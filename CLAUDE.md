@@ -156,6 +156,9 @@ npm run db:generate  # após mudar schema.ts (gera a migração e embute)
   via `next/link` (o Next aplica o basePath sozinho).
 - Gravações no banco passam por funções de `src/lib/queries.ts`, que chamam `salvar()` no fim.
 - Textos de interface em português; frases-alvo em japonês só pela camada `ScriptLayer`.
+- Celular primeiro: nada de rolagem horizontal. O `PitchAccentVisualizer` mede a largura disponível e quebra a
+  frase em linhas entre blocos gramaticais; rótulos de função nunca quebram no meio da palavra (descem para
+  outra faixa). Listas de chips usam `flex-wrap`.
 - FSRS: nunca instanciar o agendador fora de `src/lib/fsrs.ts`.
 - `public/sw.js`: páginas = rede primeiro (cache só offline); `/_next/static` e `.wasm` = cache primeiro.
   Nunca devolver HTML no lugar de JS/WASM (isso já quebrou o app).

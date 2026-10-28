@@ -89,7 +89,7 @@ export function RoleplayArena({ scenarios }: { scenarios: ScenarioView[] }) {
         </p>
       </header>
 
-      <nav className="flex gap-2 overflow-x-auto pb-1">
+      <nav className="flex flex-wrap gap-2">
         <Chip ativo={filtro === "todas"} onClick={() => setFiltro("todas")}>
           Todas <span className="opacity-60">{scenarios.length}</span>
         </Chip>
