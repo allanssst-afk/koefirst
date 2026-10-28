@@ -1,0 +1,14 @@
+node_modules
+.next
+out
+data/*.db
+data/*.db-*
+.env
+.env.local
+*.tsbuildinfo
+next-env.d.ts
+.DS_Store
+.next-test
+src/db/migrations.generated.ts
+public/sql-wasm-browser.wasm
+.claude/

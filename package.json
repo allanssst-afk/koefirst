@@ -1,0 +1,40 @@
+{
+  "name": "koefirst",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "predev": "node scripts/gerar-migracoes.mjs",
+    "dev": "next dev",
+    "prebuild": "node scripts/gerar-migracoes.mjs",
+    "build": "next build",
+    "start": "node scripts/servir.mjs out",
+    "typecheck": "tsc --noEmit",
+    "db:generate": "drizzle-kit generate && node scripts/gerar-migracoes.mjs",
+    "publicar": "bash scripts/publicar.sh"
+  },
+  "dependencies": {
+    "drizzle-orm": "^0.45.4",
+    "lucide-react": "^1.63.0",
+    "next": "^16.4.3",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "sql.js": "^1.15.2",
+    "ts-fsrs": "^6.0.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.3.3",
+    "@types/node": "^26.6.5",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@types/sql.js": "^1.4.11",
+    "drizzle-kit": "^0.31.11",
+    "tailwindcss": "^4.3.3",
+    "tsx": "^4.23.15",
+    "typescript": "^5.9.3"
+  },
+  "allowScripts": {
+    "esbuild@0.18.20": true,
+    "esbuild@0.25.12": true,
+    "esbuild@0.28.2": true
+  }
+}

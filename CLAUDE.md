@@ -1,0 +1,163 @@
+# KoeFirst (声ファースト) — guia do projeto
+
+PWA de uso pessoal para aprender japonês do zero ao B1 em 12 meses, com **oralidade primeiro**,
+**compreensão cognitiva** (lógica literal da frase japonesa) e **repetição espaçada FSRS**.
+**Sem servidor:** site estático no GitHub Pages; o banco SQLite roda no navegador e fica salvo no aparelho.
+Backup e troca de aparelho pelo cartão "Seu progresso" do Dashboard (baixar/carregar arquivo `.db`).
+
+## Regra pedagógica fundamental (não quebrar)
+
+- **Fase 1 (meses 1–3) = zero escrita japonesa.** Nada de hiragana, katakana, kanji ou romaji corrido
+  na interface principal. A frase é mostrada **só** como Guia Prosódico: blocos de moras com tom
+  Alto/Baixo (Tokyo pitch), a curva de entonação e a função cognitiva de cada bloco.
+- **Ouvir → imitar → lembrar.** Card de fala novo passa primeiro pela etapa *Aprender*
+  (`src/components/study/LearnPanel.tsx`: áudio normal/devagar, mapa de moras, decomposição e 2 repetições
+  em voz alta). Depois volta à fila 3 cards à frente como teste sem áudio. Nenhuma revisão é gravada na etapa
+  Aprender: o primeiro rating FSRS é o do teste.
+- Revisões testam a lembrança *antes* de ouvir. O botão "Ouvir dica" toca o primeiro bloco e, num segundo
+  clique, a frase inteira. Usar dica limita a nota sugerida a Hard.
+- **Contexto antes da sessão.** Estúdio e Ping-Pong começam com a escolha do contexto de vida
+  (`src/components/ContextPicker.tsx`; categorias em `src/lib/roleplay.ts`). No Estúdio o contexto filtra só as
+  frases NOVAS (tags `ctx:<categoria>` nos cards); revisões vencidas entram sempre. No Ping-Pong o contexto
+  define as situações (`CENAS_DRILL` em `src/lib/drills.ts`, cada uma com o complemento em japonês + partícula +
+  pitch). O drill é uma troca de frases completas (`montarDialogo`): o parceiro pergunta em japonês (毎日…ますか /
+  昨日…ましたか / 何をしたいですか / 何をしましょうか) e o usuário responde a frase inteira e educada
+  (いいえ、部長と話しません). O tempo de resposta só começa quando o usuário aperta "Estou pronto — responder"
+  (etapa `ready`), depois de ouvir a pergunta e ler o contexto. As peças (complemento + verbo base) ficam na
+  tela com áudio. Avaliação: completo (verbo + complemento) · parcial (só o verbo) · erro. Nada é falado em
+  português; a legenda das transformações (-mashita, -masen…) fica sempre visível.
+- Isso vale também para o que *o usuário* fala: na Fase 1 a transcrição do STT **não é exibida**
+  (mostra-se só a % de correspondência). Na Fase 2+ ela aparece.
+- Camadas ortográficas (`user_settings.fase_atual`), aplicadas pelo componente `ScriptLayer`:
+  1. Som puro (mapa de moras/pitch) · 2. + hiragana (`kana_oculto`) ·
+  3. + kanji com furigana (`kanji_oculto`) · 4. imersão B1 (kanji sem furigana).
+- **Expressões prontas** (こんにちは, ありがとうございます, すみません, はじめまして…) aparecem como um bloco
+  `papel: "expressao"` com o significado real ("olá / boa tarde"), nunca decompostas pela etimologia
+  ("este dia + [Tópico]"). A origem histórica, quando ajuda, vai nas `notas` como curiosidade.
+- Toda frase nova na UI deve vir com `moras` (som, pitch H/L, bloco, função, papel).
+
+## Stack
+
+- Next.js (App Router) com `output: "export"` (site estático) + TypeScript + Tailwind CSS v4 (tema escuro).
+  PWA: `src/app/manifest.ts` + `public/sw.js` (registrado só no build de produção).
+- Banco **no navegador**: SQLite em WebAssembly (`sql.js`) + Drizzle (`drizzle-orm/sql-js`), salvo no
+  IndexedDB (`src/lib/idb.ts`). `src/db/index.ts`: `abrirBanco()` aplica as migrações embutidas e o seed
+  (`src/db/seed-run.ts`, idempotente, preserva progresso); `salvar()` grava após cada alteração.
+  `PhaseProvider` só renderiza as telas depois de `abrirBanco()`, então as telas consultam o banco direto.
+- Migrações: `drizzle/` (drizzle-kit) → `scripts/gerar-migracoes.mjs` embute em
+  `src/db/migrations.generated.ts` (mesmo formato/hash do migrator do drizzle, para bancos importados do antigo
+  app de servidor serem reconhecidos) e copia `sql-wasm-browser.wasm` para `public/`. Roda em `predev`/`prebuild`.
+- `ts-fsrs` v6 (`DefaultScheduler`, FSRS-7) com `desiredRetention = 0.90` — configuração única em
+  `src/lib/fsrs.ts`. Passos 1m/10m com `allowModelOverride: false`, para frases novas voltarem em minutos.
+- Áudio só com APIs do navegador: TTS `speechSynthesis` (ja-JP), STT `webkitSpeechRecognition` (ja-JP; pt-BR no
+  Coach), gravação `MediaRecorder`, "Nativo vs Eu" e contorno de F0 via Web Audio API (`src/lib/audio/pitch.ts`).
+- Sem IA externa (não há onde guardar chave num site estático): a Arena usa os roteiros guiados dos cenários e o
+  Coach busca a frase mais parecida no baralho (`fraseMaisProxima` em `src/lib/queries.ts`).
+  `Capabilities` em `PhaseProvider` fica toda `null`.
+
+## Estrutura de diretórios
+
+```
+CLAUDE.md
+drizzle.config.ts · next.config.ts · postcss.config.mjs · tsconfig.json
+scripts/publicar.sh              # npm run publicar → build + envio para a branch gh-pages
+scripts/gerar-migracoes.mjs      # embute migrações + copia o wasm do SQLite
+scripts/servir.mjs               # servidor estático mínimo para testar o build (npm start)
+drizzle/                         # migrações SQL geradas
+public/sw.js · public/icon.svg · public/audio/
+src/
+  app/
+    layout.tsx · globals.css · manifest.ts
+    page.tsx                     # Tela 1 — Dashboard de Comando (+ backup do progresso)
+    study/page.tsx               # Tela 2 — Estúdio SRS de Reflexo Oral
+    drills/page.tsx              # Tela 3 — Ping-Pong de Ginástica Gramatical
+    roleplay/page.tsx            # Tela 4 — Arena de Diálogos + Coach
+  components/
+    PitchAccentVisualizer.tsx    # blocos de moras + curva H/L + blocos coloridos por função
+    CognitiveBreakdown.tsx       # ordem lógica japonesa (Tópico → Tempo → Objeto → Verbo)
+    ScriptLayer.tsx              # aplica a camada ortográfica da fase atual
+    PhaseProvider.tsx            # abre o banco do aparelho + fase global + seletor
+    PhaseCard.tsx · BackupCard.tsx · ContextPicker.tsx
+    AudioControls.tsx            # Ouvir / Devagar / "Nativo vs Eu"
+    useVoiceCapture.ts           # hook de gravação + STT + latência
+    PitchContourView.tsx         # F0 da gravação vs padrão H/L
+    ReflexTimer.tsx · RatingButtons.tsx · NavBar.tsx · ServiceWorker.tsx
+    study/LearnPanel.tsx
+    roleplay/ RoleplayArena.tsx · JaBubble.tsx · CoachWhisper.tsx
+  db/
+    schema.ts · index.ts (sql.js + IndexedDB) · seed-run.ts · migrations.generated.ts (gerado)
+    seed-data/cards.ts · seed-data/scenarios.ts (+ scenarios-cotidiano.ts) · seed-data/helpers.ts
+  lib/
+    types.ts · fsrs.ts · roles.ts · text.ts (normalização/similaridade/furigana) · idb.ts
+    queries.ts                   # consultas e gravações (fila, revisão, dashboard, atividade, coach offline)
+    drills.ts                    # verbos, cenas com complemento em japonês, montarDialogo
+    roleplay.ts                  # categorias de contexto
+    audio/ tts.ts · capture.ts (MediaRecorder + STT + VAD) · pitch.ts (F0)
+```
+
+## Modelo de dados (Drizzle, `src/db/schema.ts`)
+
+- `cards` — `id, fase (1–4), tipo ('listening'|'speaking'|'drill_conjugacao'), situacao_pt,
+  significado_cognitivo, moras_json, kana_oculto, kanji_oculto, audio_url, notas_gramaticais, tags, created_at`.
+- `fsrs_states` — `card_id, due, stability, difficulty, elapsed_days, scheduled_days, learning_steps,
+  reps, lapses, state (0 New,1 Learning,2 Review,3 Relearning), last_review`.
+- `review_logs` — histórico completo + `tempo_resposta_ms` (latência até começar a falar),
+  `duracao_fala_ms`, `transcricao`, `similaridade`.
+- `scenarios_roleplay` — `id, titulo, missao_pt, nivel, categoria, emoji, parceiro_nome, parceiro_emoji,
+  vocabulario_requerido_ids, system_prompt_cenario, roteiro_offline_json`. Cada passo do roteiro pode trocar
+  quem fala (`quem`) e traz uma resposta-modelo (`exemplo`/`exemplo_card`) para o botão "Como responder?".
+- `user_settings` — linha única (`id = 1`): `fase_atual`, `meta_novos_dia`, `meta_revisoes_dia`,
+  `meta_minutos_fala`, `data_inicio`.
+- `speech_activity` — tempo de fala em drills/roleplay/coach (alimenta "tempo de fala acumulada").
+
+### Formato de mora (`moras_json`)
+
+```ts
+{ som: "ko", pitch: "H" | "L", bloco: "kore", funcao: "isto", papel: "topico", devozeada?: true }
+```
+`papel` define a cor do bloco (`src/lib/roles.ts`): topico, sujeito, objeto, verbo, particula,
+pergunta, tempo, lugar, copula, adjetivo, substantivo, adverbio, expressao.
+Moras consecutivas com o mesmo `bloco` formam um bloco gramatical.
+
+### Furigana
+
+`kanji_oculto` usa a notação `漢字[かんじ]` (a leitura entre colchetes vale para a sequência de kanji
+imediatamente anterior). `src/lib/text.ts` converte para `<ruby>` (Fase 3) ou texto limpo (Fase 4/STT).
+
+## Pitch accent do seed
+
+Padrão de Tóquio conforme convenções NHK/OJAD (heiban, atamadaka, nakadaka, odaka; `です` após palavra
+heiban = H‑L, após queda = L‑L; formas `-ます` = queda depois de `ma`; `-ません` = queda depois de `se`).
+Ao adicionar cards, valide em OJAD (Suzuki-kun) e escreva os cards com o helper `b()` de
+`src/db/seed-data/helpers.ts`: `b("ko.re", "LH", "isto", "topico")`.
+
+## Comandos
+
+```bash
+npm run dev          # http://localhost:3000 (banco no navegador)
+npm run build        # gera o site estático em out/
+npm start            # serve out/ em http://localhost:3000 para testar o build
+npm run db:generate  # após mudar schema.ts (gera a migração e embute)
+```
+
+## Publicação (GitHub Pages)
+
+- Repositório público `allanssst-afk/koefirst`. `npm run publicar` (`scripts/publicar.sh`) faz o build com
+  `NEXT_PUBLIC_BASE_PATH=/koefirst` e envia `out/` para a branch `gh-pages` (Pages "deploy from branch"),
+  publicado em https://allanssst-afk.github.io/koefirst/. Sem GitHub Actions: o token do `gh` não tem
+  escopo `workflow`.
+- No celular: abrir o endereço e instalar ("Adicionar à Tela de Início" / "Instalar app"). HTTPS do GitHub
+  Pages libera o microfone. Cada aparelho tem o próprio banco; para levar o progresso, use backup/carregar.
+
+## Convenções
+
+- Nada de servidor, login ou serviço pago: tudo precisa funcionar como site estático no navegador.
+- Todo caminho absoluto de arquivo (wasm, sw.js, ícones, manifest) usa `NEXT_PUBLIC_BASE_PATH`; links internos
+  via `next/link` (o Next aplica o basePath sozinho).
+- Gravações no banco passam por funções de `src/lib/queries.ts`, que chamam `salvar()` no fim.
+- Textos de interface em português; frases-alvo em japonês só pela camada `ScriptLayer`.
+- FSRS: nunca instanciar o agendador fora de `src/lib/fsrs.ts`.
+- `public/sw.js`: páginas = rede primeiro (cache só offline); `/_next/static` e `.wasm` = cache primeiro.
+  Nunca devolver HTML no lugar de JS/WASM (isso já quebrou o app).
+- Para testar um build sem atrapalhar o `npm run dev`: `NEXT_DIST_DIR=.next-test npm run build` — com pasta
+  customizada o site exportado fica dentro dela; sirva com `node scripts/servir.mjs .next-test`.
