@@ -72,8 +72,9 @@ export function CompareButton({
     stopAll();
     setStage("nativo");
     onPlaying?.(true, 1);
-    await speakJa(line.kana, { url: line.audio_url });
+    const inteiro = await speakJa(line.kana, { url: line.audio_url });
     onPlaying?.(false, 1);
+    if (!inteiro) return setStage("idle"); // interrompido: não emenda a sua gravação
     await wait(500);
     setStage("eu");
     try {

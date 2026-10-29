@@ -1,8 +1,10 @@
 "use client";
 
+import { useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { House, MessagesSquare, Mic, Repeat2, UserRound } from "lucide-react";
+import { stopAll } from "@/lib/audio/tts";
 
 const ABAS = [
   { href: "/", label: "Aprender", icon: House, cor: "#58cc02" },
@@ -15,6 +17,8 @@ const ABAS = [
 /** Abas no rodapé (celular) e no topo (telas largas); somem durante uma lição. */
 export function NavBar() {
   const path = usePathname();
+  // Trocar de tela corta qualquer frase que ainda esteja tocando.
+  useEffect(() => stopAll, [path]);
   if (path.startsWith("/licao")) return null;
   const ativa = (href: string) => (href === "/" ? path === "/" : path.startsWith(href));
   return (

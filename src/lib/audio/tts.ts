@@ -1,27 +1,37 @@
 /**
  * TTS no navegador: arquivo nativo (audio_url) → speechSynthesis (voz japonesa do aparelho).
- * Todas as funções devolvem uma Promise que resolve quando o áudio termina.
+ * Todas as funções devolvem uma Promise que resolve quando o áudio termina: `true` se tocou até o fim,
+ * `false` se foi interrompido (stopAll ou outra fala) — quem encadeia áudios deve parar no `false`.
  */
 
-let current: HTMLAudioElement | null = null;
+let current: { audio: HTMLAudioElement; parar: () => void } | null = null;
 // Mantém referência para o Chrome não descartar a utterance antes do onend.
 const liveUtterances: SpeechSynthesisUtterance[] = [];
 
+/**
+ * Geração do áudio: cada stopAll() (e cada fala nova) invalida o que ainda estava esperando para tocar.
+ * Sem isso, uma fala que aguardava as vozes do aparelho escapava do cancelamento e tocava depois,
+ * sobreposta à próxima ou numa tela que já tinha sido fechada.
+ */
+let geracao = 0;
+
 export function stopAll() {
+  geracao++;
   if (current) {
-    current.pause();
+    current.audio.pause();
+    current.parar();
     current = null;
   }
   if (typeof speechSynthesis !== "undefined") speechSynthesis.cancel();
 }
 
-export function playUrl(url: string, rate = 1): Promise<void> {
+export function playUrl(url: string, rate = 1): Promise<boolean> {
   stopAll();
   return new Promise((resolve, reject) => {
     const a = new Audio(url);
     a.playbackRate = rate;
-    current = a;
-    a.onended = () => resolve();
+    current = { audio: a, parar: () => resolve(false) };
+    a.onended = () => resolve(true);
     a.onerror = () => reject(new Error("audio error"));
     a.play().catch(reject);
   });
@@ -44,10 +54,14 @@ const PREFERRED: Record<string, RegExp> = {
   "pt-BR": /(Google português do Brasil|Luciana|Francisca|Felipe|Maria)/i,
 };
 
-export async function speakSynth(text: string, lang: "ja-JP" | "pt-BR", rate = 1): Promise<void> {
-  if (typeof speechSynthesis === "undefined") return;
+export async function speakSynth(text: string, lang: "ja-JP" | "pt-BR", rate = 1): Promise<boolean> {
+  if (typeof speechSynthesis === "undefined") return false;
   stopAll();
+  const minha = geracao;
   const voices = await getVoices();
+  // Outra fala começou (ou alguém parou o áudio) enquanto as vozes carregavam: esta não toca mais.
+  if (minha !== geracao) return false;
+  speechSynthesis.cancel(); // fila sempre vazia: nunca duas frases enfileiradas
   const sameLang = voices.filter((v) => v.lang.replace("_", "-").startsWith(lang.slice(0, 2)));
   const voice = sameLang.find((v) => PREFERRED[lang].test(v.name)) ?? sameLang[0];
   return new Promise((resolve) => {
@@ -59,7 +73,7 @@ export async function speakSynth(text: string, lang: "ja-JP" | "pt-BR", rate = 1
     const finish = () => {
       liveUtterances.splice(liveUtterances.indexOf(u), 1);
       clearTimeout(guard);
-      resolve();
+      resolve(minha === geracao);
     };
     const guard = setTimeout(finish, 2500 + text.length * 300);
     u.onend = finish;
@@ -69,7 +83,7 @@ export async function speakSynth(text: string, lang: "ja-JP" | "pt-BR", rate = 1
 }
 
 /** Fala uma frase japonesa (kana de preferência). */
-export async function speakJa(text: string, opts: { url?: string | null; rate?: number } = {}): Promise<void> {
+export async function speakJa(text: string, opts: { url?: string | null; rate?: number } = {}): Promise<boolean> {
   const rate = opts.rate ?? 1;
   if (opts.url) {
     try {
@@ -86,3 +100,11 @@ export function speakPt(text: string, rate = 1.05) {
 }
 
 export const wait = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
+
+// Celular: ao sair do app o navegador pausa a voz e, na volta, solta a fila sozinho. Ao esconder, para tudo.
+if (typeof document !== "undefined") {
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) stopAll();
+  });
+  window.addEventListener("pagehide", stopAll);
+}
