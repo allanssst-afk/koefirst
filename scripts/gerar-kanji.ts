@@ -31,6 +31,7 @@ const SIG_EXTRA: Record<string, string[]> = {
   鍵: ["chave", "fechadura"],
   歩: ["andar", "caminhar", "passo"],
   曲: ["curvar", "virar", "música"],
+  枚: ["folha", "contador de coisas finas (papéis, selos)"],
 };
 
 const NOMES_PROPRIOS = /^(Japão|China|Coreia|Tóquio|Buda)/;

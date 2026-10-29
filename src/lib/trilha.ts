@@ -135,6 +135,21 @@ export const UNIDADES: Unidade[] = [
     ],
     missoes: ["rp_lug_konbini", "rp_lug_recepcao", "rp_lug_chave"],
   },
+  {
+    id: "u9",
+    numero: 9,
+    titulo: "Números, horas e preços",
+    descricao: "Que horas são, quanto custa, quantos e quando",
+    cor: "#5b8fd9",
+    contexto: "compras",
+    cards: [
+      "card_055", "card_056", "card_057",
+      "card_058", "card_059", "card_060",
+      "card_061", "card_062", "card_063",
+      "card_064", "card_065", "card_066",
+    ],
+    missoes: ["rp_num_cafe", "rp_num_correio", "rp_num_horario"],
+  },
 ];
 
 const TITULO: Record<TipoLicao, string> = {

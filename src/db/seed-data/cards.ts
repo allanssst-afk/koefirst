@@ -1,4 +1,5 @@
 import { cardsLugares } from "./cards-lugares";
+import { cardsNumeros } from "./cards-numeros";
 import { cardsTrabalho } from "./cards-trabalho";
 import { b, card } from "./helpers";
 
@@ -507,4 +508,4 @@ const cardsBase = [
   }),
 ];
 
-export const seedCards = [...cardsBase, ...cardsTrabalho, ...cardsLugares];
+export const seedCards = [...cardsBase, ...cardsTrabalho, ...cardsLugares, ...cardsNumeros];

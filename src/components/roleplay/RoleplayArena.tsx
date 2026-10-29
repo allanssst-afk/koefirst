@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 import { usePhase } from "../PhaseProvider";
 import { useVoiceCapture } from "../useVoiceCapture";
-import { CoachWhisper } from "./CoachWhisper";
+import { BotaoCoach, CoachWhisper } from "./CoachWhisper";
 import { JaBubble } from "./JaBubble";
 import { useRouter } from "next/navigation";
 import { somConclusao } from "@/lib/audio/som";
@@ -452,6 +452,7 @@ function Conversation({
                 <span className="hidden sm:inline">Como responder?</span>
               </button>
             )}
+            <BotaoCoach onClick={() => setCoachOpen(true)} />
             {(falhas > 0 || modeloVisto) && (
               <button
                 onClick={avancar}

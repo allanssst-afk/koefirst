@@ -5,6 +5,7 @@ import { cenariosCotidiano } from "./scenarios-cotidiano";
 import { cenariosExtra } from "./scenarios-extra";
 import { cenariosTrabalho } from "./scenarios-trabalho";
 import { cenariosLugares } from "./scenarios-lugares";
+import { cenariosNumeros } from "./scenarios-numeros";
 
 /** Um turno do roteiro offline (usado quando não há chave de IA). */
 export interface RoteiroPasso {
@@ -256,4 +257,4 @@ const cenariosBase: SeedScenario[] = [
   },
 ];
 
-export const seedScenarios: SeedScenario[] = [...cenariosBase, ...cenariosCotidiano, ...cenariosExtra, ...cenariosTrabalho, ...cenariosLugares];
+export const seedScenarios: SeedScenario[] = [...cenariosBase, ...cenariosCotidiano, ...cenariosExtra, ...cenariosTrabalho, ...cenariosLugares, ...cenariosNumeros];

@@ -15,8 +15,9 @@ import type { JaLine } from "@/lib/types";
 type Step = "ask" | "loading" | "teach" | "done";
 
 /**
- * Botão flutuante "Sussurro do Coach (Como eu digo…?)": dúvida em português →
- * frase ensinada sonoramente → repetir 2× → retomar o diálogo.
+ * Sussurro do Coach ("Como eu digo…?"): dúvida em português → frase ensinada sonoramente → repetir 2× →
+ * retomar o diálogo. Abre pelo botão `BotaoCoach`, que fica na linha de resposta da Arena (não flutua, para
+ * não cobrir os botões no celular).
  */
 export function CoachWhisper({
   open,
@@ -108,17 +109,6 @@ export function CoachWhisper({
 
   return (
     <>
-      {!open && (
-        <button
-          onClick={() => onOpenChange(true)}
-          aria-label="Como eu digo…?"
-          title="Como eu digo…?"
-          // no celular fica só o ícone, logo acima das abas, para não cobrir o botão de responder
-          className="fixed bottom-24 right-4 z-40 flex h-12 w-12 items-center justify-center gap-2 rounded-full bg-violet-500 text-sm font-bold text-white shadow-lg shadow-violet-900/40 md:bottom-40 md:h-auto md:w-auto md:px-4 md:py-3"
-        >
-          <Sparkles size={20} /> <span className="hidden md:inline">Como eu digo…?</span>
-        </button>
-      )}
       {open && (
         <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 p-3 sm:items-center" onClick={() => close(false)}>
           <div
@@ -215,5 +205,20 @@ export function CoachWhisper({
         </div>
       )}
     </>
+  );
+}
+
+/** Botão que abre o Coach, na linha de resposta da Arena. */
+export function BotaoCoach({ onClick }: { onClick: () => void }) {
+  return (
+    <button
+      onClick={onClick}
+      aria-label="Como eu digo…?"
+      title="Como eu digo…?"
+      className="flex h-12 shrink-0 items-center gap-1.5 rounded-xl bg-violet-500 px-3 text-xs font-bold text-white"
+    >
+      <Sparkles size={16} />
+      <span className="hidden sm:inline">Como eu digo…?</span>
+    </button>
   );
 }

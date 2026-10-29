@@ -124,7 +124,8 @@ Unidades novas seguem a ordem do plano; ao terminar uma, marcar no plano.
 - Áudio só com APIs do navegador: TTS `speechSynthesis` (ja-JP), STT `webkitSpeechRecognition` (ja-JP; pt-BR no
   Coach), gravação `MediaRecorder`, "Nativo vs Eu" e contorno de F0 via Web Audio API (`src/lib/audio/pitch.ts`).
 - Sem IA externa (não há onde guardar chave num site estático): a Arena usa os roteiros guiados dos cenários e o
-  Coach busca a frase mais parecida no baralho (`fraseMaisProxima` em `src/lib/queries.ts`).
+  Coach busca a frase mais parecida no baralho (`fraseMaisProxima` em `src/lib/queries.ts`). O Coach abre pelo
+  `BotaoCoach` na linha de resposta da Arena — nada de botão flutuante (cobria os botões no celular).
   `Capabilities` em `PhaseProvider` fica toda `null`.
 
 ## Estrutura de diretórios
@@ -168,8 +169,9 @@ src/
     roleplay/ RoleplayArena.tsx · JaBubble.tsx · CoachWhisper.tsx
   db/
     schema.ts · index.ts (sql.js + IndexedDB) · seed-run.ts · migrations.generated.ts (gerado)
-    seed-data/cards.ts (+ cards-trabalho.ts, cards-lugares.ts) · seed-data/scenarios.ts (+ scenarios-cotidiano.ts,
-      scenarios-extra.ts, scenarios-trabalho.ts, scenarios-lugares.ts) · seed-data/helpers.ts
+    seed-data/cards.ts (+ cards-trabalho.ts, cards-lugares.ts, cards-numeros.ts) · seed-data/scenarios.ts
+      (+ scenarios-cotidiano.ts, scenarios-extra.ts, scenarios-trabalho.ts, scenarios-lugares.ts,
+      scenarios-numeros.ts) · seed-data/helpers.ts
   lib/
     types.ts · fsrs.ts · roles.ts · text.ts (normalização/similaridade/furigana) · idb.ts
     queries.ts                   # consultas e gravações (fila, revisão, dashboard, atividade, coach offline)
