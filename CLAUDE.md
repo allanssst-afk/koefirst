@@ -50,6 +50,16 @@ Backup e troca de aparelho pelo cartão "Seu progresso" do Dashboard (baixar/car
   `src/lib/kana-tracos.generated.ts`, gerado por `scripts/gerar-kana.mjs` a partir do KanjiVG (CC BY-SA 3.0,
   crédito na página). **Exceção à Fase 1:** é um módulo à parte, aberto por atalhos no Perfil e no Praticar
   (`AtalhosEstudo`); na Fase 1 mostra o aviso de que a escrita entra na Fase 2, e o resto do app segue só com som.
+- **Kanji** (`/kanji`, `/kanji/ver/?k=会&g=app`, `src/lib/kanji.ts`, `QuizKanji.tsx`): 335 kanji — os das frases,
+  missões e Ping-Pong do app (`noApp`) + JLPT N5 (103) e N4 (181) — com significados em português, leituras on/kun,
+  nível, ordem dos traços e as palavras das frases que usam cada um (`PALAVRAS`: tiradas de `漢字[よみ]` nos cards;
+  o okurigana e o prefixo お/ご vêm do bloco de moras que contém a leitura). Caligrafia igual à dos kana
+  (`Caligrafia` com `dados`), quiz kanji→sentido, sentido→kanji e palavra→leitura (o quiz genérico fica em
+  `escrita/Quiz.tsx`). Progresso no mesmo `kana_log`. Dados em `src/lib/kanji-dados.generated.ts`, gerado por
+  `scripts/gerar-kanji.ts` a partir do KANJIDIC2 (EDRDG, CC BY-SA 4.0) e do KanjiVG; `SIG_EXTRA` corrige à mão os
+  significados que faltam ou enganam. Só as páginas de kanji importam esses dados (o dicionário não). Na Fase < 3
+  mostra o aviso de que os kanji entram na Fase 3; no Dicionário, os atalhos para os kanji da frase só aparecem
+  na Fase 3+.
 - **Limite diário de frases novas:** `meta_novos_dia` (Perfil → "Frases novas por dia") vale para trilha e aba
   Revisar juntas (`novosDeHoje`). Lição de frases que passaria da meta não abre ("Amanhã"); o resto do dia é
   revisão e prática.
@@ -127,6 +137,7 @@ src/
     page.tsx                     # Aprender — trilha de unidades e lições
     dicionario/page.tsx          # dicionário de palavras e frases
     escrita/page.tsx · escrita/tracar/page.tsx   # kana: tabela, quiz e caligrafia
+    kanji/page.tsx · kanji/ver/page.tsx          # kanji: listas, quiz, detalhe e caligrafia
     licao/page.tsx               # player de lição (?id=u1:l2)
     perfil/page.tsx              # estatísticas, camada ortográfica, backup
     study/page.tsx               # Tela 2 — Estúdio SRS de Reflexo Oral
@@ -138,7 +149,7 @@ src/
     ScriptLayer.tsx              # aplica a camada ortográfica da fase atual
     PhaseProvider.tsx            # abre o banco do aparelho + fase global + seletor
     PhaseCard.tsx · BackupCard.tsx · ContextPicker.tsx · TecnicasCard.tsx · AtalhosEstudo.tsx
-    escrita/ Caligrafia.tsx · QuizKana.tsx
+    escrita/ Caligrafia.tsx · Quiz.tsx · QuizKana.tsx · QuizKanji.tsx
     AudioControls.tsx            # Ouvir / Devagar / "Nativo vs Eu"
     useVoiceCapture.ts           # hook de gravação + STT + latência
     PitchContourView.tsx         # F0 da gravação vs padrão H/L
@@ -158,6 +169,7 @@ src/
     roleplay.ts                  # categorias de contexto
     trilha.ts                    # unidades, lições e geração dos exercícios
     dicionario.ts · kana.ts · kana-tracos.generated.ts (scripts/gerar-kana.mjs)
+    kanji.ts · kanji-dados.generated.ts (scripts/gerar-kanji.ts)
     audio/ tts.ts · capture.ts (MediaRecorder + STT + VAD) · pitch.ts (F0)
 ```
 
@@ -175,7 +187,8 @@ src/
 - `user_settings` — linha única (`id = 1`): `fase_atual`, `meta_novos_dia`, `meta_revisoes_dia`,
   `meta_minutos_fala`, `data_inicio`.
 - `speech_activity` — tempo de fala em drills/roleplay/coach (alimenta "tempo de fala acumulada").
-- `kana_log` — `kana, modo ('quiz'|'escrita'), acertou`: treino de escrita (progresso da tabela de kana).
+- `kana_log` — `kana, modo ('quiz'|'escrita'), acertou`: treino de escrita (progresso dos kana e dos kanji;
+  a coluna guarda o caractere).
 - `licao_log` — uma linha por lição concluída (`licao_id`, `xp`, `acertos`, `total`): progresso da trilha,
   XP e, com revisões e fala, a sequência de dias (`diasSeguidos`).
 

@@ -19,18 +19,46 @@ function amostrarCaminho(d: string, n = 40): Ponto[] {
 
 const linha = (pts: Ponto[]) => pts.map(([x, y], i) => `${i ? "L" : "M"}${x.toFixed(1)},${y.toFixed(1)}`).join("");
 
+/** Traços de referência de um caractere (caixa 109×109, como no KanjiVG). */
+export interface DadosTracos {
+  tracos: string[];
+  numeros: [number, number][];
+}
+
 /**
- * Caligrafia de um kana: o aluno traça com o dedo, um traço por vez, na ordem e no sentido certos.
+ * Caligrafia de um kana ou kanji: o aluno traça com o dedo, um traço por vez, na ordem e no sentido certos.
  * Traço certo encaixa no desenho de referência; traço errado pisca e o app mostra como se faz.
  * Guia (olho) mostra o caractere apagado com os números dos traços; sem guia, o treino é de memória.
  */
-export function Caligrafia({ caractere, aoConcluir }: { caractere: string; aoConcluir?: (semErro: boolean) => void }) {
-  const dados = tracosDe(caractere);
+export function Caligrafia({
+  caractere,
+  dados: dadosKanji,
+  aoConcluir,
+}: {
+  caractere: string;
+  /** traços do caractere; sem eles, procura na tabela de kana */
+  dados?: DadosTracos;
+  aoConcluir?: (semErro: boolean) => void;
+}) {
+  const dados = dadosKanji ?? tracosDe(caractere);
   const [guia, setGuia] = useState(true);
   const [grade, setGrade] = useState(true);
-  const [feitos, setFeitos] = useState(0);
-  const [erros, setErros] = useState(0);
+  const [feitos, setFeitosState] = useState(0);
+  const [erros, setErrosState] = useState(0);
   const [desenho, setDesenho] = useState<Ponto[] | null>(null);
+  // Os eventos do dedo chegam mais rápido que a tela redesenha: o traço e a contagem vivem em refs,
+  // e o estado só serve para desenhar.
+  const tracoAtual = useRef<Ponto[] | null>(null);
+  const feitosRef = useRef(0);
+  const errosRef = useRef(0);
+  const setFeitos = (n: number) => {
+    feitosRef.current = n;
+    setFeitosState(n);
+  };
+  const setErros = (n: number) => {
+    errosRef.current = n;
+    setErrosState(n);
+  };
   const [errou, setErrou] = useState(false);
   /** animação da ordem dos traços: todos (-1 = parada) ou só o traço que o aluno errou */
   const [demo, setDemo] = useState<{ de: number; ate: number; chave: number } | null>(null);
@@ -39,8 +67,11 @@ export function Caligrafia({ caractere, aoConcluir }: { caractere: string; aoCon
 
   useEffect(() => setRefs(dados.tracos.map((d) => amostrarCaminho(d))), [dados]);
   useEffect(() => {
-    setFeitos(0);
-    setErros(0);
+    feitosRef.current = 0;
+    errosRef.current = 0;
+    tracoAtual.current = null;
+    setFeitosState(0);
+    setErrosState(0);
     setDesenho(null);
     setDemo(null);
   }, [caractere]);
@@ -62,30 +93,33 @@ export function Caligrafia({ caractere, aoConcluir }: { caractere: string; aoCon
       /* sem captura: o traço termina ao sair do quadro */
     }
     setDemo(null);
-    setDesenho([paraCaixa(e)]);
+    tracoAtual.current = [paraCaixa(e)];
+    setDesenho(tracoAtual.current);
   };
   const mover = (e: React.PointerEvent) => {
-    if (!desenho) return;
-    const p = paraCaixa(e);
-    setDesenho((d) => (d ? [...d, p] : d));
+    if (!tracoAtual.current) return;
+    tracoAtual.current = [...tracoAtual.current, paraCaixa(e)];
+    setDesenho(tracoAtual.current);
   };
   const fim = () => {
-    if (!desenho) return;
-    const pts = desenho;
+    const pts = tracoAtual.current;
+    if (!pts) return;
+    tracoAtual.current = null;
     setDesenho(null);
     if (pts.length < 3) return; // um toque solto não conta
-    if (tracoConfere(pts, refs[feitos])) {
-      const n = feitos + 1;
-      setFeitos(n);
-      if (n === total) {
-        registrarKana(caractere, "escrita", erros === 0);
-        aoConcluir?.(erros === 0);
+    const f = feitosRef.current;
+    if (f >= total) return;
+    if (tracoConfere(pts, refs[f])) {
+      setFeitos(f + 1);
+      if (f + 1 === total) {
+        registrarKana(caractere, "escrita", errosRef.current === 0);
+        aoConcluir?.(errosRef.current === 0);
       }
     } else {
-      setErros((x) => x + 1);
+      setErros(errosRef.current + 1);
       setErrou(true);
       setTimeout(() => setErrou(false), 450);
-      setDemo({ de: feitos, ate: feitos, chave: Date.now() }); // mostra só o traço que faltou
+      setDemo({ de: f, ate: f, chave: Date.now() }); // mostra só o traço que faltou
     }
   };
 
@@ -176,7 +210,7 @@ export function Caligrafia({ caractere, aoConcluir }: { caractere: string; aoCon
       </p>
 
       <div className="grid grid-cols-6 gap-2">
-        <Botao rotulo="Desfazer traço" onClick={() => setFeitos((f) => Math.max(0, f - 1))} disabled={!feitos || pronto}>
+        <Botao rotulo="Desfazer traço" onClick={() => setFeitos(Math.max(0, feitosRef.current - 1))} disabled={!feitos || pronto}>
           <Undo2 size={20} />
         </Botao>
         <Botao rotulo="Recomeçar" onClick={recomecar}>

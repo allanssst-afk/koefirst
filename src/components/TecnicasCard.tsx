@@ -44,7 +44,7 @@ const TECNICAS: { nome: string; porque: string; onde: string }[] = [
     nome: "Escrita à mão, traço a traço",
     porque:
       "Escrever à mão, na ordem e no sentido certos, fixa o reconhecimento dos caracteres melhor do que só olhar ou digitar.",
-    onde: "Escrita (Perfil ou Praticar): caligrafia com correção de cada traço, tabela com som e quiz com cronômetro.",
+    onde: "Kana e Kanji (Perfil ou Praticar): caligrafia com correção de cada traço, tabelas com som e quiz com cronômetro.",
   },
   {
     nome: "Simulado de escuta (formato JLPT)",

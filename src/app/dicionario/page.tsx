@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Link from "next/link";
 import { ChevronDown, Search, Volume2 } from "lucide-react";
 import { PitchAccentVisualizer } from "@/components/PitchAccentVisualizer";
 import { usePhase } from "@/components/PhaseProvider";
@@ -158,6 +159,9 @@ function LinhaVerbete({ v, aberto, alternar }: { v: Verbete; aberto: boolean; al
 }
 
 function LinhaFrase({ c, aberto, alternar }: { c: CardTrilha; aberto: boolean; alternar: () => void }) {
+  const { fase } = usePhase();
+  // os kanji só aparecem a partir da Fase 3 (camada de kanji)
+  const kanji = fase >= 3 ? [...new Set(c.kanji.match(/[\u4e00-\u9faf]/g) ?? [])] : [];
   return (
     <div className="rounded-2xl border border-[var(--line)] bg-[var(--panel)]">
       <div role="button" tabIndex={0} onClick={alternar} className="flex cursor-pointer items-center gap-3 p-3">
@@ -176,6 +180,20 @@ function LinhaFrase({ c, aberto, alternar }: { c: CardTrilha; aberto: boolean; a
             <span className="font-semibold text-[var(--pitch)]">Lógica japonesa:</span> {c.significado_cognitivo}
           </p>
           {c.notas && <p className="text-xs text-[var(--muted)]">💡 {c.notas}</p>}
+          {kanji.length > 0 && (
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-xs text-[var(--muted)]">Kanji:</span>
+              {kanji.map((k) => (
+                <Link
+                  key={k}
+                  href={`/kanji/ver/?k=${encodeURIComponent(k)}`}
+                  className="btn font-jp rounded-lg border border-[var(--line)] px-2 py-1 text-lg"
+                >
+                  {k}
+                </Link>
+              ))}
+            </div>
+          )}
         </div>
       )}
     </div>

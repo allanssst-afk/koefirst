@@ -165,6 +165,14 @@ export default function Escrita() {
         <PenLine size={20} /> Começar a caligrafia pelo começo
       </Link>
 
+      <Link href="/kanji" className="btn btn-secundario flex items-center gap-3 rounded-2xl p-4">
+        <span className="font-jp text-3xl text-[var(--pitch)]">字</span>
+        <span className="min-w-0 flex-1">
+          <span className="block font-bold">Próximo passo: kanji</span>
+          <span className="block text-xs text-[var(--muted)]">Os das suas frases e os do JLPT N5 e N4</span>
+        </span>
+      </Link>
+
       <p className="text-center text-[11px] text-[var(--muted)]">
         Ordem dos traços: KanjiVG, de Ulrich Apel (licença CC BY-SA 3.0).
       </p>
