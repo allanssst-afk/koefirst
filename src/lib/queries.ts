@@ -507,3 +507,35 @@ export function diasSeguidos(): number {
   }
   return n;
 }
+
+// ───────────────────────── Escrita (kana)
+
+/** Registra um kana respondido no quiz ou traçado na caligrafia. */
+export function registrarKana(kana: string, modo: "quiz" | "escrita", acertou: boolean) {
+  getDb().insert(schema.kanaLog).values({ kana, modo, acertou }).run();
+  salvar();
+}
+
+export interface ProgressoKana {
+  acertos: number;
+  total: number;
+  /** acertou as 3 últimas vezes (quiz ou escrita) */
+  dominado: boolean;
+}
+
+/** Progresso de cada kana praticado, para marcar a tabela. */
+export function progressoKana(): Map<string, ProgressoKana> {
+  const linhas = getDb()
+    .select({ kana: schema.kanaLog.kana, acertou: schema.kanaLog.acertou })
+    .from(schema.kanaLog)
+    .orderBy(asc(schema.kanaLog.created_at), asc(schema.kanaLog.id))
+    .all();
+  const porKana = new Map<string, boolean[]>();
+  for (const l of linhas) porKana.set(l.kana, [...(porKana.get(l.kana) ?? []), l.acertou]);
+  const r = new Map<string, ProgressoKana>();
+  for (const [kana, hist] of porKana) {
+    const ult = hist.slice(-3);
+    r.set(kana, { acertos: hist.filter(Boolean).length, total: hist.length, dominado: ult.length === 3 && ult.every(Boolean) });
+  }
+  return r;
+}

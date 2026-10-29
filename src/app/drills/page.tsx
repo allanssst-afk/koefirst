@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ArrowLeftRight, Check, Mic, Play, RotateCcw, Square, Volume2, X } from "lucide-react";
 import { PlayButtons } from "@/components/AudioControls";
+import { AtalhosEstudo } from "@/components/AtalhosEstudo";
 import { ContextPicker, lerContextoSalvo, salvarContexto, type Contexto } from "@/components/ContextPicker";
 import { PitchAccentVisualizer } from "@/components/PitchAccentVisualizer";
 import { usePhase } from "@/components/PhaseProvider";
@@ -185,6 +186,8 @@ export default function DrillsPage() {
             (passado, negativo, desejo…). As palavras da frase aparecem como peças para você montar a resposta.
           </p>
         </header>
+
+        <AtalhosEstudo />
 
         <section className="space-y-2">
           <h2 className="text-sm font-semibold">1. Em que contexto você vai usar?</h2>

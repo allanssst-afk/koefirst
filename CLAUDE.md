@@ -38,6 +38,18 @@ Backup e troca de aparelho pelo cartão "Seu progresso" do Dashboard (baixar/car
   termina. Novas lições entram sempre no FIM de `licoesDa` (os ids `uN:lM` são a chave do progresso salvo).
 - **Técnicas do método** (`src/components/TecnicasCard.tsx`, no Perfil): cada técnica, a base de pesquisa e onde
   está no app. Atualizar ao criar exercícios novos.
+- **Dicionário** (`/dicionario`, `src/lib/dicionario.ts`): cada bloco das frases do baralho vira um verbete
+  (função em português, papel, som, melodia como aparece na frase, frases onde aparece) + aba de frases; busca em
+  português ou pelo som. Na Fase 1 o som aparece só em moras separadas (`ka·i·gi`); kana a partir da Fase 2.
+- **Escrita japonesa** (`/escrita`, `/escrita/tracar/?k=あ`, `src/components/escrita/`, `src/lib/kana.ts`):
+  tabela de hiragana/katakana (básicos + ten-ten/maru) com som e progresso, caligrafia (`Caligrafia.tsx`: traça
+  com o dedo; cada traço é comparado ao de referência por `tracoConfere` — ordem, sentido e tamanho; guia com
+  números, grade, animação da ordem dos traços, modo de memória sem guia) e quiz de 16 perguntas com cronômetro
+  (`QuizKana.tsx`: kana→som, som→kana, hiragana↔katakana; kana não dominado sai 3× mais). Respostas e traçados
+  vão para `kana_log` (`registrarKana`/`progressoKana`; dominado = 3 acertos seguidos). Ordem dos traços:
+  `src/lib/kana-tracos.generated.ts`, gerado por `scripts/gerar-kana.mjs` a partir do KanjiVG (CC BY-SA 3.0,
+  crédito na página). **Exceção à Fase 1:** é um módulo à parte, aberto por atalhos no Perfil e no Praticar
+  (`AtalhosEstudo`); na Fase 1 mostra o aviso de que a escrita entra na Fase 2, e o resto do app segue só com som.
 - **Limite diário de frases novas:** `meta_novos_dia` (Perfil → "Frases novas por dia") vale para trilha e aba
   Revisar juntas (`novosDeHoje`). Lição de frases que passaria da meta não abre ("Amanhã"); o resto do dia é
   revisão e prática.
@@ -113,6 +125,8 @@ src/
   app/
     layout.tsx · globals.css · manifest.ts
     page.tsx                     # Aprender — trilha de unidades e lições
+    dicionario/page.tsx          # dicionário de palavras e frases
+    escrita/page.tsx · escrita/tracar/page.tsx   # kana: tabela, quiz e caligrafia
     licao/page.tsx               # player de lição (?id=u1:l2)
     perfil/page.tsx              # estatísticas, camada ortográfica, backup
     study/page.tsx               # Tela 2 — Estúdio SRS de Reflexo Oral
@@ -123,7 +137,8 @@ src/
     CognitiveBreakdown.tsx       # ordem lógica japonesa (Tópico → Tempo → Objeto → Verbo)
     ScriptLayer.tsx              # aplica a camada ortográfica da fase atual
     PhaseProvider.tsx            # abre o banco do aparelho + fase global + seletor
-    PhaseCard.tsx · BackupCard.tsx · ContextPicker.tsx · TecnicasCard.tsx
+    PhaseCard.tsx · BackupCard.tsx · ContextPicker.tsx · TecnicasCard.tsx · AtalhosEstudo.tsx
+    escrita/ Caligrafia.tsx · QuizKana.tsx
     AudioControls.tsx            # Ouvir / Devagar / "Nativo vs Eu"
     useVoiceCapture.ts           # hook de gravação + STT + latência
     PitchContourView.tsx         # F0 da gravação vs padrão H/L
@@ -142,6 +157,7 @@ src/
     drills.ts                    # verbos, cenas com complemento em japonês, montarDialogo
     roleplay.ts                  # categorias de contexto
     trilha.ts                    # unidades, lições e geração dos exercícios
+    dicionario.ts · kana.ts · kana-tracos.generated.ts (scripts/gerar-kana.mjs)
     audio/ tts.ts · capture.ts (MediaRecorder + STT + VAD) · pitch.ts (F0)
 ```
 
@@ -159,6 +175,7 @@ src/
 - `user_settings` — linha única (`id = 1`): `fase_atual`, `meta_novos_dia`, `meta_revisoes_dia`,
   `meta_minutos_fala`, `data_inicio`.
 - `speech_activity` — tempo de fala em drills/roleplay/coach (alimenta "tempo de fala acumulada").
+- `kana_log` — `kana, modo ('quiz'|'escrita'), acertou`: treino de escrita (progresso da tabela de kana).
 - `licao_log` — uma linha por lição concluída (`licao_id`, `xp`, `acertos`, `total`): progresso da trilha,
   XP e, com revisões e fala, a sequência de dias (`diasSeguidos`).
 

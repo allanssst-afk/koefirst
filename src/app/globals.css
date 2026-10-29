@@ -120,3 +120,22 @@ button:disabled {
 .animate-subir {
   animation: subir 0.22s ease-out both;
 }
+
+/* Caligrafia: o traço se desenha (path com pathLength=1) e o quadro treme quando o traço não confere */
+@keyframes desenhar-traco {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes tremer {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-4px);
+  }
+  75% {
+    transform: translateX(4px);
+  }
+}

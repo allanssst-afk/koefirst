@@ -41,6 +41,12 @@ const TECNICAS: { nome: string; porque: string; onde: string }[] = [
     onde: "Ping-Pong (praticar) e missões da Arena (conversar).",
   },
   {
+    nome: "Escrita à mão, traço a traço",
+    porque:
+      "Escrever à mão, na ordem e no sentido certos, fixa o reconhecimento dos caracteres melhor do que só olhar ou digitar.",
+    onde: "Escrita (Perfil ou Praticar): caligrafia com correção de cada traço, tabela com som e quiz com cronômetro.",
+  },
+  {
     nome: "Simulado de escuta (formato JLPT)",
     porque:
       "A prova de escuta do JLPT N5/N4 tem compreensão, expressão na situação e resposta rápida, e exige nota total mais um mínimo em cada seção.",

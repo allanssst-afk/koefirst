@@ -6,6 +6,7 @@ import { BookOpen, Flame, Target, Timer, Waves, Zap } from "lucide-react";
 import { BackupCard } from "@/components/BackupCard";
 import { PhaseCard } from "@/components/PhaseCard";
 import { TecnicasCard } from "@/components/TecnicasCard";
+import { AtalhosEstudo } from "@/components/AtalhosEstudo";
 import { atualizarConfig, diasSeguidos, getDashboardStats, getProgressoTrilha, getSettings } from "@/lib/queries";
 
 const META_B1_PALAVRAS = 2000;
@@ -60,6 +61,8 @@ export default function Perfil() {
           <span className="block text-xs text-[var(--muted)]">Moras, alto/baixo, queda de acento e cores</span>
         </span>
       </Link>
+
+      <AtalhosEstudo />
 
       <TecnicasCard />
 

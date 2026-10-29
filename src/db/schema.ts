@@ -115,3 +115,14 @@ export const licaoLog = sqliteTable("licao_log", {
     .notNull()
     .default(sql`(unixepoch() * 1000)`),
 });
+
+/** Treino de escrita japonesa: cada kana respondido no quiz ou traçado na caligrafia. */
+export const kanaLog = sqliteTable("kana_log", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  kana: text("kana").notNull(),
+  modo: text("modo", { enum: ["quiz", "escrita"] }).notNull(),
+  acertou: integer("acertou", { mode: "boolean" }).notNull(),
+  created_at: integer("created_at", { mode: "timestamp_ms" })
+    .notNull()
+    .default(sql`(unixepoch() * 1000)`),
+});
