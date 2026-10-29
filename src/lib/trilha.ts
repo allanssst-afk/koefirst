@@ -150,7 +150,8 @@ export type Exercicio =
   | { tipo: "quiz"; pergunta: string; opcoes: { texto: string; falar?: string }[]; correta: number; explicacao: string }
   | { tipo: "nova"; card: CardTrilha }
   | { tipo: "escuta"; card: CardTrilha; opcoes: string[] }
-  | { tipo: "montar"; card: CardTrilha; banco: string[]; resposta: string[] }
+  /** monte a frase em japonês com os blocos (na ordem japonesa); `banco` = blocos embaralhados + 2 intrusos */
+  | { tipo: "montar"; card: CardTrilha; banco: Mora[][]; resposta: string[] }
   | { tipo: "falar"; card: CardTrilha }
   | { tipo: "dialogo"; dialogo: DialogoDrill; forma: Forma; opcoes: FalaDrill[]; correta: number };
 
@@ -172,25 +173,38 @@ function embaralhar<T>(xs: T[]): T[] {
   return a;
 }
 
-/** Palavras da tradução sem pontuação, para o banco de palavras. */
-export const palavras = (t: string) =>
-  t
-    .replace(/[.!?,]/g, "")
-    .split(/\s+/)
-    .filter(Boolean);
+/** Identidade de um bloco (o mesmo som pode ter funções diferentes). */
+export const chaveBloco = (bloco: Mora[]) => `${bloco[0].bloco}|${bloco[0].funcao}`;
+
+/** Blocos de todas as frases, para sortear os intrusos do exercício de montar. */
+const TODOS_BLOCOS = seedCards.flatMap((c) => c.blocos);
 
 function escuta(card: CardTrilha): Exercicio {
   const outras = embaralhar(seedCards.filter((c) => c.id !== card.id)).slice(0, 3).map((c) => traducaoPrincipal(c as SeedCard));
   return { tipo: "escuta", card, opcoes: embaralhar([traducaoPrincipal(card), ...outras]) };
 }
 
+/** Dá para montar: a frase tem pelo menos 2 blocos (expressões de um bloco só não têm ordem a treinar). */
+const montavel = (c: CardTrilha) => c.blocos.length >= 2;
+
+/**
+ * Montar a frase em japonês: o aluno vê o sentido em português e põe os blocos na ordem em que o japonês
+ * pensa (tópico → tempo → objeto → verbo, partículas depois da palavra). Treina a lógica, não a tradução.
+ * Intrusos: uma partícula que não está na frase (quando a frase usa partícula) e mais um bloco qualquer.
+ */
 function montar(card: CardTrilha): Exercicio {
-  const resposta = palavras(traducaoPrincipal(card));
-  const usadas = new Set(resposta.map((w) => w.toLowerCase()));
-  const extras = embaralhar(seedCards.flatMap((c) => palavras(traducaoPrincipal(c as SeedCard))))
-    .filter((w) => !usadas.has(w.toLowerCase()) && (usadas.add(w.toLowerCase()), true))
-    .slice(0, Math.min(4, Math.max(2, 7 - resposta.length)));
-  return { tipo: "montar", card, resposta, banco: embaralhar([...resposta, ...extras]) };
+  const resposta = card.blocos.map(chaveBloco);
+  const usadas = new Set(resposta);
+  const candidatos = embaralhar(TODOS_BLOCOS).filter((b) => {
+    const k = chaveBloco(b);
+    return !usadas.has(k) && (usadas.add(k), true);
+  });
+  const temParticula = card.blocos.some((b) => b[0].papel === "particula");
+  const intrusos = [
+    ...(temParticula ? candidatos.filter((b) => b[0].papel === "particula").slice(0, 1) : []),
+    ...candidatos.filter((b) => b[0].papel !== "particula"),
+  ].slice(0, 2);
+  return { tipo: "montar", card, resposta, banco: embaralhar([...card.blocos, ...intrusos]) };
 }
 
 const TREINO: Forma[] = ["mashita", "masen", "masen_deshita", "tai", "mashou"];
@@ -246,7 +260,7 @@ export function montarLicao(l: Licao): Exercicio[] {
     case "frases": {
       const ex: Exercicio[] = [];
       for (const c of cards) ex.push({ tipo: "nova", card: c }, escuta(c));
-      for (const c of cards) ex.push(montar(c));
+      for (const c of cards.filter(montavel)) ex.push(montar(c));
       for (const c of cards.filter((c) => c.tipo === "speaking").slice(0, 2)) ex.push({ tipo: "falar", card: c });
       return ex;
     }
@@ -255,7 +269,7 @@ export function montarLicao(l: Licao): Exercicio[] {
     case "revisao":
       return embaralhar(cards)
         .slice(0, 10)
-        .map((c, i) => [escuta, montar, (x: CardTrilha): Exercicio => ({ tipo: "falar", card: x })][i % 3](c));
+        .map((c, i) => [escuta, (x: CardTrilha) => (montavel(x) ? montar(x) : escuta(x)), (x: CardTrilha): Exercicio => ({ tipo: "falar", card: x })][i % 3](c));
     case "dialogo":
       return [];
   }

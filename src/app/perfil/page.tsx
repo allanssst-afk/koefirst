@@ -1,10 +1,11 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { BookOpen, Flame, Target, Timer, Waves, Zap } from "lucide-react";
 import { BackupCard } from "@/components/BackupCard";
 import { PhaseCard } from "@/components/PhaseCard";
-import { diasSeguidos, getDashboardStats, getProgressoTrilha } from "@/lib/queries";
+import { atualizarConfig, diasSeguidos, getDashboardStats, getProgressoTrilha, getSettings } from "@/lib/queries";
 
 const META_B1_PALAVRAS = 2000;
 
@@ -127,8 +128,40 @@ export default function Perfil() {
         <PhaseCard faseRecomendada={s.faseRecomendada} />
       </div>
 
+      <RitmoCard />
+
       <BackupCard />
     </div>
+  );
+}
+
+const OPCOES_NOVOS = [3, 5, 8, 10, 15];
+
+/** Meta diária de frases novas: vale para a trilha e para a aba Revisar juntas. */
+function RitmoCard() {
+  const [meta, setMeta] = useState(() => getSettings().meta_novos_dia);
+  const escolher = (n: number) => setMeta(atualizarConfig({ meta_novos_dia: n }).meta_novos_dia);
+  return (
+    <section className="rounded-2xl border border-[var(--line)] bg-[var(--panel)] p-5">
+      <h2 className="text-sm font-semibold">Frases novas por dia</h2>
+      <p className="mt-1 text-xs text-[var(--muted)]">
+        A repetição espaçada funciona melhor com poucas frases novas por dia e revisão em dia. Quando a meta é
+        cumprida, a trilha espera até amanhã para apresentar frases novas.
+      </p>
+      <div className="mt-3 flex flex-wrap gap-2">
+        {OPCOES_NOVOS.map((n) => (
+          <button
+            key={n}
+            onClick={() => escolher(n)}
+            className={`btn-3d rounded-xl border-2 px-4 py-2 font-extrabold ${
+              meta === n ? "border-[var(--accent)] bg-[var(--accent)]/15 text-[var(--accent)]" : "border-[var(--line)]"
+            }`}
+          >
+            {n}
+          </button>
+        ))}
+      </div>
+    </section>
   );
 }
 

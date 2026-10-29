@@ -14,10 +14,17 @@ Backup e troca de aparelho pelo cartão "Seu progresso" do Dashboard (baixar/car
   som"), Frases novas (até 3 cards), Ping-Pong, Diálogo (missão da Arena, abre `/roleplay/?missao=…&licao=…`) e
   Revisão. Progresso linear: a próxima lição desbloqueia quando a anterior é concluída.
 - **Lição** (`/licao/?id=u1:l2`, `src/components/licao/`): um exercício por tela, barra de progresso, botão
-  VERIFICAR → painel verde/vermelho → CONTINUAR; erros voltam no fim. Exercícios (`montarLicao`): nova frase,
-  ouvir e escolher a tradução, montar a tradução (banco de palavras), falar, escolher a resposta japonesa
-  (diálogo do Ping-Pong), quiz e slides do tutorial. Concluir grava em `licao_log` (XP: 10, +5 sem erros;
-  missão da Arena: 15) e agenda no FSRS as frases apresentadas.
+  VERIFICAR → painel verde/vermelho → CONTINUAR; erros voltam no fim. Exercícios (`montarLicao`): nova frase
+  (com a `CognitiveBreakdown`: lógica literal + blocos na ordem japonesa), ouvir e escolher a tradução, **montar a
+  frase em japonês** (blocos com função + som, na ordem japonesa, com 2 blocos intrusos; só frases de 2+ blocos),
+  falar, escolher a resposta japonesa (diálogo do Ping-Pong), quiz e slides do tutorial. O painel de resposta
+  mostra a "Lógica japonesa" (`significado_cognitivo`). Concluir grava em `licao_log` (XP: 10, +5 sem erros;
+  missão da Arena: 15) e leva o desempenho ao FSRS (`concluirLicao`): frase nova recebe a primeira nota pelos
+  erros dela na lição (`notaDaLicao`: 0 = Good, 1 = Hard, 2+ = Again); na lição de revisão, só as frases
+  erradas recebem Again. Nunca dar "Good" automático.
+- **Limite diário de frases novas:** `meta_novos_dia` (Perfil → "Frases novas por dia") vale para trilha e aba
+  Revisar juntas (`novosDeHoje`). Lição de frases que passaria da meta não abre ("Amanhã"); o resto do dia é
+  revisão e prática.
 - **Visual:** paleta escura azul-petróleo com verde para ações (`--accent`), dourado para a entonação
   (`--pitch`), fonte Nunito, botões "3D" (`.btn-3d`, `.btn-primario`, `.btn-secundario` em `globals.css`) e a
   mascote Koe (`src/components/Mascote.tsx`, personagem original — um balão de fala).

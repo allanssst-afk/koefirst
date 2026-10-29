@@ -10,8 +10,8 @@ import { ExExplica } from "./Tutorial";
 import type { ExProps, Resposta } from "./comuns";
 import { somAcerto, somConclusao, somErro } from "@/lib/audio/som";
 import { speakJa, stopAll } from "@/lib/audio/tts";
-import { concluirLicao } from "@/lib/queries";
-import { montarLicao, type Exercicio, type Licao } from "@/lib/trilha";
+import { concluirLicao, notaDaLicao } from "@/lib/queries";
+import { cardPorId, montarLicao, traducaoPrincipal, type Exercicio, type Licao } from "@/lib/trilha";
 
 /** Exercícios só de leitura/apresentação: o botão é CONTINUAR direto, sem verificar. */
 const INFORMATIVO: Exercicio["tipo"][] = ["nova", "explica"];
@@ -36,7 +36,9 @@ export function LessonPlayer({ licao }: { licao: Licao }) {
   const [acertos, setAcertos] = useState(0);
   const [respondidos, setRespondidos] = useState(0);
   const [erros, setErros] = useState(0);
-  const [fim, setFim] = useState<{ xp: number } | null>(null);
+  /** erros por frase (card): viram a nota FSRS de cada uma no fim da lição */
+  const [errosPorFrase, setErrosPorFrase] = useState<Record<string, number>>({});
+  const [fim, setFim] = useState<{ xp: number; resultados: { card: string; erros: number }[] } | null>(null);
 
   const item = fila[idx];
   const concluidos = idx + (resposta?.ok ? 1 : 0);
@@ -54,6 +56,8 @@ export function LessonPlayer({ licao }: { licao: Licao }) {
         if (r.ok) setAcertos((n) => n + 1);
       }
       if (!r.ok) setErros((n) => n + 1);
+      const ex = item.ex;
+      if ("card" in ex) setErrosPorFrase((m) => ({ ...m, [ex.card.id]: (m[ex.card.id] ?? 0) + (r.ok ? 0 : 1) }));
     },
     [item],
   );
@@ -67,16 +71,26 @@ export function LessonPlayer({ licao }: { licao: Licao }) {
     }
     setResposta(null);
     setVerificador(null);
+    window.scrollTo(0, 0);
     if (idx + 1 < novaFila.length) {
       setIdx(idx + 1);
       return;
     }
     const xp = 10 + (erros === 0 ? 5 : 0);
-    const apresentados = licao.tipo === "frases" ? licao.cards : [];
-    await concluirLicao(licao.id, xp, acertos, respondidos, apresentados);
+    // Lição de frases: toda frase apresentada entra no FSRS com a nota do desempenho.
+    // Lição de revisão: só as frases erradas voltam ao FSRS (como lapso).
+    const resultados =
+      licao.tipo === "frases"
+        ? licao.cards.map((card) => ({ card, erros: errosPorFrase[card] ?? 0 }))
+        : licao.tipo === "revisao"
+          ? Object.entries(errosPorFrase)
+              .filter(([, e]) => e > 0)
+              .map(([card, e]) => ({ card, erros: e }))
+          : [];
+    await concluirLicao(licao.id, xp, acertos, respondidos, resultados);
     somConclusao();
-    setFim({ xp });
-  }, [fila, item, resposta, idx, erros, acertos, respondidos, licao]);
+    setFim({ xp, resultados });
+  }, [fila, item, resposta, idx, erros, acertos, respondidos, licao, errosPorFrase]);
 
   if (fim) {
     const pct = respondidos ? Math.round((acertos / respondidos) * 100) : 100;
@@ -96,8 +110,12 @@ export function LessonPlayer({ licao }: { licao: Licao }) {
             <p className="py-3 text-2xl font-black text-[var(--accent)]">🎯 {pct}%</p>
           </div>
         </div>
-        {licao.tipo === "frases" && (
-          <p className="text-sm text-[var(--muted)]">As frases desta lição entraram na sua revisão (aba Revisar).</p>
+        {licao.tipo === "frases" && <ResumoAgenda resultados={fim.resultados} />}
+        {licao.tipo === "revisao" && fim.resultados.length > 0 && (
+          <p className="text-sm text-[var(--muted)]">
+            {fim.resultados.length === 1 ? "A frase que você errou volta" : `As ${fim.resultados.length} frases que você errou voltam`}{" "}
+            para a revisão daqui a pouco, para fixar de novo.
+          </p>
         )}
         <button onClick={() => router.push("/")} className="btn-3d btn-primario w-full rounded-2xl py-4">
           Continuar
@@ -175,6 +193,11 @@ export function LessonPlayer({ licao }: { licao: Licao }) {
               <div className="min-w-0 flex-1">
                 <p className="text-xl font-black">{resposta.ok ? "Muito bem!" : "Resposta correta:"}</p>
                 {!resposta.ok && resposta.correta && <p className="text-base font-semibold">{resposta.correta}</p>}
+                {resposta.literal && (
+                  <p className="mt-1 text-sm opacity-90">
+                    <span className="font-extrabold">Lógica japonesa:</span> {resposta.literal}
+                  </p>
+                )}
               </div>
               {resposta.ouvir && (
                 <button onClick={() => speakJa(resposta.ouvir!)} aria-label="Ouvir a frase" className="rounded-xl p-2">
@@ -207,6 +230,32 @@ export function LessonPlayer({ licao }: { licao: Licao }) {
           )}
         </div>
       </div>
+    </div>
+  );
+}
+
+const AGENDA: Record<1 | 2 | 3, { rotulo: string; quando: string; cor: string }> = {
+  3: { rotulo: "Fácil de lembrar", quando: "volta em ~10 min", cor: "var(--accent)" },
+  2: { rotulo: "Com esforço", quando: "volta em poucos minutos", cor: "var(--pitch)" },
+  1: { rotulo: "Ainda não fixou", quando: "volta em 1 min", cor: "var(--bad)" },
+};
+
+/** Como cada frase entrou na repetição espaçada, conforme os erros da lição. */
+function ResumoAgenda({ resultados }: { resultados: { card: string; erros: number }[] }) {
+  return (
+    <div className="w-full space-y-2 rounded-2xl border-2 border-[var(--line)] p-3 text-left">
+      <p className="text-xs font-extrabold uppercase tracking-wider text-[var(--muted)]">Entrou na sua revisão (FSRS)</p>
+      {resultados.map(({ card, erros }) => {
+        const a = AGENDA[notaDaLicao(erros) as 1 | 2 | 3];
+        return (
+          <p key={card} className="flex items-center justify-between gap-2 text-sm">
+            <span className="min-w-0 truncate font-bold">{traducaoPrincipal(cardPorId(card))}</span>
+            <span className="shrink-0 text-xs font-bold" style={{ color: a.cor }}>
+              {a.rotulo} · {a.quando}
+            </span>
+          </p>
+        );
+      })}
     </div>
   );
 }

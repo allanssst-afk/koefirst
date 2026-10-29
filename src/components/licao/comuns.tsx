@@ -10,6 +10,8 @@ export interface Resposta {
   ok: boolean;
   /** resposta certa em texto (aparece quando erra) */
   correta?: string;
+  /** lógica literal da frase (ordem japonesa), mostrada no painel com acerto ou erro */
+  literal?: string;
   /** frase japonesa (kana) para ouvir no painel de resposta */
   ouvir?: string;
 }

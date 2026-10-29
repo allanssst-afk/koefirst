@@ -96,13 +96,7 @@ export function getQueue(contexto: Categoria | null = null): { items: QueueItem[
     .limit(settings.meta_revisoes_dia)
     .all();
 
-  const newToday =
-    db
-      .select({ n: sql<number>`count(*)` })
-      .from(reviewLogs)
-      .where(and(eq(reviewLogs.state_antes, 0), gte(reviewLogs.reviewed_at, startOfToday())))
-      .get()?.n ?? 0;
-  const newLimit = Math.max(0, settings.meta_novos_dia - newToday);
+  const newLimit = Math.max(0, settings.meta_novos_dia - novosDeHoje().feitos);
 
   const fresh = newLimit
     ? db
@@ -143,16 +137,10 @@ export function getContextSummary() {
       .innerJoin(cards, eq(cards.id, fsrsStates.card_id))
       .where(ctx ? and(eq(fsrsStates.state, 0), temContexto(ctx)) : eq(fsrsStates.state, 0))
       .get()?.n ?? 0;
-  const { meta_novos_dia } = getSettings();
-  const novosHoje =
-    db
-      .select({ n: sql<number>`count(*)` })
-      .from(reviewLogs)
-      .where(and(eq(reviewLogs.state_antes, 0), gte(reviewLogs.reviewed_at, startOfToday())))
-      .get()?.n ?? 0;
+  const { feitos, meta } = novosDeHoje();
   return {
     vencidos,
-    novosRestantesHoje: Math.max(0, meta_novos_dia - novosHoje),
+    novosRestantesHoje: Math.max(0, meta - feitos),
     novosPorContexto: Object.fromEntries([
       ["todos", novos(null)],
       ...CATEGORIAS.map((c) => [c.id, novos(c.id)]),
@@ -433,15 +421,57 @@ export function fraseMaisProxima(pergunta: string): CardDTO | null {
 
 // ───────────────────────── Trilha (lições, XP, sequência)
 
-/** Registra a lição feita e agenda no FSRS as frases que ela apresentou pela primeira vez. */
-export async function concluirLicao(licaoId: string, xp: number, acertos: number, total: number, cardsApresentados: string[] = []) {
+/** Desempenho de uma frase dentro da lição: quantas vezes ela foi errada. */
+export interface ResultadoFrase {
+  card: string;
+  erros: number;
+}
+
+/**
+ * Nota FSRS de uma frase NOVA a partir da lição: sem erros = Good, um erro = Hard, dois ou mais = Again.
+ * Assim a dificuldade inicial do FSRS reflete o que aconteceu de verdade, e não um "Good" automático.
+ */
+export const notaDaLicao = (erros: number): Grade => (erros === 0 ? 3 : erros === 1 ? 2 : 1);
+
+/**
+ * Registra a lição feita e leva o resultado para o FSRS:
+ * - frase nova (ainda não agendada) → primeira revisão com a nota do desempenho (`notaDaLicao`);
+ * - frase já agendada que foi errada (lição de revisão) → Again (lapso), para voltar logo;
+ * - frase já agendada e acertada → não mexe: revisar antes da hora não deve inflar o intervalo.
+ */
+export async function concluirLicao(licaoId: string, xp: number, acertos: number, total: number, resultados: ResultadoFrase[] = []) {
   const db = getDb();
   db.insert(schema.licaoLog).values({ licao_id: licaoId, xp, acertos, total }).run();
-  for (const id of cardsApresentados) {
-    const st = db.select({ state: fsrsStates.state }).from(fsrsStates).where(eq(fsrsStates.card_id, id)).get();
-    if (st?.state === 0) await salvarRevisao({ card_id: id, rating: 3 });
+  for (const { card, erros } of resultados) {
+    const st = db.select({ state: fsrsStates.state }).from(fsrsStates).where(eq(fsrsStates.card_id, card)).get();
+    if (!st) continue;
+    if (st.state === 0) await salvarRevisao({ card_id: card, rating: notaDaLicao(erros) });
+    else if (erros > 0) await salvarRevisao({ card_id: card, rating: 1 });
   }
   salvar();
+}
+
+/** Frases novas que entraram no FSRS hoje (pela trilha ou pela aba Revisar) e a meta diária. */
+export function novosDeHoje() {
+  const n =
+    getDb()
+      .select({ n: sql<number>`count(*)` })
+      .from(reviewLogs)
+      .where(and(eq(reviewLogs.state_antes, 0), gte(reviewLogs.reviewed_at, startOfToday())))
+      .get()?.n ?? 0;
+  return { feitos: n, meta: getSettings().meta_novos_dia };
+}
+
+/** Quantas das frases da lista ainda não foram apresentadas (estado New). */
+export function contarNovas(ids: string[]) {
+  if (!ids.length) return 0;
+  return (
+    getDb()
+      .select({ n: sql<number>`count(*)` })
+      .from(fsrsStates)
+      .where(and(eq(fsrsStates.state, 0), inArray(fsrsStates.card_id, ids)))
+      .get()?.n ?? 0
+  );
 }
 
 export function getProgressoTrilha() {

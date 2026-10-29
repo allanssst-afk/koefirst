@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { Loader2, Mic, Square } from "lucide-react";
+import { CognitiveBreakdown } from "../CognitiveBreakdown";
 import { PitchAccentVisualizer } from "../PitchAccentVisualizer";
 import { usePhase } from "../PhaseProvider";
 import { ScriptLayer } from "../ScriptLayer";
@@ -11,8 +12,10 @@ import { browserSttSupported } from "@/lib/audio/capture";
 import { speakJa, stopAll } from "@/lib/audio/tts";
 import { FORMAS } from "@/lib/drills";
 import { registrarAtividade } from "@/lib/queries";
-import { bestSimilarity, stripFurigana } from "@/lib/text";
-import { traducaoPrincipal, type Exercicio } from "@/lib/trilha";
+import { roleOf } from "@/lib/roles";
+import { bestSimilarity, morasToKana, stripFurigana } from "@/lib/text";
+import { chaveBloco, traducaoPrincipal, type Exercicio } from "@/lib/trilha";
+import type { Mora } from "@/lib/types";
 
 type Ex<T extends Exercicio["tipo"]> = Extract<Exercicio, { tipo: T }>;
 
@@ -52,7 +55,8 @@ export function ExNova({ ex }: ExProps<Ex<"nova">>) {
         <p className="text-2xl font-extrabold">{card.traducao}</p>
         <p className="text-sm text-[var(--muted)]">Quando usar: {card.situacao_pt}</p>
       </div>
-      {card.notas && <p className="rounded-2xl bg-[var(--panel)] p-3 text-sm text-[var(--muted)]">💡 {card.notas}</p>}
+      {/* a lógica literal: como o japonês monta a ideia, bloco a bloco */}
+      <CognitiveBreakdown moras={card.moras} literal={card.significado_cognitivo} notas={card.notas ? `💡 ${card.notas}` : undefined} />
     </div>
   );
 }
@@ -65,7 +69,7 @@ export function ExEscuta({ ex, travado, aoPronto }: ExProps<Ex<"escuta">>) {
   const certa = traducaoPrincipal(ex.card);
   const escolher = (i: number) => {
     setEscolha(i);
-    aoPronto(() => ({ ok: ex.opcoes[i] === certa, correta: certa, ouvir: ex.card.kana }));
+    aoPronto(() => ({ ok: ex.opcoes[i] === certa, correta: certa, literal: ex.card.significado_cognitivo, ouvir: ex.card.kana }));
   };
   return (
     <div className="space-y-6">
@@ -84,65 +88,75 @@ export function ExEscuta({ ex, travado, aoPronto }: ExProps<Ex<"escuta">>) {
   );
 }
 
-// ───────────── Montar: traduza a frase com o banco de palavras
+// ───────────── Montar: ponha os blocos na ordem em que o japonês pensa
+
+/** Um bloco do banco: função em português + o som (moras na Fase 1, kana depois), tocável. */
+function PecaBloco({ bloco, onClick, travado }: { bloco: Mora[]; onClick: () => void; travado: boolean }) {
+  const { fase } = usePhase();
+  const r = roleOf(bloco[0].papel);
+  return (
+    <button
+      disabled={travado}
+      onClick={onClick}
+      className={`btn-3d rounded-xl border-2 px-3 py-1.5 text-left ${r.chip}`}
+      style={{ borderColor: r.hex, borderBottomColor: r.hex }}
+    >
+      <span className="block text-[10px] font-extrabold uppercase tracking-wider opacity-70">{r.label}</span>
+      <span className="block text-base font-bold leading-tight">{bloco[0].funcao}</span>
+      <span className={`block text-xs opacity-80 ${fase >= 2 ? "font-jp" : ""}`}>
+        {fase >= 2 ? morasToKana(bloco) : bloco.map((m) => m.som).join("·")}
+      </span>
+    </button>
+  );
+}
 
 export function ExMontar({ ex, travado, aoPronto }: ExProps<Ex<"montar">>) {
   const [usadas, setUsadas] = useState<number[]>([]);
-  const [tocando, setTocando] = useState(false);
-  useTocarAoAbrir(ex.card.kana, setTocando);
 
   useEffect(() => {
     if (!usadas.length) return aoPronto(null);
-    const dita = usadas.map((i) => ex.banco[i]).join(" ");
+    const montada = usadas.map((i) => chaveBloco(ex.banco[i])).join(" ");
     aoPronto(() => ({
-      ok: dita.toLowerCase() === ex.resposta.join(" ").toLowerCase(),
-      correta: traducaoPrincipal(ex.card),
+      ok: montada === ex.resposta.join(" "),
+      correta: ex.card.blocos.map((b) => b[0].funcao).join(" → "),
+      literal: ex.card.significado_cognitivo,
       ouvir: ex.card.kana,
     }));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [usadas]);
 
+  const pegar = (i: number) => {
+    setUsadas((u) => [...u, i]);
+    speakJa(morasToKana(ex.banco[i]));
+  };
+
   return (
     <div className="space-y-6">
-      <Enunciado>Traduza esta frase</Enunciado>
-      <BalaoMascote>
-        <div className="space-y-2">
-          <BotoesSom texto={ex.card.kana} aoTocar={(on) => setTocando(on)} />
-          <PitchAccentVisualizer moras={ex.card.moras} size="sm" showFuncao={false} playing={tocando} />
-          <ScriptLayer kana={ex.card.kana} kanji={ex.card.kanji} className="text-lg" />
-        </div>
+      <Enunciado rotulo="Ordem japonesa">Monte a frase em japonês</Enunciado>
+      <BalaoMascote humor="feliz">
+        <p className="text-xl font-bold">{traducaoPrincipal(ex.card)}</p>
+        <p className="text-xs text-[var(--muted)]">{ex.card.situacao_pt}</p>
       </BalaoMascote>
+      <p className="text-center text-xs text-[var(--muted)]">
+        Toque nos blocos na ordem em que o japonês fala. {ex.banco.length - ex.resposta.length} blocos sobram.
+      </p>
 
       {/* linha da resposta */}
-      <div className="flex min-h-[7.5rem] flex-wrap content-start gap-2 border-y-2 border-[var(--line)] py-3">
+      <div className="flex min-h-[6.5rem] flex-wrap content-start gap-2 border-y-2 border-[var(--line)] py-3">
         {usadas.map((i) => (
-          <button
-            key={i}
-            disabled={travado}
-            onClick={() => setUsadas((u) => u.filter((x) => x !== i))}
-            className="btn-3d rounded-xl border-2 border-[var(--line)] bg-[var(--panel)] px-3 py-2 text-base font-semibold"
-          >
-            {ex.banco[i]}
-          </button>
+          <PecaBloco key={i} bloco={ex.banco[i]} travado={travado} onClick={() => setUsadas((u) => u.filter((x) => x !== i))} />
         ))}
       </div>
 
-      {/* banco de palavras */}
+      {/* banco de blocos */}
       <div className="flex flex-wrap justify-center gap-2">
-        {ex.banco.map((w, i) =>
+        {ex.banco.map((b, i) =>
           usadas.includes(i) ? (
-            <span key={i} className="rounded-xl bg-[var(--line)] px-3 py-2 text-base text-transparent">
-              {w}
+            <span key={i} className="invisible">
+              <PecaBloco bloco={b} travado onClick={() => {}} />
             </span>
           ) : (
-            <button
-              key={i}
-              disabled={travado}
-              onClick={() => setUsadas((u) => [...u, i])}
-              className="btn-3d rounded-xl border-2 border-[var(--line)] px-3 py-2 text-base font-semibold"
-            >
-              {w}
-            </button>
+            <PecaBloco key={i} bloco={b} travado={travado} onClick={() => pegar(i)} />
           ),
         )}
       </div>
@@ -172,7 +186,12 @@ export function ExFalar({ ex, travado, aoResponder, aoPular }: ExProps<Ex<"falar
       return;
     }
     const s = bestSimilarity(r.alternatives, [ex.card.kana, stripFurigana(ex.card.kanji)]);
-    aoResponder({ ok: s >= 0.6, correta: `${traducaoPrincipal(ex.card)} — ouça o modelo`, ouvir: ex.card.kana });
+    aoResponder({
+      ok: s >= 0.6,
+      correta: `${traducaoPrincipal(ex.card)} — ouça o modelo`,
+      literal: ex.card.significado_cognitivo,
+      ouvir: ex.card.kana,
+    });
   };
 
   return (
@@ -191,11 +210,16 @@ export function ExFalar({ ex, travado, aoResponder, aoPular }: ExProps<Ex<"falar
           </div>
           <PitchAccentVisualizer moras={ex.card.moras} size="sm" />
           <div className="flex justify-center gap-2">
-            <button onClick={() => aoResponder({ ok: true })} className="btn-3d btn-primario rounded-2xl px-5 py-3">
+            <button
+              onClick={() => aoResponder({ ok: true, literal: ex.card.significado_cognitivo })}
+              className="btn-3d btn-primario rounded-2xl px-5 py-3"
+            >
               Falei certo
             </button>
             <button
-              onClick={() => aoResponder({ ok: false, correta: traducaoPrincipal(ex.card), ouvir: ex.card.kana })}
+              onClick={() =>
+                aoResponder({ ok: false, correta: traducaoPrincipal(ex.card), literal: ex.card.significado_cognitivo, ouvir: ex.card.kana })
+              }
               className="btn-3d btn-secundario rounded-2xl px-5 py-3 font-bold"
             >
               Errei

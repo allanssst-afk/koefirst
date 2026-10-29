@@ -7,7 +7,7 @@ import { BookOpen, Check, Lock, MessagesSquare, NotebookText, Repeat2, Star, Tro
 import { BotoesSom } from "@/components/licao/comuns";
 import { Mascote } from "@/components/Mascote";
 import { PitchAccentVisualizer } from "@/components/PitchAccentVisualizer";
-import { getProgressoTrilha, getQueue } from "@/lib/queries";
+import { contarNovas, getProgressoTrilha, getQueue, novosDeHoje } from "@/lib/queries";
 import { cardPorId, hrefDaLicao, licoesDa, UNIDADES, type Licao, type TipoLicao, type Unidade } from "@/lib/trilha";
 
 const ICONE: Record<TipoLicao, typeof Star> = {
@@ -31,6 +31,7 @@ export default function Trilha() {
   const router = useRouter();
   const { feitas, xpTotal, xpHoje, sequencia } = useMemo(() => getProgressoTrilha(), []);
   const revisoes = useMemo(() => getQueue().dueCount, []);
+  const novos = useMemo(() => novosDeHoje(), []);
   const [aviso, setAviso] = useState("");
   const [guia, setGuia] = useState<Unidade | null>(null);
 
@@ -39,12 +40,27 @@ export default function Trilha() {
   const atual = todas.find((l) => !feitas.has(l.id))?.id;
   const desbloqueada = (l: Licao) => feitas.has(l.id) || l.id === atual;
 
+  // Espaçamento: frases novas por dia têm limite (meta do Perfil, somando trilha e aba Revisar).
+  // Uma lição de frases novas só abre se couber na meta de hoje — o resto do dia é para revisar e praticar.
+  const novasDaLicao = (l: Licao) => (l.tipo === "frases" ? contarNovas(l.cards) : 0);
+  const passaDaMeta = (l: Licao) => {
+    const n = novasDaLicao(l);
+    return n > 0 && novos.feitos > 0 && novos.feitos + n > novos.meta;
+  };
+  const atualLicao = todas.find((l) => l.id === atual);
+  const atualBloqueadaPelaMeta = atualLicao ? passaDaMeta(atualLicao) : false;
+
+  const avisar = (texto: string) => {
+    setAviso(texto);
+    setTimeout(() => setAviso(""), 4000);
+  };
+
   const abrir = (l: Licao) => {
-    if (!desbloqueada(l)) {
-      setAviso("Complete as lições anteriores para desbloquear esta.");
-      setTimeout(() => setAviso(""), 2500);
-      return;
-    }
+    if (!desbloqueada(l)) return avisar("🔒 Complete as lições anteriores para desbloquear esta.");
+    if (passaDaMeta(l))
+      return avisar(
+        `🌙 Você já aprendeu ${novos.feitos} frases novas hoje (meta: ${novos.meta}). A memória precisa de intervalo: revise e pratique agora; amanhã a trilha continua.`,
+      );
     router.push(hrefDaLicao(l));
   };
 
@@ -55,6 +71,27 @@ export default function Trilha() {
         <span className="text-[var(--warn)]" title="Dias seguidos">🔥 {sequencia}</span>
         <span className="text-[var(--pitch)]" title="XP total">⚡ {xpTotal}</span>
         <span className="text-[var(--azul)]" title="XP de hoje">+{xpHoje} hoje</span>
+      </div>
+
+      {/* meta de frases novas do dia */}
+      <div className="space-y-1.5 px-1">
+        <div className="flex items-center justify-between text-xs font-extrabold uppercase tracking-wider text-[var(--muted)]">
+          <span>Frases novas hoje</span>
+          <span className={novos.feitos >= novos.meta ? "text-[var(--accent)]" : ""}>
+            {Math.min(novos.feitos, novos.meta)} / {novos.meta}
+          </span>
+        </div>
+        <div className="h-3 overflow-hidden rounded-full bg-[var(--line)]">
+          <div
+            className="h-full rounded-full bg-[var(--accent)] transition-all"
+            style={{ width: `${Math.min(100, (novos.feitos / Math.max(1, novos.meta)) * 100)}%` }}
+          />
+        </div>
+        {atualBloqueadaPelaMeta && (
+          <p className="text-xs text-[var(--muted)]">
+            Meta de hoje cumprida. Agora o que fixa é revisar (aba Revisar) e praticar (Praticar, Conversar).
+          </p>
+        )}
       </div>
 
       {revisoes > 0 && (
@@ -109,7 +146,7 @@ export default function Trilha() {
                   {ehAtual && (
                     <div className="absolute -top-14 left-1/2 z-10 -translate-x-1/2 animate-pulo">
                       <div className="whitespace-nowrap rounded-xl border-2 border-[var(--line)] bg-[var(--bg)] px-3 py-2 text-sm font-extrabold uppercase tracking-wider" style={{ color: u.cor }}>
-                        Começar
+                        {atualBloqueadaPelaMeta ? "Amanhã" : "Começar"}
                       </div>
                       <div className="mx-auto -mt-[7px] h-3 w-3 rotate-45 border-b-2 border-r-2 border-[var(--line)] bg-[var(--bg)]" />
                     </div>
@@ -147,7 +184,7 @@ export default function Trilha() {
 
       {aviso && (
         <div className="fixed inset-x-4 bottom-24 z-40 mx-auto max-w-md rounded-2xl bg-[var(--panel-2)] p-4 text-center text-sm font-bold shadow-xl animate-subir">
-          🔒 {aviso}
+          {aviso}
         </div>
       )}
 
