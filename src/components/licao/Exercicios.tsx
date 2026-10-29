@@ -98,8 +98,8 @@ function PecaBloco({ bloco, onClick, travado }: { bloco: Mora[]; onClick: () => 
     <button
       disabled={travado}
       onClick={onClick}
-      className={`btn-3d rounded-xl border-2 px-3 py-1.5 text-left ${r.chip}`}
-      style={{ borderColor: r.hex, borderBottomColor: r.hex }}
+      className={`btn rounded-xl border px-3 py-1.5 text-left ${r.chip}`}
+      style={{ borderColor: r.hex }}
     >
       <span className="block text-[10px] font-extrabold uppercase tracking-wider opacity-70">{r.label}</span>
       <span className="block text-base font-bold leading-tight">{bloco[0].funcao}</span>
@@ -212,7 +212,7 @@ export function ExFalar({ ex, travado, aoResponder, aoPular }: ExProps<Ex<"falar
           <div className="flex justify-center gap-2">
             <button
               onClick={() => aoResponder({ ok: true, literal: ex.card.significado_cognitivo })}
-              className="btn-3d btn-primario rounded-2xl px-5 py-3"
+              className="btn btn-primario rounded-2xl px-5 py-3"
             >
               Falei certo
             </button>
@@ -220,7 +220,7 @@ export function ExFalar({ ex, travado, aoResponder, aoPular }: ExProps<Ex<"falar
               onClick={() =>
                 aoResponder({ ok: false, correta: traducaoPrincipal(ex.card), literal: ex.card.significado_cognitivo, ouvir: ex.card.kana })
               }
-              className="btn-3d btn-secundario rounded-2xl px-5 py-3 font-bold"
+              className="btn btn-secundario rounded-2xl px-5 py-3 font-bold"
             >
               Errei
             </button>
@@ -231,10 +231,10 @@ export function ExFalar({ ex, travado, aoResponder, aoPular }: ExProps<Ex<"falar
           <button
             onClick={voice.status === "recording" ? voice.stop : falar}
             disabled={travado || voice.status === "processing"}
-            className={`btn-3d flex h-20 w-full max-w-sm items-center justify-center gap-3 rounded-2xl border-2 text-lg font-extrabold ${
+            className={`btn flex h-20 w-full max-w-sm items-center justify-center gap-3 rounded-full border text-lg font-bold ${
               voice.status === "recording"
                 ? "border-[var(--bad)] bg-[var(--bad)]/15 text-[var(--bad)]"
-                : "border-[var(--line)] text-[var(--azul)]"
+                : "border-[var(--accent)]/50 bg-[var(--accent)]/10 text-[var(--accent)]"
             }`}
           >
             {voice.status === "recording" ? <Square /> : voice.status === "processing" ? <Loader2 className="animate-spin" /> : <Mic />}
@@ -243,7 +243,7 @@ export function ExFalar({ ex, travado, aoResponder, aoPular }: ExProps<Ex<"falar
           {fase >= 2 && voice.interim && <p className="font-jp text-[var(--muted)]">{voice.interim}</p>}
           {aviso && <p className="text-sm text-[var(--warn)]">{aviso}</p>}
           {!travado && (
-            <button onClick={aoPular} className="text-sm font-bold uppercase tracking-wider text-[var(--muted)]">
+            <button onClick={aoPular} className="text-sm font-semibold text-[var(--muted)] underline underline-offset-4">
               Não posso falar agora
             </button>
           )}

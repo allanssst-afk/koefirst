@@ -1,28 +1,28 @@
 @import "tailwindcss";
 
-/* Tema escuro acolhedor (inspirado em apps de idiomas): verde para ações, dourado para a entonação */
+/* Tema "sumi e shu": fundo cor de tinta, vermelhão (朱) para ações, jade para acerto, dourado para a entonação */
 :root {
-  --bg: #131f24;
-  --panel: #1b2b32;
-  --panel-2: #22343c;
-  --line: #37464f;
-  --grid: #37464f;
-  --fg: #f1f7fb;
-  --muted: #94a7b1;
-  --accent: #58cc02;
-  --accent-dark: #46a302;
-  --azul: #1cb0f6;
-  --pitch: #ffc800;
-  --drop: #ff4b4b;
-  --user: #1cb0f6;
-  --ok: #58cc02;
-  --warn: #ff9600;
-  --bad: #ff4b4b;
+  --bg: #11131c;
+  --panel: #191c28;
+  --panel-2: #222636;
+  --line: #2e3346;
+  --grid: #2e3346;
+  --fg: #eef0f6;
+  --muted: #8e95ab;
+  --accent: #ff7350;
+  --accent-dark: #d4532f;
+  --azul: #6f9dff;
+  --pitch: #f2c14e;
+  --drop: #ff5c8a;
+  --user: #6f9dff;
+  --ok: #3ccf91;
+  --warn: #ffab5e;
+  --bad: #ff5c8a;
   color-scheme: dark;
 }
 
 @theme inline {
-  --font-sans: var(--font-nunito), ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-sans: var(--font-outfit), ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
 }
 
@@ -70,29 +70,28 @@ button:disabled {
   animation: rise 0.25s ease-out both;
 }
 
-/* Botões "3D": borda inferior mais escura que afunda ao tocar (fora de camada, para vencer o border-2).
+/* Botões planos que encolhem de leve ao tocar.
    As cores ficam em @layer components para que utilitários como disabled:bg-… possam sobrescrever. */
-.btn-3d {
-  border-bottom-width: 4px;
-  transition: transform 0.05s, border-bottom-width 0.05s;
+.btn {
+  transition: transform 0.08s, box-shadow 0.15s, background-color 0.15s;
 }
-.btn-3d:active:not(:disabled) {
-  transform: translateY(2px);
-  border-bottom-width: 2px;
+.btn:active:not(:disabled) {
+  transform: scale(0.97);
 }
 @layer components {
   .btn-primario {
     background: var(--accent);
-    border-color: var(--accent-dark);
-    color: #0f1a0a;
-    font-weight: 800;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
+    color: #1c0b05;
+    font-weight: 700;
+    font-size: 1.05rem;
+    box-shadow: 0 10px 24px -14px var(--accent);
+  }
+  .btn-primario:disabled {
+    box-shadow: none;
   }
   .btn-secundario {
-    background: transparent;
-    border: 2px solid var(--line);
-    border-bottom-width: 4px;
+    background: var(--panel);
+    border: 1px solid var(--line);
     color: var(--fg);
   }
 }

@@ -45,14 +45,14 @@ export function BotoesSom({ texto, grande = false, aoTocar }: { texto: string; g
       <button
         onClick={() => tocar(1)}
         aria-label="Ouvir"
-        className={`btn-3d flex ${tam} items-center justify-center rounded-2xl border-[#1899d6] bg-[var(--azul)] text-white ${tocando ? "opacity-80" : ""}`}
+        className={`btn flex ${tam} items-center justify-center rounded-2xl bg-[var(--azul)] text-white ${tocando ? "opacity-80" : ""}`}
       >
         <Volume2 size={grande ? 30 : 22} />
       </button>
       <button
         onClick={() => tocar(0.65)}
         aria-label="Ouvir devagar"
-        className={`btn-3d flex ${grande ? "h-12 w-12" : "h-9 w-9"} items-center justify-center rounded-xl border-[#1899d6] bg-[var(--azul)] text-white`}
+        className={`btn flex ${grande ? "h-12 w-12" : "h-9 w-9"} items-center justify-center rounded-xl bg-[var(--azul)] text-white`}
       >
         <Snail size={grande ? 22 : 16} />
       </button>
@@ -79,11 +79,9 @@ export function Enunciado({ children, rotulo }: { children: ReactNode; rotulo?: 
   return (
     <div>
       {rotulo && (
-        <p className="mb-1 flex items-center gap-2 text-xs font-extrabold uppercase tracking-wider text-[#ce82ff]">
-          <span className="h-2 w-2 rounded-full bg-[#ce82ff]" /> {rotulo}
-        </p>
+        <p className="mb-1 text-sm font-semibold text-[var(--accent)]">{rotulo}</p>
       )}
-      <h1 className="text-2xl font-extrabold leading-tight">{children}</h1>
+      <h1 className="text-2xl font-bold leading-tight">{children}</h1>
     </div>
   );
 }
@@ -106,14 +104,14 @@ export function Opcao({
     <button
       onClick={onClick}
       disabled={travado}
-      className={`btn-3d flex w-full items-center gap-3 rounded-2xl border-2 px-4 py-3 text-left text-base font-semibold ${
-        ativo ? "border-[var(--azul)] bg-[var(--azul)]/15 text-[var(--azul)]" : "border-[var(--line)]"
+      className={`btn flex w-full items-center gap-3 rounded-2xl border px-4 py-3 text-left text-base font-medium ${
+        ativo ? "border-[var(--accent)] bg-[var(--accent)]/12" : "border-[var(--line)] bg-[var(--panel)]"
       }`}
     >
       {numero !== undefined && (
         <span
-          className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border-2 text-xs ${
-            ativo ? "border-[var(--azul)]" : "border-[var(--line)] text-[var(--muted)]"
+          className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-bold ${
+            ativo ? "bg-[var(--accent)] text-[#1c0b05]" : "bg-[var(--panel-2)] text-[var(--muted)]"
           }`}
         >
           {numero}

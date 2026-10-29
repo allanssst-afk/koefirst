@@ -51,7 +51,7 @@ export default function Perfil() {
       {/* Atalho para o tutorial */}
       <Link
         href="/licao?id=u0:l1"
-        className="btn-3d btn-secundario flex items-center gap-3 rounded-2xl p-4"
+        className="btn btn-secundario flex items-center gap-3 rounded-2xl p-4"
       >
         <BookOpen className="text-[var(--azul)]" />
         <span>
@@ -153,7 +153,7 @@ function RitmoCard() {
           <button
             key={n}
             onClick={() => escolher(n)}
-            className={`btn-3d rounded-xl border-2 px-4 py-2 font-extrabold ${
+            className={`btn rounded-xl border-2 px-4 py-2 font-extrabold ${
               meta === n ? "border-[var(--accent)] bg-[var(--accent)]/15 text-[var(--accent)]" : "border-[var(--line)]"
             }`}
           >

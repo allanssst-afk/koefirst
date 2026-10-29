@@ -14,8 +14,8 @@ export function Mascote({ humor = "feliz", tamanho = 96 }: { humor?: "feliz" | "
       {/* olhos */}
       <ellipse cx="44" cy="52" rx="9" ry={humor === "triste" ? 8 : 11} fill="#fff" />
       <ellipse cx="76" cy="52" rx="9" ry={humor === "triste" ? 8 : 11} fill="#fff" />
-      <circle cx="46" cy="54" r="5" fill="#131f24" />
-      <circle cx="78" cy="54" r="5" fill="#131f24" />
+      <circle cx="46" cy="54" r="5" fill="#11131c" />
+      <circle cx="78" cy="54" r="5" fill="#11131c" />
       <circle cx="48" cy="51" r="1.8" fill="#fff" />
       <circle cx="80" cy="51" r="1.8" fill="#fff" />
       {humor === "triste" && (
@@ -34,7 +34,7 @@ export function Mascote({ humor = "feliz", tamanho = 96 }: { humor?: "feliz" | "
       )}
       {/* ondas de som */}
       {humor === "falando" && (
-        <g stroke="#1cb0f6" strokeWidth="4" fill="none" strokeLinecap="round">
+        <g stroke="#ff7350" strokeWidth="4" fill="none" strokeLinecap="round">
           <path d="M108 8 q8 8 0 16" />
           <path d="M100 12 q4 4 0 8" />
         </g>

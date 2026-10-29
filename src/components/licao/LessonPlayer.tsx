@@ -3,7 +3,7 @@
 import { useCallback, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { CheckCircle2, Volume2, X, XCircle } from "lucide-react";
+import { CheckCircle2, Target, Volume2, X, XCircle, Zap } from "lucide-react";
 import { Mascote } from "../Mascote";
 import { ExDialogo, ExEscuta, ExFalar, ExMontar, ExNova, ExQuiz } from "./Exercicios";
 import { ExExplica } from "./Tutorial";
@@ -23,7 +23,7 @@ interface Item {
 }
 
 /**
- * Lição no estilo Duolingo: um exercício por tela, barra de progresso no topo, botão grande embaixo
+ * Lição: um exercício por tela, barra de progresso no topo, botão grande embaixo
  * (VERIFICAR → painel verde/vermelho → CONTINUAR). Exercícios errados voltam no fim da lição.
  */
 export function LessonPlayer({ licao }: { licao: Licao }) {
@@ -99,15 +99,22 @@ export function LessonPlayer({ licao }: { licao: Licao }) {
         <div className="animate-pulo">
           <Mascote humor="feliz" tamanho={140} />
         </div>
-        <h1 className="text-3xl font-black text-[var(--pitch)]">Lição concluída!</h1>
+        <div>
+          <p className="text-sm font-semibold text-[var(--muted)]">Estação concluída</p>
+          <h1 className="text-3xl font-bold">{licao.titulo}</h1>
+        </div>
         <div className="grid w-full grid-cols-2 gap-3">
-          <div className="overflow-hidden rounded-2xl border-2 border-[var(--pitch)]">
-            <p className="bg-[var(--pitch)] py-1 text-xs font-extrabold uppercase text-[#131f24]">Total de XP</p>
-            <p className="py-3 text-2xl font-black text-[var(--pitch)]">⚡ {fim.xp}</p>
+          <div className="rounded-2xl bg-[var(--panel)] p-4 text-left">
+            <p className="flex items-center gap-1.5 text-2xl font-bold">
+              <Zap size={20} className="text-[var(--pitch)]" /> {fim.xp}
+            </p>
+            <p className="text-xs text-[var(--muted)]">XP ganho</p>
           </div>
-          <div className="overflow-hidden rounded-2xl border-2 border-[var(--accent)]">
-            <p className="bg-[var(--accent)] py-1 text-xs font-extrabold uppercase text-[#131f24]">Precisão</p>
-            <p className="py-3 text-2xl font-black text-[var(--accent)]">🎯 {pct}%</p>
+          <div className="rounded-2xl bg-[var(--panel)] p-4 text-left">
+            <p className="flex items-center gap-1.5 text-2xl font-bold">
+              <Target size={20} className="text-[var(--ok)]" /> {pct}%
+            </p>
+            <p className="text-xs text-[var(--muted)]">de acertos</p>
           </div>
         </div>
         {licao.tipo === "frases" && <ResumoAgenda resultados={fim.resultados} />}
@@ -117,7 +124,7 @@ export function LessonPlayer({ licao }: { licao: Licao }) {
             para a revisão daqui a pouco, para fixar de novo.
           </p>
         )}
-        <button onClick={() => router.push("/")} className="btn-3d btn-primario w-full rounded-2xl py-4">
+        <button onClick={() => router.push("/")} className="btn btn-primario w-full rounded-2xl py-4">
           Continuar
         </button>
       </div>
@@ -137,23 +144,26 @@ export function LessonPlayer({ licao }: { licao: Licao }) {
 
   return (
     <div className="mx-auto flex min-h-[100dvh] max-w-xl flex-col px-4 pt-4">
-      {/* topo: fechar + barra de progresso */}
-      <div className="flex items-center gap-4">
+      {/* topo: fechar + progresso */}
+      <div className="flex items-center gap-3">
         <Link href="/" aria-label="Sair da lição" className="text-[var(--muted)]">
-          <X size={28} />
+          <X size={24} />
         </Link>
-        <div className="h-4 flex-1 overflow-hidden rounded-full bg-[var(--line)]">
+        <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-[var(--line)]">
           <div
             className="h-full rounded-full bg-[var(--accent)] transition-all duration-500"
-            style={{ width: `${Math.max(4, progresso * 100)}%` }}
+            style={{ width: `${Math.max(2, progresso * 100)}%` }}
           />
         </div>
+        <span className="w-12 text-right font-mono text-xs text-[var(--muted)]">
+          {Math.min(concluidos, fila.length)}/{fila.length}
+        </span>
       </div>
 
       {/* exercício */}
       <div key={idx} className="flex-1 py-6 pb-44 animate-rise">
         {item.repetido && (
-          <p className="mb-3 text-xs font-extrabold uppercase tracking-wider text-[var(--warn)]">Erro anterior</p>
+          <p className="mb-3 text-sm font-semibold text-[var(--warn)]">De novo: você errou esta antes</p>
         )}
         {(() => {
           const ex = item.ex;
@@ -178,29 +188,34 @@ export function LessonPlayer({ licao }: { licao: Licao }) {
 
       {/* rodapé fixo: botão ou painel de resposta */}
       <div
-        className={`fixed inset-x-0 bottom-0 z-40 border-t-2 pb-[max(1rem,env(safe-area-inset-bottom))] ${
+        className={`fixed inset-x-0 bottom-0 z-40 pb-[max(1rem,env(safe-area-inset-bottom))] ${
           resposta
-            ? resposta.ok
-              ? "border-transparent bg-[#d7ffb8] text-[#58a700] animate-subir"
-              : "border-transparent bg-[#ffdfe0] text-[#ea2b2b] animate-subir"
-            : "border-[var(--line)] bg-[var(--bg)]"
+            ? "rounded-t-3xl border-t-4 bg-[var(--panel-2)] animate-subir"
+            : "border-t border-[var(--line)] bg-[var(--bg)]"
         }`}
+        style={resposta ? { borderTopColor: resposta.ok ? "var(--ok)" : "var(--bad)" } : undefined}
       >
         <div className="mx-auto max-w-xl space-y-3 px-4 pt-4">
           {resposta && (
             <div className="flex items-start gap-3">
-              {resposta.ok ? <CheckCircle2 size={32} /> : <XCircle size={32} />}
+              {resposta.ok ? (
+                <CheckCircle2 size={28} className="shrink-0 text-[var(--ok)]" />
+              ) : (
+                <XCircle size={28} className="shrink-0 text-[var(--bad)]" />
+              )}
               <div className="min-w-0 flex-1">
-                <p className="text-xl font-black">{resposta.ok ? "Muito bem!" : "Resposta correta:"}</p>
-                {!resposta.ok && resposta.correta && <p className="text-base font-semibold">{resposta.correta}</p>}
+                <p className="text-lg font-bold" style={{ color: resposta.ok ? "var(--ok)" : "var(--bad)" }}>
+                  {resposta.ok ? "Isso mesmo" : "Resposta certa:"}
+                </p>
+                {!resposta.ok && resposta.correta && <p className="text-base font-medium">{resposta.correta}</p>}
                 {resposta.literal && (
-                  <p className="mt-1 text-sm opacity-90">
-                    <span className="font-extrabold">Lógica japonesa:</span> {resposta.literal}
+                  <p className="mt-1 text-sm text-[var(--muted)]">
+                    <span className="font-semibold text-[var(--pitch)]">Lógica japonesa:</span> {resposta.literal}
                   </p>
                 )}
               </div>
               {resposta.ouvir && (
-                <button onClick={() => speakJa(resposta.ouvir!)} aria-label="Ouvir a frase" className="rounded-xl p-2">
+                <button onClick={() => speakJa(resposta.ouvir!)} aria-label="Ouvir a frase" className="rounded-xl p-2 text-[var(--azul)]">
                   <Volume2 size={24} />
                 </button>
               )}
@@ -209,21 +224,20 @@ export function LessonPlayer({ licao }: { licao: Licao }) {
           {resposta ? (
             <button
               onClick={avancar}
-              className={`btn-3d w-full rounded-2xl py-4 font-extrabold uppercase tracking-wider text-white ${
-                resposta.ok ? "border-[#46a302] bg-[#58cc02]" : "border-[#c41e1e] bg-[#ff4b4b]"
-              }`}
+              className="btn w-full rounded-2xl py-4 text-[1.05rem] font-bold text-[#11131c]"
+              style={{ background: resposta.ok ? "var(--ok)" : "var(--bad)" }}
             >
               Continuar
             </button>
           ) : informativo ? (
-            <button onClick={avancar} className="btn-3d btn-primario w-full rounded-2xl py-4">
+            <button onClick={avancar} className="btn btn-primario w-full rounded-2xl py-4">
               Continuar
             </button>
           ) : (
             <button
               onClick={() => verificador && responder(verificador())}
               disabled={!verificador}
-              className="btn-3d btn-primario w-full rounded-2xl py-4 disabled:border-[var(--line)] disabled:bg-[var(--line)] disabled:text-[var(--muted)]"
+              className="btn btn-primario w-full rounded-2xl py-4 disabled:bg-[var(--line)] disabled:text-[var(--muted)]"
             >
               Verificar
             </button>
@@ -235,7 +249,7 @@ export function LessonPlayer({ licao }: { licao: Licao }) {
 }
 
 const AGENDA: Record<1 | 2 | 3, { rotulo: string; quando: string; cor: string }> = {
-  3: { rotulo: "Fácil de lembrar", quando: "volta em ~10 min", cor: "var(--accent)" },
+  3: { rotulo: "Fácil de lembrar", quando: "volta em ~10 min", cor: "var(--ok)" },
   2: { rotulo: "Com esforço", quando: "volta em poucos minutos", cor: "var(--pitch)" },
   1: { rotulo: "Ainda não fixou", quando: "volta em 1 min", cor: "var(--bad)" },
 };
@@ -243,8 +257,8 @@ const AGENDA: Record<1 | 2 | 3, { rotulo: string; quando: string; cor: string }>
 /** Como cada frase entrou na repetição espaçada, conforme os erros da lição. */
 function ResumoAgenda({ resultados }: { resultados: { card: string; erros: number }[] }) {
   return (
-    <div className="w-full space-y-2 rounded-2xl border-2 border-[var(--line)] p-3 text-left">
-      <p className="text-xs font-extrabold uppercase tracking-wider text-[var(--muted)]">Entrou na sua revisão (FSRS)</p>
+    <div className="w-full space-y-2 rounded-2xl bg-[var(--panel)] p-3 text-left">
+      <p className="text-xs font-semibold text-[var(--muted)]">Entrou na sua revisão (FSRS)</p>
       {resultados.map(({ card, erros }) => {
         const a = AGENDA[notaDaLicao(erros) as 1 | 2 | 3];
         return (

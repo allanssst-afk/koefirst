@@ -21,7 +21,7 @@ function Exemplo({ moras, falar, legenda, funcao = true }: { moras: Mora[]; fala
     <div className="space-y-1 rounded-2xl border-2 border-[var(--line)] p-3">
       <div className="flex items-center justify-between gap-2">
         <p className="text-sm font-bold">{legenda}</p>
-        <button onClick={tocar} aria-label="Ouvir" className="btn-3d rounded-xl border-[#1899d6] bg-[var(--azul)] p-2 text-white">
+        <button onClick={tocar} aria-label="Ouvir" className="btn rounded-xl bg-[var(--azul)] p-2 text-white">
           <Volume2 size={18} />
         </button>
       </div>

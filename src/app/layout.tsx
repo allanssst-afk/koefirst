@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Nunito } from "next/font/google";
+import { Outfit } from "next/font/google";
 import { NavBar } from "@/components/NavBar";
 import { PhaseProvider } from "@/components/PhaseProvider";
 import { ServiceWorker } from "@/components/ServiceWorker";
@@ -7,8 +7,8 @@ import "./globals.css";
 
 const BASE = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 
-// fonte arredondada e amigável, empacotada no build (funciona offline)
-const nunito = Nunito({ subsets: ["latin"], weight: ["400", "600", "700", "800", "900"], variable: "--font-nunito" });
+// fonte geométrica, empacotada no build (funciona offline)
+const outfit = Outfit({ subsets: ["latin"], weight: ["400", "500", "600", "700", "800", "900"], variable: "--font-outfit" });
 
 export const metadata: Metadata = {
   title: "KoeFirst 声ファースト",
@@ -18,7 +18,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#131f24",
+  themeColor: "#11131c",
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
@@ -26,7 +26,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="pt-BR" className={nunito.variable}>
+    <html lang="pt-BR" className={outfit.variable}>
       <body className="min-h-dvh">
         <PhaseProvider>
           <NavBar />

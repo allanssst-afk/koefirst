@@ -5,14 +5,16 @@ PWA de uso pessoal para aprender japonês do zero ao B1 em 12 meses, com **orali
 **Sem servidor:** site estático no GitHub Pages; o banco SQLite roda no navegador e fica salvo no aparelho.
 Backup e troca de aparelho pelo cartão "Seu progresso" do Dashboard (baixar/carregar arquivo `.db`).
 
-## Estrutura do app (estilo Duolingo)
+## Estrutura do app
 
 - **Abas:** Aprender (`/`, trilha) · Revisar (`/study`, FSRS) · Praticar (`/drills`, Ping-Pong) ·
   Conversar (`/roleplay`, Arena) · Perfil (`/perfil`, estatísticas, camada ortográfica e backup).
 - **Trilha** (`src/lib/trilha.ts`): unidades por situação de vida (`UNIDADES`, cada uma com cards, contexto do
   Ping-Pong e missões da Arena) → lições geradas por `licoesDa`: tutorial (unidade 0, "Como funciona o mapa de
   som"), Frases novas (até 3 cards), Ping-Pong, Diálogo (missão da Arena, abre `/roleplay/?missao=…&licao=…`) e
-  Revisão. Progresso linear: a próxima lição desbloqueia quando a anterior é concluída.
+  Revisão. Progresso linear: a próxima lição desbloqueia quando a anterior é concluída. Visualmente é um mapa de
+  metrô: cada unidade é uma "linha" (símbolo de anel com o número, cor em `cor`) e cada lição uma "estação"
+  numerada (`1-03`) num trilho vertical — não usar o caminho em zigue-zague de círculos.
 - **Lição** (`/licao/?id=u1:l2`, `src/components/licao/`): um exercício por tela, barra de progresso, botão
   VERIFICAR → painel verde/vermelho → CONTINUAR; erros voltam no fim. Exercícios (`montarLicao`): nova frase
   (com a `CognitiveBreakdown`: lógica literal + blocos na ordem japonesa), ouvir e escolher a tradução, **montar a
@@ -25,8 +27,10 @@ Backup e troca de aparelho pelo cartão "Seu progresso" do Dashboard (baixar/car
 - **Limite diário de frases novas:** `meta_novos_dia` (Perfil → "Frases novas por dia") vale para trilha e aba
   Revisar juntas (`novosDeHoje`). Lição de frases que passaria da meta não abre ("Amanhã"); o resto do dia é
   revisão e prática.
-- **Visual:** paleta escura azul-petróleo com verde para ações (`--accent`), dourado para a entonação
-  (`--pitch`), fonte Nunito, botões "3D" (`.btn-3d`, `.btn-primario`, `.btn-secundario` em `globals.css`) e a
+- **Visual (identidade própria, não imitar o Duolingo):** tema "sumi e shu" — fundo cor de tinta, vermelhão
+  (`--accent`) para ações, jade (`--ok`) para acerto, rosa (`--bad`) para erro, dourado para a entonação
+  (`--pitch`); fonte Outfit; botões planos que encolhem ao tocar (`.btn`, `.btn-primario`, `.btn-secundario` em
+  `globals.css`); painel de resposta escuro com faixa colorida no topo; textos sem caixa-alta nos botões; e a
   mascote Koe (`src/components/Mascote.tsx`, personagem original — um balão de fala).
 - Cada card do seed tem `traducao` (tradução natural; alternativas com " / ") usada pelos exercícios.
 

@@ -3,7 +3,21 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { BookOpen, Check, Lock, MessagesSquare, NotebookText, Repeat2, Star, Trophy, X } from "lucide-react";
+import {
+  BookOpen,
+  Check,
+  ChevronRight,
+  Flame,
+  Lock,
+  MessagesSquare,
+  NotebookText,
+  Repeat2,
+  Sparkles,
+  Star,
+  Trophy,
+  X,
+  Zap,
+} from "lucide-react";
 import { BotoesSom } from "@/components/licao/comuns";
 import { Mascote } from "@/components/Mascote";
 import { PitchAccentVisualizer } from "@/components/PitchAccentVisualizer";
@@ -17,15 +31,6 @@ const ICONE: Record<TipoLicao, typeof Star> = {
   dialogo: MessagesSquare,
   revisao: Trophy,
 };
-
-/** Deslocamento horizontal dos nós (o caminho em zigue-zague). */
-const ZIGUE = [0, 44, 70, 44, 0, -44, -70, -44];
-
-function escurecer(hex: string, f = 0.78) {
-  const n = parseInt(hex.slice(1), 16);
-  const c = (s: number) => Math.round(((n >> s) & 255) * f);
-  return `rgb(${c(16)}, ${c(8)}, ${c(0)})`;
-}
 
 export default function Trilha() {
   const router = useRouter();
@@ -65,27 +70,29 @@ export default function Trilha() {
   };
 
   return (
-    <div className="mx-auto max-w-md space-y-8 pb-8">
+    <div className="mx-auto max-w-md space-y-7 pb-8">
       {/* status do dia */}
-      <div className="flex items-center justify-between rounded-2xl border-2 border-[var(--line)] px-4 py-3 text-lg font-extrabold">
-        <span className="text-[var(--warn)]" title="Dias seguidos">🔥 {sequencia}</span>
-        <span className="text-[var(--pitch)]" title="XP total">⚡ {xpTotal}</span>
-        <span className="text-[var(--azul)]" title="XP de hoje">+{xpHoje} hoje</span>
+      <div className="grid grid-cols-3 gap-2">
+        <Indicador icone={Flame} cor="var(--warn)" valor={sequencia} rotulo={sequencia === 1 ? "dia seguido" : "dias seguidos"} />
+        <Indicador icone={Zap} cor="var(--pitch)" valor={xpTotal} rotulo="XP total" />
+        <Indicador icone={Sparkles} cor="var(--azul)" valor={`+${xpHoje}`} rotulo="XP hoje" />
       </div>
 
       {/* meta de frases novas do dia */}
       <div className="space-y-1.5 px-1">
-        <div className="flex items-center justify-between text-xs font-extrabold uppercase tracking-wider text-[var(--muted)]">
+        <div className="flex items-center justify-between text-sm font-semibold text-[var(--muted)]">
           <span>Frases novas hoje</span>
-          <span className={novos.feitos >= novos.meta ? "text-[var(--accent)]" : ""}>
-            {Math.min(novos.feitos, novos.meta)} / {novos.meta}
+          <span className={novos.feitos >= novos.meta ? "text-[var(--ok)]" : "text-[var(--fg)]"}>
+            {Math.min(novos.feitos, novos.meta)} de {novos.meta}
           </span>
         </div>
-        <div className="h-3 overflow-hidden rounded-full bg-[var(--line)]">
-          <div
-            className="h-full rounded-full bg-[var(--accent)] transition-all"
-            style={{ width: `${Math.min(100, (novos.feitos / Math.max(1, novos.meta)) * 100)}%` }}
-          />
+        <div className="flex gap-1">
+          {Array.from({ length: novos.meta }, (_, i) => (
+            <div
+              key={i}
+              className={`h-1.5 flex-1 rounded-full ${i < novos.feitos ? "bg-[var(--accent)]" : "bg-[var(--line)]"}`}
+            />
+          ))}
         </div>
         {atualBloqueadaPelaMeta && (
           <p className="text-xs text-[var(--muted)]">
@@ -95,92 +102,122 @@ export default function Trilha() {
       </div>
 
       {revisoes > 0 && (
-        <Link href="/study" className="btn-3d btn-secundario flex items-center gap-3 rounded-2xl p-4">
-          <Mascote humor="feliz" tamanho={52} />
+        <Link
+          href="/study"
+          className="btn flex items-center gap-3 rounded-2xl border border-[var(--line)] border-l-4 border-l-[var(--azul)] bg-[var(--panel)] p-3"
+        >
+          <Mascote humor="feliz" tamanho={48} />
           <span className="flex-1">
-            <span className="block font-extrabold">Hora de revisar!</span>
+            <span className="block font-bold">Hora de revisar</span>
             <span className="block text-sm text-[var(--muted)]">
               {revisoes} {revisoes === 1 ? "frase quer" : "frases querem"} voltar à memória
             </span>
           </span>
-          <span className="rounded-xl bg-[var(--azul)] px-3 py-2 text-sm font-extrabold uppercase text-white">Revisar</span>
+          <ChevronRight className="text-[var(--azul)]" />
         </Link>
       )}
 
-      {unidades.map(({ u, licoes }) => (
-        <section key={u.id} className="space-y-8">
-          {/* banner da unidade */}
-          <div
-            className="flex items-stretch overflow-hidden rounded-2xl text-white"
-            style={{ background: u.cor, boxShadow: `0 4px 0 ${escurecer(u.cor)}` }}
-          >
-            <div className="flex-1 p-4">
-              <p className="text-xs font-extrabold uppercase tracking-wider opacity-80">
-                {u.numero === 0 ? "Introdução" : `Seção 1, Unidade ${u.numero}`}
-              </p>
-              <h2 className="text-xl font-black leading-tight">{u.titulo}</h2>
-              <p className="text-sm opacity-90">{u.descricao}</p>
+      {unidades.map(({ u, licoes }) => {
+        const nFeitas = licoes.filter((l) => feitas.has(l.id)).length;
+        return (
+          <section key={u.id} className="space-y-3">
+            {/* placa da linha (unidade) */}
+            <div className="flex items-center gap-3">
+              <SimboloLinha cor={u.cor} numero={u.numero} />
+              <div className="min-w-0 flex-1">
+                <p className="text-xs font-semibold text-[var(--muted)]">
+                  {u.numero === 0 ? "Introdução" : `Linha ${u.numero}`} · {nFeitas} de {licoes.length} estações
+                </p>
+                <h2 className="text-lg font-bold leading-tight">{u.titulo}</h2>
+                <p className="text-sm text-[var(--muted)]">{u.descricao}</p>
+              </div>
+              {u.cards.length > 0 && (
+                <button
+                  onClick={() => setGuia(u)}
+                  aria-label="Guia da unidade"
+                  className="btn flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-[var(--line)] text-[var(--muted)]"
+                >
+                  <NotebookText size={22} />
+                </button>
+              )}
             </div>
-            {u.cards.length > 0 && (
-              <button
-                onClick={() => setGuia(u)}
-                aria-label="Guia da unidade"
-                className="flex w-16 items-center justify-center border-l-2"
-                style={{ borderColor: escurecer(u.cor) }}
-              >
-                <NotebookText size={28} />
-              </button>
-            )}
-          </div>
 
-          {/* caminho */}
-          <div className="flex flex-col items-center gap-6 pt-12">
-            {licoes.map((l, i) => {
-              const Icone = ICONE[l.tipo];
-              const feita = feitas.has(l.id);
-              const ehAtual = l.id === atual;
-              const livre = feita || ehAtual;
-              const cor = livre ? u.cor : "#37464f";
-              return (
-                <div key={l.id} className="relative" style={{ transform: `translateX(${ZIGUE[i % ZIGUE.length]}px)` }}>
-                  {ehAtual && (
-                    <div className="absolute -top-14 left-1/2 z-10 -translate-x-1/2 animate-pulo">
-                      <div className="whitespace-nowrap rounded-xl border-2 border-[var(--line)] bg-[var(--bg)] px-3 py-2 text-sm font-extrabold uppercase tracking-wider" style={{ color: u.cor }}>
-                        {atualBloqueadaPelaMeta ? "Amanhã" : "Começar"}
-                      </div>
-                      <div className="mx-auto -mt-[7px] h-3 w-3 rotate-45 border-b-2 border-r-2 border-[var(--line)] bg-[var(--bg)]" />
-                    </div>
-                  )}
-                  <button
-                    onClick={() => abrir(l)}
-                    aria-label={`${l.titulo}${feita ? " (concluída)" : livre ? "" : " (bloqueada)"}`}
-                    title={l.titulo}
-                    className={`relative flex h-[68px] w-[76px] items-center justify-center rounded-[50%] transition active:translate-y-1 ${
-                      ehAtual ? "ring-8 ring-offset-4 ring-offset-[var(--bg)]" : ""
-                    }`}
-                    style={{
-                      background: cor,
-                      boxShadow: `0 7px 0 ${livre ? escurecer(u.cor) : "#2a373e"}`,
-                      ["--tw-ring-color" as string]: `${u.cor}55`,
-                    }}
-                  >
-                    {feita ? (
-                      <Check size={34} strokeWidth={4} className="text-white" />
-                    ) : livre ? (
-                      <Icone size={32} className="fill-white text-white" />
-                    ) : (
-                      <Lock size={26} className="text-[#52656d]" />
+            {/* estações */}
+            <ol>
+              {licoes.map((l, i) => {
+                const Icone = ICONE[l.tipo];
+                const feita = feitas.has(l.id);
+                const ehAtual = l.id === atual;
+                const livre = feita || ehAtual;
+                const ultima = i === licoes.length - 1;
+                return (
+                  <li key={l.id} className="relative py-1 pl-11">
+                    {/* trilho: metade de cima chega à estação, metade de baixo sai dela */}
+                    {i > 0 && (
+                      <span
+                        className="absolute left-[15px] top-0 h-1/2 w-1.5"
+                        style={{ background: livre ? u.cor : "var(--line)" }}
+                      />
                     )}
-                  </button>
-                  <p className={`mt-3 text-center text-xs font-bold ${livre ? "" : "text-[var(--muted)]"}`}>
-                    {l.titulo}
-                  </p>
-                </div>
-              );
-            })}
-          </div>
-        </section>
-      ))}
+                    {!ultima && (
+                      <span
+                        className="absolute bottom-0 left-[15px] top-1/2 w-1.5"
+                        style={{ background: feita ? u.cor : "var(--line)" }}
+                      />
+                    )}
+                    {/* estação */}
+                    <span
+                      className={`absolute left-[18px] top-1/2 flex -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-4 ${
+                        ehAtual ? "h-7 w-7" : "h-5 w-5"
+                      }`}
+                      style={{
+                        borderColor: livre ? u.cor : "var(--line)",
+                        background: feita ? u.cor : "var(--bg)",
+                        boxShadow: ehAtual ? `0 0 0 6px ${u.cor}33` : undefined,
+                      }}
+                    >
+                      {feita && <Check size={10} strokeWidth={5} className="text-[var(--bg)]" />}
+                    </span>
+                    <button
+                      onClick={() => abrir(l)}
+                      aria-label={`${l.titulo}${feita ? " (concluída)" : livre ? "" : " (bloqueada)"}`}
+                      className={`btn flex w-full items-center gap-3 rounded-xl px-3 text-left ${
+                        ehAtual ? "border py-3" : "py-2"
+                      } ${livre ? "" : "opacity-50"}`}
+                      style={ehAtual ? { borderColor: u.cor, background: `${u.cor}14` } : undefined}
+                    >
+                      <span className="w-9 shrink-0 font-mono text-[11px] text-[var(--muted)]">
+                        {u.numero}-{String(i + 1).padStart(2, "0")}
+                      </span>
+                      <span className="min-w-0 flex-1">
+                        <span className={`block leading-tight ${ehAtual ? "font-bold" : "font-medium"}`}>{l.titulo}</span>
+                        {ehAtual && (
+                          <span className="block text-xs font-semibold" style={{ color: u.cor }}>
+                            {atualBloqueadaPelaMeta ? "Amanhã — meta de hoje cumprida" : "Próxima estação"}
+                          </span>
+                        )}
+                      </span>
+                      {livre ? (
+                        <Icone size={18} style={{ color: ehAtual ? u.cor : "var(--muted)" }} />
+                      ) : (
+                        <Lock size={16} className="text-[var(--muted)]" />
+                      )}
+                      {ehAtual && !atualBloqueadaPelaMeta && (
+                        <span
+                          className="rounded-full px-3 py-1 text-sm font-bold text-[#11131c]"
+                          style={{ background: u.cor }}
+                        >
+                          Começar
+                        </span>
+                      )}
+                    </button>
+                  </li>
+                );
+              })}
+            </ol>
+          </section>
+        );
+      })}
 
       {aviso && (
         <div className="fixed inset-x-4 bottom-24 z-40 mx-auto max-w-md rounded-2xl bg-[var(--panel-2)] p-4 text-center text-sm font-bold shadow-xl animate-subir">
@@ -190,6 +227,29 @@ export default function Trilha() {
 
       {guia && <GuiaDaUnidade unidade={guia} onClose={() => setGuia(null)} />}
     </div>
+  );
+}
+
+function Indicador({ icone: Icone, cor, valor, rotulo }: { icone: typeof Star; cor: string; valor: number | string; rotulo: string }) {
+  return (
+    <div className="rounded-2xl bg-[var(--panel)] px-3 py-2.5">
+      <p className="flex items-center gap-1.5 text-xl font-bold">
+        <Icone size={18} style={{ color: cor }} /> {valor}
+      </p>
+      <p className="text-[11px] text-[var(--muted)]">{rotulo}</p>
+    </div>
+  );
+}
+
+/** Símbolo da linha, como nas placas de metrô de Tóquio: anel grosso na cor da linha com o número dentro. */
+function SimboloLinha({ cor, numero }: { cor: string; numero: number }) {
+  return (
+    <span
+      className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border-[5px] bg-white text-lg font-black text-[#11131c]"
+      style={{ borderColor: cor }}
+    >
+      {numero}
+    </span>
   );
 }
 
@@ -203,8 +263,8 @@ function GuiaDaUnidade({ unidade, onClose }: { unidade: Unidade; onClose: () => 
       >
         <div className="flex items-start justify-between gap-3">
           <div>
-            <p className="text-xs font-extrabold uppercase tracking-wider" style={{ color: unidade.cor }}>
-              Guia · Unidade {unidade.numero}
+            <p className="text-xs font-semibold" style={{ color: unidade.cor }}>
+              Guia · Linha {unidade.numero}
             </p>
             <h2 className="text-xl font-black">{unidade.titulo}</h2>
           </div>
@@ -215,7 +275,7 @@ function GuiaDaUnidade({ unidade, onClose }: { unidade: Unidade; onClose: () => 
         {unidade.cards.map((id) => {
           const c = cardPorId(id);
           return (
-            <div key={id} className="space-y-2 rounded-2xl border-2 border-[var(--line)] p-3">
+            <div key={id} className="space-y-2 rounded-2xl bg-[var(--panel)] p-3">
               <div className="flex items-center justify-between gap-2">
                 <p className="font-extrabold">{c.traducao}</p>
                 <BotoesSom texto={c.kana} />
