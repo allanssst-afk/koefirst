@@ -32,6 +32,8 @@ const SIG_EXTRA: Record<string, string[]> = {
   歩: ["andar", "caminhar", "passo"],
   曲: ["curvar", "virar", "música"],
   枚: ["folha", "contador de coisas finas (papéis, selos)"],
+  張: ["esticar", "estender"],
+  頑: ["teimoso", "persistente"],
 };
 
 const NOMES_PROPRIOS = /^(Japão|China|Coreia|Tóquio|Buda)/;
@@ -60,7 +62,8 @@ function lerKanjidic(arquivo: string): Map<string, Bruto> {
       const x = bloco.match(new RegExp(`<${tag}>(\\d+)</${tag}>`));
       return x ? Number(x[1]) : null;
     };
-    const todos = (re: RegExp) => [...bloco.matchAll(re)].map((x) => x[1]);
+    const entidades: Record<string, string> = { amp: "&", lt: "<", gt: ">", quot: '"', apos: "'" };
+    const todos = (re: RegExp) => [...bloco.matchAll(re)].map((x) => x[1].replace(/&(amp|lt|gt|quot|apos);/g, (_, e: string) => entidades[e]));
     m.set(lit, {
       jlpt: num("jlpt"),
       tracosN: num("stroke_count") ?? 0,

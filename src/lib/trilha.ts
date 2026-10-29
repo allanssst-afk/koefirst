@@ -18,6 +18,8 @@ export interface Unidade {
   contexto: Categoria | null;
   cards: string[];
   missoes: string[];
+  /** transformações do Ping-Pong que esta unidade ensina; dela em diante entram no sorteio */
+  formasNovas?: Forma[];
 }
 
 export type TipoLicao = "tutorial" | "frases" | "pingpong" | "dialogo" | "revisao" | "simulado";
@@ -150,6 +152,22 @@ export const UNIDADES: Unidade[] = [
     ],
     missoes: ["rp_num_cafe", "rp_num_correio", "rp_num_horario"],
   },
+  {
+    id: "u10",
+    numero: 10,
+    titulo: "Peça e oriente",
+    descricao: "Pedir, pedir licença, proibir e explicar o caminho",
+    cor: "#d4a017",
+    contexto: "trabalho",
+    cards: [
+      "card_067", "card_068", "card_069",
+      "card_070", "card_071", "card_072",
+      "card_073", "card_074", "card_075",
+      "card_076", "card_077", "card_078",
+    ],
+    missoes: ["rp_ped_templo", "rp_ped_cadastro", "rp_ped_escritorio"],
+    formasNovas: ["te_kudasai"],
+  },
 ];
 
 const TITULO: Record<TipoLicao, string> = {
@@ -267,15 +285,19 @@ function montar(card: CardTrilha): Exercicio {
 
 const TREINO: Forma[] = ["mashita", "masen", "masen_deshita", "tai", "mashou"];
 
-function dialogo(ctx: Categoria): Exercicio {
+/** Transformações já ensinadas até a unidade: as básicas + as novas das unidades anteriores e desta. */
+const formasAte = (u: Unidade): Forma[] => [...TREINO, ...UNIDADES.filter((x) => x.numero <= u.numero).flatMap((x) => x.formasNovas ?? [])];
+
+/** `sorteio`: de onde sai a transformação da pergunta; `todas`: de onde sai a alternativa errada. */
+function dialogo(ctx: Categoria, sorteio: Forma[] = TREINO, todas: Forma[] = TREINO): Exercicio {
   const cenas = cenasDoContexto(ctx);
   for (;;) {
     const cena = cenas[Math.floor(Math.random() * cenas.length)];
-    const forma = TREINO[Math.floor(Math.random() * TREINO.length)];
+    const forma = sorteio[Math.floor(Math.random() * sorteio.length)];
     if (verboPorDict(cena.verbo).sem?.includes(forma) || cena.sem?.includes(forma)) continue;
     const d = montarDialogo(cena, forma);
     // alternativas erradas: mesma situação com outra transformação; mesma transformação em outra situação
-    const outraForma = TREINO.find((f) => f !== forma && FORMAS[f].abertura !== FORMAS[forma].abertura) ?? "masen";
+    const outraForma = todas.find((f) => f !== forma && FORMAS[f].abertura !== FORMAS[forma].abertura) ?? "masen";
     const outraCena = cenas.find((c) => c.verbo !== cena.verbo) ?? cena;
     const erradas = [montarDialogo(cena, outraForma).resposta, montarDialogo(outraCena, forma).resposta];
     const opcoes = embaralhar([d.resposta, ...erradas]);
@@ -380,8 +402,12 @@ export function montarLicao(l: Licao): Exercicio[] {
       for (const c of cards.filter((c) => c.tipo === "speaking").slice(0, 2)) ex.push({ tipo: "falar", card: c });
       return ex;
     }
-    case "pingpong":
-      return Array.from({ length: 6 }, () => dialogo(l.unidade.contexto ?? "social"));
+    case "pingpong": {
+      // a unidade que ensina uma forma nova treina essa forma em metade dos diálogos
+      const todas = formasAte(l.unidade);
+      const novas = l.unidade.formasNovas ?? [];
+      return Array.from({ length: 6 }, (_, i) => dialogo(l.unidade.contexto ?? "social", i % 2 === 0 && novas.length ? novas : todas, todas));
+    }
     case "revisao": {
       const ex = embaralhar(cards)
         .slice(0, 10)

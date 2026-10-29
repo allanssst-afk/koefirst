@@ -14,10 +14,10 @@ import type { CaptureResult } from "@/lib/audio/capture";
 import { speakJa, stopAll, wait } from "@/lib/audio/tts";
 import {
   cenasDoContexto,
+  combina,
   FORMAS,
   montarDialogo,
   PARCEIRO_DRILL,
-  verboPorDict,
   type CenaDrill,
   type DialogoDrill,
   type FalaDrill,
@@ -28,7 +28,7 @@ import { CATEGORIAS } from "@/lib/roleplay";
 import { bestSimilarity, containsAny } from "@/lib/text";
 
 const JANELAS = [3000, 5000, 8000, 15000];
-const TREINAVEIS: Forma[] = ["mashita", "masen", "masen_deshita", "tai", "mashou"];
+const TREINAVEIS: Forma[] = ["mashita", "masen", "masen_deshita", "tai", "mashou", "te_kudasai"];
 
 type Stage = "setup" | "cue" | "ready" | "listening" | "result";
 /** completo = frase inteira · parcial = só o verbo transformado · erro = nem o verbo */
@@ -100,16 +100,11 @@ export default function DrillsPage() {
   const novaRodada = useCallback(async () => {
     if (!formas.length) return;
     stopAll();
-    const cenas = cenasDoContexto(contexto);
-    let cena: CenaDrill, forma: Forma;
-    do {
-      cena = cenas[Math.floor(Math.random() * cenas.length)];
-      forma = formas[Math.floor(Math.random() * formas.length)];
-    } while (
-      verboPorDict(cena.verbo).sem?.includes(forma) ||
-      cena.sem?.includes(forma) ||
-      (`${cena.verbo}-${cena.obj}-${forma}` === last.current && cenas.length * formas.length > 1)
-    );
+    // sorteia entre os pares (situação, transformação) que combinam; sem repetir a rodada anterior
+    const pares = cenasDoContexto(contexto).flatMap((c) => formas.filter((f) => combina(c, f)).map((f) => [c, f] as const));
+    if (!pares.length) return;
+    const semRepetir = pares.filter(([c, f]) => `${c.verbo}-${c.obj}-${f}` !== last.current);
+    const [cena, forma] = (semRepetir.length ? semRepetir : pares)[Math.floor(Math.random() * (semRepetir.length || pares.length))];
     last.current = `${cena.verbo}-${cena.obj}-${forma}`;
     const r: Round = { cena, forma, dialogo: montarDialogo(cena, forma), result: null, nota: null };
     roundRef.current = r;
@@ -170,6 +165,8 @@ export default function DrillsPage() {
   }, [stage, round, voice, novaRodada, responder]);
 
   // Mantém pelo menos uma transformação ligada (dá para ajustar também durante a sessão).
+  // a combinação escolhida tem pelo menos uma situação possível (o pedido não serve para lazer, por exemplo)
+  const possivel = cenasDoContexto(contexto).some((c) => formas.some((f) => combina(c, f)));
   const toggle = (f: Forma) =>
     setFormas((fs) => (fs.includes(f) ? (fs.length > 1 ? fs.filter((x) => x !== f) : fs) : [...fs, f]));
   const pctAcerto = placar.rodadas ? Math.round((placar.acertos / placar.rodadas) * 100) : 0;
@@ -201,6 +198,12 @@ export default function DrillsPage() {
         <section className="space-y-2">
           <h2 className="text-sm font-semibold">2. Quais transformações treinar?</h2>
           <FormasChips formas={formas} onToggle={toggle} />
+          {formas.length > 0 && !possivel && (
+            <p className="text-xs text-[var(--warn)]">
+              Nenhuma situação deste contexto combina com essas transformações (o pedido serve para tarefas, como no
+              trabalho e nas compras). Inclua outra transformação ou troque o contexto.
+            </p>
+          )}
         </section>
 
         <section className="space-y-2">
@@ -222,7 +225,7 @@ export default function DrillsPage() {
 
         <button
           onClick={comecar}
-          disabled={!formas.length}
+          disabled={!formas.length || !possivel}
           className="flex h-14 w-full items-center justify-center gap-3 rounded-2xl bg-[var(--accent)] text-lg font-black text-black disabled:opacity-40"
         >
           <Play /> Começar
@@ -287,8 +290,8 @@ export default function DrillsPage() {
           <p className="text-lg font-black text-[var(--accent)]">«{dialogo.resposta.pt}»</p>
           {stage !== "result" && (
             <p className="text-xs text-[var(--muted)]">
-              Transformação: <span className="font-mono text-[var(--fg)]">{f.regra}</span> · o «(eu)» fica implícito em
-              japonês
+              Transformação: <span className="font-mono text-[var(--fg)]">{f.regra}</span>
+              {dialogo.resposta.pt.includes("(eu)") ? " · o «(eu)» fica implícito em japonês" : " · quem vai fazer é a outra pessoa"}
             </p>
           )}
         </div>

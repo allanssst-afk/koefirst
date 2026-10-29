@@ -24,48 +24,52 @@ export interface Verbo {
   raizKanji: string;
   /** verbo heiban (plano) muda o pitch da forma -tai */
   heiban: boolean;
+  /** forma -te: sons (prefixo _ = devozeada), mora em que a voz cai (0 = plano), kana e kanji com furigana */
+  te: { som: string; acento: number; kana: string; kanji: string };
+  /** imperativo educado em português, para o pedido ("envie") */
+  ptPedido: string;
 }
 
 export const VERBOS: Verbo[] = [
-  { dict: "taberu", pt: "comer", ptPres: "como", ptPret: "comi", vcPres: "come", vcPret: "comeu", raiz: ["ta", "be"], raizKana: "たべ", raizKanji: "食[た]べ", heiban: false },
-  { dict: "nomu", pt: "beber", ptPres: "bebo", ptPret: "bebi", vcPres: "bebe", vcPret: "bebeu", raiz: ["no", "mi"], raizKana: "のみ", raizKanji: "飲[の]み", heiban: false },
-  { dict: "iku", pt: "ir", ptPres: "vou", ptPret: "fui", vcPres: "vai", vcPret: "foi", ptVamos: "", raiz: ["i", "ki"], raizKana: "いき", raizKanji: "行[い]き", heiban: true },
-  { dict: "kuru", pt: "vir", ptPres: "venho", ptPret: "vim", vcPres: "vem", vcPret: "veio", sem: ["mashou"], raiz: ["ki"], raizKana: "き", raizKanji: "来[き]", heiban: false },
-  { dict: "suru", pt: "fazer", ptPres: "faço", ptPret: "fiz", vcPres: "faz", vcPret: "fez", raiz: ["shi"], raizKana: "し", raizKanji: "し", heiban: true },
-  { dict: "miru", pt: "ver", ptPres: "vejo", ptPret: "vi", vcPres: "vê", vcPret: "viu", raiz: ["mi"], raizKana: "み", raizKanji: "見[み]", heiban: false },
-  { dict: "kaku", pt: "escrever", ptPres: "escrevo", ptPret: "escrevi", vcPres: "escreve", vcPret: "escreveu", raiz: ["ka", "ki"], raizKana: "かき", raizKanji: "書[か]き", heiban: false },
-  { dict: "yomu", pt: "ler", ptPres: "leio", ptPret: "li", vcPres: "lê", vcPret: "leu", raiz: ["yo", "mi"], raizKana: "よみ", raizKanji: "読[よ]み", heiban: false },
-  { dict: "kau", pt: "comprar", ptPres: "compro", ptPret: "comprei", vcPres: "compra", vcPret: "comprou", raiz: ["ka", "i"], raizKana: "かい", raizKanji: "買[か]い", heiban: true },
-  { dict: "hanasu", pt: "falar", ptPres: "falo", ptPret: "falei", vcPres: "fala", vcPret: "falou", raiz: ["ha", "na", "shi"], raizKana: "はなし", raizKanji: "話[はな]し", heiban: false },
-  { dict: "kaeru", pt: "voltar", ptPres: "volto", ptPret: "voltei", vcPres: "volta", vcPret: "voltou", raiz: ["ka", "e", "ri"], raizKana: "かえり", raizKanji: "帰[かえ]り", heiban: false },
-  { dict: "okiru", pt: "acordar", ptPres: "acordo", ptPret: "acordei", vcPres: "acorda", vcPret: "acordou", raiz: ["o", "ki"], raizKana: "おき", raizKanji: "起[お]き", heiban: false },
-  { dict: "neru", pt: "dormir", ptPres: "durmo", ptPret: "dormi", vcPres: "dorme", vcPret: "dormiu", raiz: ["ne"], raizKana: "ね", raizKanji: "寝[ね]", heiban: true },
-  { dict: "hataraku", pt: "trabalhar", ptPres: "trabalho", ptPret: "trabalhei", vcPres: "trabalha", vcPret: "trabalhou", raiz: ["ha", "ta", "ra", "ki"], raizKana: "はたらき", raizKanji: "働[はたら]き", heiban: true },
-  { dict: "kiku", pt: "ouvir", ptPres: "ouço", ptPret: "ouvi", vcPres: "ouve", vcPret: "ouviu", raiz: ["ki", "ki"], raizKana: "きき", raizKanji: "聞[き]き", heiban: true },
-  { dict: "matsu", pt: "esperar", ptPres: "espero", ptPret: "esperei", vcPres: "espera", vcPret: "esperou", raiz: ["ma", "chi"], raizKana: "まち", raizKanji: "待[ま]ち", heiban: false },
-  { dict: "au", pt: "encontrar", ptPres: "encontro", ptPret: "encontrei", vcPres: "encontra", vcPret: "encontrou", raiz: ["a", "i"], raizKana: "あい", raizKanji: "会[あ]い", heiban: false },
-  { dict: "okuru", pt: "enviar", ptPres: "envio", ptPret: "enviei", vcPres: "envia", vcPret: "enviou", raiz: ["o", "ku", "ri"], raizKana: "おくり", raizKanji: "送[おく]り", heiban: true },
-  { dict: "tsukau", pt: "usar", ptPres: "uso", ptPret: "usei", vcPres: "usa", vcPret: "usou", raiz: ["tsu", "ka", "i"], raizKana: "つかい", raizKanji: "使[つか]い", heiban: true },
-  { dict: "tsukuru", pt: "preparar", ptPres: "preparo", ptPret: "preparei", vcPres: "prepara", vcPret: "preparou", raiz: ["tsu", "ku", "ri"], raizKana: "つくり", raizKanji: "作[つく]り", heiban: false },
-  { dict: "harau", pt: "pagar", ptPres: "pago", ptPret: "paguei", vcPres: "paga", vcPret: "pagou", raiz: ["ha", "ra", "i"], raizKana: "はらい", raizKanji: "払[はら]い", heiban: false },
-  { dict: "noru", pt: "pegar", ptPres: "pego", ptPret: "peguei", vcPres: "pega", vcPret: "pegou", raiz: ["no", "ri"], raizKana: "のり", raizKanji: "乗[の]り", heiban: true },
-  { dict: "hajimeru", pt: "começar", ptPres: "começo", ptPret: "comecei", vcPres: "começa", vcPret: "começou", raiz: ["ha", "ji", "me"], raizKana: "はじめ", raizKanji: "始[はじ]め", heiban: true },
-  { dict: "tetsudau", pt: "ajudar", ptPres: "ajudo", ptPret: "ajudei", vcPres: "ajuda", vcPret: "ajudou", raiz: ["te", "tsu", "da", "i"], raizKana: "てつだい", raizKanji: "手伝[てつだ]い", heiban: false },
-  { dict: "modoru", pt: "retornar", ptPres: "retorno", ptPret: "retornei", vcPres: "retorna", vcPret: "retornou", raiz: ["mo", "do", "ri"], raizKana: "もどり", raizKanji: "戻[もど]り", heiban: false },
-  { dict: "aruku", pt: "andar", ptPres: "ando", ptPret: "andei", vcPres: "anda", vcPret: "andou", raiz: ["a", "ru", "ki"], raizKana: "あるき", raizKanji: "歩[ある]き", heiban: false },
+  { dict: "taberu", sem: ["te_kudasai"], pt: "comer", ptPres: "como", ptPret: "comi", vcPres: "come", vcPret: "comeu", raiz: ["ta", "be"], raizKana: "たべ", raizKanji: "食[た]べ", te: { som: "ta.be.te", acento: 1, kana: "たべて", kanji: "食[た]べて" }, ptPedido: "coma", heiban: false },
+  { dict: "nomu", sem: ["te_kudasai"], pt: "beber", ptPres: "bebo", ptPret: "bebi", vcPres: "bebe", vcPret: "bebeu", raiz: ["no", "mi"], raizKana: "のみ", raizKanji: "飲[の]み", te: { som: "no.n.de", acento: 1, kana: "のんで", kanji: "飲[の]んで" }, ptPedido: "beba", heiban: false },
+  { dict: "iku", pt: "ir", ptPres: "vou", ptPret: "fui", vcPres: "vai", vcPret: "foi", ptVamos: "", raiz: ["i", "ki"], raizKana: "いき", raizKanji: "行[い]き", te: { som: "i.t.te", acento: 0, kana: "いって", kanji: "行[い]って" }, ptPedido: "vá", heiban: true },
+  { dict: "kuru", pt: "vir", ptPres: "venho", ptPret: "vim", vcPres: "vem", vcPret: "veio", sem: ["mashou"], raiz: ["ki"], raizKana: "き", raizKanji: "来[き]", te: { som: "_ki.te", acento: 1, kana: "きて", kanji: "来[き]て" }, ptPedido: "venha", heiban: false },
+  { dict: "suru", pt: "fazer", ptPres: "faço", ptPret: "fiz", vcPres: "faz", vcPret: "fez", raiz: ["shi"], raizKana: "し", raizKanji: "し", te: { som: "_shi.te", acento: 0, kana: "して", kanji: "して" }, ptPedido: "faça", heiban: true },
+  { dict: "miru", pt: "ver", ptPres: "vejo", ptPret: "vi", vcPres: "vê", vcPret: "viu", raiz: ["mi"], raizKana: "み", raizKanji: "見[み]", te: { som: "mi.te", acento: 1, kana: "みて", kanji: "見[み]て" }, ptPedido: "veja", heiban: false },
+  { dict: "kaku", pt: "escrever", ptPres: "escrevo", ptPret: "escrevi", vcPres: "escreve", vcPret: "escreveu", raiz: ["ka", "ki"], raizKana: "かき", raizKanji: "書[か]き", te: { som: "ka.i.te", acento: 1, kana: "かいて", kanji: "書[か]いて" }, ptPedido: "escreva", heiban: false },
+  { dict: "yomu", pt: "ler", ptPres: "leio", ptPret: "li", vcPres: "lê", vcPret: "leu", raiz: ["yo", "mi"], raizKana: "よみ", raizKanji: "読[よ]み", te: { som: "yo.n.de", acento: 1, kana: "よんで", kanji: "読[よ]んで" }, ptPedido: "leia", heiban: false },
+  { dict: "kau", pt: "comprar", ptPres: "compro", ptPret: "comprei", vcPres: "compra", vcPret: "comprou", raiz: ["ka", "i"], raizKana: "かい", raizKanji: "買[か]い", te: { som: "ka.t.te", acento: 0, kana: "かって", kanji: "買[か]って" }, ptPedido: "compre", heiban: true },
+  { dict: "hanasu", pt: "falar", ptPres: "falo", ptPret: "falei", vcPres: "fala", vcPret: "falou", raiz: ["ha", "na", "shi"], raizKana: "はなし", raizKanji: "話[はな]し", te: { som: "ha.na._shi.te", acento: 2, kana: "はなして", kanji: "話[はな]して" }, ptPedido: "fale", heiban: false },
+  { dict: "kaeru", pt: "voltar", ptPres: "volto", ptPret: "voltei", vcPres: "volta", vcPret: "voltou", raiz: ["ka", "e", "ri"], raizKana: "かえり", raizKanji: "帰[かえ]り", te: { som: "ka.e.t.te", acento: 1, kana: "かえって", kanji: "帰[かえ]って" }, ptPedido: "volte", heiban: false },
+  { dict: "okiru", sem: ["te_kudasai"], pt: "acordar", ptPres: "acordo", ptPret: "acordei", vcPres: "acorda", vcPret: "acordou", raiz: ["o", "ki"], raizKana: "おき", raizKanji: "起[お]き", te: { som: "o.ki.te", acento: 1, kana: "おきて", kanji: "起[お]きて" }, ptPedido: "acorde", heiban: false },
+  { dict: "neru", sem: ["te_kudasai"], pt: "dormir", ptPres: "durmo", ptPret: "dormi", vcPres: "dorme", vcPret: "dormiu", raiz: ["ne"], raizKana: "ね", raizKanji: "寝[ね]", te: { som: "ne.te", acento: 0, kana: "ねて", kanji: "寝[ね]て" }, ptPedido: "durma", heiban: true },
+  { dict: "hataraku", sem: ["te_kudasai"], pt: "trabalhar", ptPres: "trabalho", ptPret: "trabalhei", vcPres: "trabalha", vcPret: "trabalhou", raiz: ["ha", "ta", "ra", "ki"], raizKana: "はたらき", raizKanji: "働[はたら]き", te: { som: "ha.ta.ra.i.te", acento: 0, kana: "はたらいて", kanji: "働[はたら]いて" }, ptPedido: "trabalhe", heiban: true },
+  { dict: "kiku", pt: "ouvir", ptPres: "ouço", ptPret: "ouvi", vcPres: "ouve", vcPret: "ouviu", raiz: ["ki", "ki"], raizKana: "きき", raizKanji: "聞[き]き", te: { som: "ki.i.te", acento: 0, kana: "きいて", kanji: "聞[き]いて" }, ptPedido: "ouça", heiban: true },
+  { dict: "matsu", pt: "esperar", ptPres: "espero", ptPret: "esperei", vcPres: "espera", vcPret: "esperou", raiz: ["ma", "chi"], raizKana: "まち", raizKanji: "待[ま]ち", te: { som: "ma.t.te", acento: 1, kana: "まって", kanji: "待[ま]って" }, ptPedido: "espere", heiban: false },
+  { dict: "au", pt: "encontrar", ptPres: "encontro", ptPret: "encontrei", vcPres: "encontra", vcPret: "encontrou", raiz: ["a", "i"], raizKana: "あい", raizKanji: "会[あ]い", te: { som: "a.t.te", acento: 1, kana: "あって", kanji: "会[あ]って" }, ptPedido: "encontre", heiban: false },
+  { dict: "okuru", pt: "enviar", ptPres: "envio", ptPret: "enviei", vcPres: "envia", vcPret: "enviou", raiz: ["o", "ku", "ri"], raizKana: "おくり", raizKanji: "送[おく]り", te: { som: "o.ku.t.te", acento: 0, kana: "おくって", kanji: "送[おく]って" }, ptPedido: "envie", heiban: true },
+  { dict: "tsukau", pt: "usar", ptPres: "uso", ptPret: "usei", vcPres: "usa", vcPret: "usou", raiz: ["tsu", "ka", "i"], raizKana: "つかい", raizKanji: "使[つか]い", te: { som: "_tsu.ka.t.te", acento: 0, kana: "つかって", kanji: "使[つか]って" }, ptPedido: "use", heiban: true },
+  { dict: "tsukuru", pt: "preparar", ptPres: "preparo", ptPret: "preparei", vcPres: "prepara", vcPret: "preparou", raiz: ["tsu", "ku", "ri"], raizKana: "つくり", raizKanji: "作[つく]り", te: { som: "_tsu.ku.t.te", acento: 2, kana: "つくって", kanji: "作[つく]って" }, ptPedido: "prepare", heiban: false },
+  { dict: "harau", pt: "pagar", ptPres: "pago", ptPret: "paguei", vcPres: "paga", vcPret: "pagou", raiz: ["ha", "ra", "i"], raizKana: "はらい", raizKanji: "払[はら]い", te: { som: "ha.ra.t.te", acento: 2, kana: "はらって", kanji: "払[はら]って" }, ptPedido: "pague", heiban: false },
+  { dict: "noru", pt: "pegar", ptPres: "pego", ptPret: "peguei", vcPres: "pega", vcPret: "pegou", raiz: ["no", "ri"], raizKana: "のり", raizKanji: "乗[の]り", te: { som: "no.t.te", acento: 0, kana: "のって", kanji: "乗[の]って" }, ptPedido: "pegue", heiban: true },
+  { dict: "hajimeru", pt: "começar", ptPres: "começo", ptPret: "comecei", vcPres: "começa", vcPret: "começou", raiz: ["ha", "ji", "me"], raizKana: "はじめ", raizKanji: "始[はじ]め", te: { som: "ha.ji.me.te", acento: 0, kana: "はじめて", kanji: "始[はじ]めて" }, ptPedido: "comece", heiban: true },
+  { dict: "tetsudau", sem: ["te_kudasai"], pt: "ajudar", ptPres: "ajudo", ptPret: "ajudei", vcPres: "ajuda", vcPret: "ajudou", raiz: ["te", "tsu", "da", "i"], raizKana: "てつだい", raizKanji: "手伝[てつだ]い", te: { som: "te.tsu.da.t.te", acento: 3, kana: "てつだって", kanji: "手伝[てつだ]って" }, ptPedido: "ajude", heiban: false },
+  { dict: "modoru", pt: "retornar", ptPres: "retorno", ptPret: "retornei", vcPres: "retorna", vcPret: "retornou", raiz: ["mo", "do", "ri"], raizKana: "もどり", raizKanji: "戻[もど]り", te: { som: "mo.do.t.te", acento: 2, kana: "もどって", kanji: "戻[もど]って" }, ptPedido: "retorne", heiban: false },
+  { dict: "aruku", sem: ["te_kudasai"], pt: "andar", ptPres: "ando", ptPret: "andei", vcPres: "anda", vcPret: "andou", raiz: ["a", "ru", "ki"], raizKana: "あるき", raizKanji: "歩[ある]き", te: { som: "a.ru.i.te", acento: 2, kana: "あるいて", kanji: "歩[ある]いて" }, ptPedido: "ande", heiban: false },
   {
-    dict: "benkyou suru",
+    dict: "benkyou suru", sem: ["te_kudasai"],
     pt: "estudar", ptPres: "estudo", ptPret: "estudei", vcPres: "estuda", vcPret: "estudou",
     raiz: ["be", "n", "kyo", "o", "shi"],
     raizKana: "べんきょうし",
     raizKanji: "勉強[べんきょう]し",
-    heiban: true,
+    te: { som: "be.n.kyo.o._shi.te", acento: 0, kana: "べんきょうして", kanji: "勉強[べんきょう]して" }, ptPedido: "estude", heiban: true,
   },
 ];
 
 const junta = (...partes: (string | undefined)[]) => partes.filter(Boolean).join(" ");
 
-export type Forma = "masu" | "mashita" | "masen" | "masen_deshita" | "tai" | "mashou";
+export type Forma = "masu" | "mashita" | "masen" | "masen_deshita" | "tai" | "mashou" | "te_kudasai";
 
 interface FormaDef {
   label: string;
@@ -166,7 +170,26 @@ export const FORMAS: Record<Forma, FormaDef> = {
     kana: "ましょう",
     funcao: "[polido] + vamos",
   },
+  te_kudasai: {
+    pergunta: () => "Quer que eu ajude?",
+    abertura: "Sim, por favor,",
+    quando: "Pedir um favor a quem oferece ajuda",
+    regra: "-masu → forma -te + kudasai",
+    frase: (v, obj) => junta(v.ptPedido, obj),
+    label: "Pedido",
+    comando: "Peça!",
+    sufixo: [],
+    kana: "てください",
+    funcao: "por favor (pedido)",
+  },
 };
+
+/** Pitch da forma -te pela mora da queda: 0 = plano (LHH…), 1 = cai depois da 1ª (HLL…), n = LH…H depois L. */
+function pitchTe(n: number, acento: number): string {
+  return Array.from({ length: n }, (_, i) =>
+    acento === 0 ? (i === 0 ? "L" : "H") : acento === 1 ? (i === 0 ? "H" : "L") : i === 0 ? "L" : i < acento ? "H" : "L",
+  ).join("");
+}
 
 export interface Conjugacao {
   verbo: Verbo;
@@ -183,12 +206,25 @@ export interface Conjugacao {
  * Gera a conjugação com pitch de Tóquio:
  * - famílias -masu: 1ª mora baixa, sobe até o núcleo (ma / se / sho) e cai.
  * - -tai: verbos planos caem depois de "ta" (ikitái); verbos acentuados caem na última mora da raiz (tabé-tai).
+ * - -te kudasai: a forma -te tem o acento do próprio verbo; depois de verbo com queda, "kudasai" fica todo baixo
+ *   (káite kudasai); depois de verbo plano, sobe até "sa" (magatte kudasái). Conferido no OJAD.
  */
 export function conjugar(verbo: Verbo, forma: Forma): Conjugacao {
   const raizBloco = verbo.raiz.join("");
   const raizFn = verbo.pt;
   const mora = (som: string, pitch: "H" | "L", bloco: string, funcao: string, papel: Mora["papel"], dev?: boolean): Mora =>
     dev ? { som, pitch, bloco, funcao, papel, devozeada: true } : { som, pitch, bloco, funcao, papel };
+
+  if (forma === "te_kudasai") {
+    const te = verbo.te;
+    const moras = [
+      ...b(te.som, pitchTe(te.som.split(".").length, te.acento), `${raizFn} (forma -te)`, "verbo"),
+      ...b("ku.da.sa.i", te.acento ? "LLLL" : "HHHL", FORMAS.te_kudasai.funcao, "verbo"),
+    ];
+    const kana = te.kana + "ください";
+    const kanji = te.kanji + "ください";
+    return { verbo, forma, moras, kana, kanji, alvos: [kana, stripFurigana(kanji), te.kana, stripFurigana(te.kanji)] };
+  }
 
   let moras: Mora[];
   if (forma === "tai") {
@@ -398,6 +434,26 @@ export const CENAS_DRILL: Record<Categoria, CenaDrill[]> = {
   ],
 };
 
+/**
+ * Pedido (-te kudasai) responde a "Quer que eu ajude?": só vale para tarefas que alguém pode fazer por você
+ * (escrever, enviar, comprar, pagar, esperar o cliente…). Lazer e deslocamentos pessoais ("veja televisão",
+ * "pegue o táxi") ficam fora.
+ */
+const PEDIDOS_OK = new Set([
+  "kaku|o e-mail", "yomu|os documentos", "hanasu|com o gerente", "au|o cliente", "iku|à reunião", "matsu|o cliente",
+  "suru|o trabalho", "okuru|o e-mail", "yomu|o e-mail", "tsukuru|os documentos", "au|o gerente", "hajimeru|a reunião",
+  "hajimeru|o trabalho", "okuru|os documentos ao cliente", "kaku|o relatório",
+  "kau|um café", "suru|o pedido", "harau|a conta", "matsu|os amigos",
+  "kau|roupas", "kau|um presente", "miru|o preço", "iku|à loja de departamentos", "kau|sapatos", "kau|um livro",
+  "harau|com cartão", "iku|ao supermercado", "iku|ao konbini",
+  "miru|o mapa", "kau|a passagem", "kau|uma lembrancinha",
+]);
+for (const cenas of Object.values(CENAS_DRILL))
+  for (const c of cenas) if (!PEDIDOS_OK.has(`${c.verbo}|${c.obj}`)) c.sem = [...(c.sem ?? []), "te_kudasai"];
+
+/** A transformação combina com a situação (nem o verbo nem a cena a excluem). */
+export const combina = (cena: CenaDrill, forma: Forma) => !verboPorDict(cena.verbo).sem?.includes(forma) && !cena.sem?.includes(forma);
+
 /** Situações do contexto; "todos" mistura as de todos os contextos. */
 export function cenasDoContexto(ctx: Categoria | "todos"): CenaDrill[] {
   return ctx === "todos" ? Object.values(CENAS_DRILL).flat() : CENAS_DRILL[ctx];
@@ -453,6 +509,7 @@ const ponto = (t: string) => (/[.!?]$/.test(t) ? t : `${t}.`);
  * - Passado negativo:  昨日、…ましたか → いいえ、[complemento][verbo]ませんでした
  * - Desejo:            何をしたいですか → [complemento][verbo]たいです
  * - Convite:           何をしましょうか → [complemento][verbo]ましょう
+ * - Pedido:            手伝いましょうか → はい、[complemento][verbo -te]ください
  */
 export function montarDialogo(cena: CenaDrill, forma: Forma): DialogoDrill {
   const v = verboPorDict(cena.verbo);
@@ -462,7 +519,10 @@ export function montarDialogo(cena: CenaDrill, forma: Forma): DialogoDrill {
   const fim = (t: string) => `${t}。`;
 
   let pergunta: FalaDrill;
-  if (forma === "tai" || forma === "mashou") {
+  if (forma === "te_kudasai") {
+    const q = conjugar(verboPorDict("tetsudau"), "mashou");
+    pergunta = fala(fim(q.kana + "か"), fim(q.kanji + "か"), f.pergunta(v, cena.obj), q.moras, KA);
+  } else if (forma === "tai" || forma === "mashou") {
     const q = conjugar(suru, forma === "tai" ? "tai" : "mashou");
     pergunta = fala(fim(NANI_O.kana + q.kana + "か"), fim(NANI_O.kanji + q.kanji + "か"), f.pergunta(v, cena.obj), NANI_O.moras, q.moras, KA);
   } else {
@@ -480,7 +540,7 @@ export function montarDialogo(cena: CenaDrill, forma: Forma): DialogoDrill {
   }
 
   const alvo = conjugar(v, forma);
-  const inicio = forma === "mashita" ? HAI : forma === "masen" || forma === "masen_deshita" ? IIE : null;
+  const inicio = forma === "mashita" || forma === "te_kudasai" ? HAI : forma === "masen" || forma === "masen_deshita" ? IIE : null;
   const ptResposta = ponto(maiuscula(comEuImplicito([f.abertura, f.frase(v, cena.obj)].filter(Boolean).join(" "))));
   const resposta = fala(
     fim((inicio?.kana ?? "") + c.kana + alvo.kana),

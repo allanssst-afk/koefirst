@@ -97,6 +97,12 @@ Unidades novas seguem a ordem do plano; ao terminar uma, marcar no plano.
   (etapa `ready`), depois de ouvir a pergunta e ler o contexto. As peças (complemento + verbo base) ficam na
   tela com áudio. Avaliação: completo (verbo + complemento) · parcial (só o verbo) · erro. Nada é falado em
   português; a legenda das transformações (-mashita, -masen…) fica sempre visível.
+- **Pedido (-te kudasai)** no Ping-Pong: o parceiro oferece 手伝いましょうか ("Quer que eu ajude?") e o usuário pede
+  はい、[complemento][forma -te]ください. Cada verbo de `VERBOS` tem `te` (sons, acento — 0 plano, n = cai depois
+  da n-ª mora —, kana, kanji) e `ptPedido` (imperativo). Depois de verbo com queda "kudasai" fica todo baixo; depois
+  de verbo plano sobe até "sa". Só cenas da lista `PEDIDOS_OK` aceitam pedido (tarefas que alguém faz por você);
+  `combina(cena, forma)` diz se a dupla vale e a tela sorteia só entre duplas válidas. Nas lições, cada unidade
+  declara `formasNovas`: a forma entra no Ping-Pong dela (metade dos diálogos) e no sorteio das seguintes.
 - Isso vale também para o que *o usuário* fala: na Fase 1 a transcrição do STT **não é exibida**
   (mostra-se só a % de correspondência). Na Fase 2+ ela aparece.
 - Camadas ortográficas (`user_settings.fase_atual`), aplicadas pelo componente `ScriptLayer`:
@@ -169,9 +175,9 @@ src/
     roleplay/ RoleplayArena.tsx · JaBubble.tsx · CoachWhisper.tsx
   db/
     schema.ts · index.ts (sql.js + IndexedDB) · seed-run.ts · migrations.generated.ts (gerado)
-    seed-data/cards.ts (+ cards-trabalho.ts, cards-lugares.ts, cards-numeros.ts) · seed-data/scenarios.ts
-      (+ scenarios-cotidiano.ts, scenarios-extra.ts, scenarios-trabalho.ts, scenarios-lugares.ts,
-      scenarios-numeros.ts) · seed-data/helpers.ts
+    seed-data/cards.ts (+ cards-trabalho.ts, cards-lugares.ts, cards-numeros.ts, cards-pedidos.ts) ·
+      seed-data/scenarios.ts (+ scenarios-cotidiano.ts, scenarios-extra.ts, scenarios-trabalho.ts,
+      scenarios-lugares.ts, scenarios-numeros.ts, scenarios-pedidos.ts) · seed-data/helpers.ts
   lib/
     types.ts · fsrs.ts · roles.ts · text.ts (normalização/similaridade/furigana) · idb.ts
     queries.ts                   # consultas e gravações (fila, revisão, dashboard, atividade, coach offline)
