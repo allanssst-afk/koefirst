@@ -1,3 +1,4 @@
+import { cardsLugares } from "./cards-lugares";
 import { cardsTrabalho } from "./cards-trabalho";
 import { b, card } from "./helpers";
 
@@ -157,7 +158,7 @@ const cardsBase = [
     kanji: "水[みず]をください",
     blocos: [
       b("mi.zu", "LH", "água", "objeto"),
-      b("o", "H", "[Objeto direto] (escrito を)", "particula"),
+      b("o", "H", "[Objeto]", "particula"),
       b("ku.da.sa.i", "LHHL", "dê-me (por favor)", "verbo"),
     ],
     notas:
@@ -506,4 +507,4 @@ const cardsBase = [
   }),
 ];
 
-export const seedCards = [...cardsBase, ...cardsTrabalho];
+export const seedCards = [...cardsBase, ...cardsTrabalho, ...cardsLugares];

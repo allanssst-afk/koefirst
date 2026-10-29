@@ -120,6 +120,21 @@ export const UNIDADES: Unidade[] = [
     ],
     missoes: ["rp_trab_atraso", "rp_trab_prazo", "rp_trab_cliente", "rp_trab_saida"],
   },
+  {
+    id: "u8",
+    numero: 8,
+    titulo: "Onde fica, o que tem",
+    descricao: "Lugares, posição, direções e quem está onde",
+    cor: "#b8754a",
+    contexto: "cidade",
+    cards: [
+      "card_043", "card_044", "card_045",
+      "card_046", "card_047", "card_048",
+      "card_049", "card_050", "card_051",
+      "card_052", "card_053", "card_054",
+    ],
+    missoes: ["rp_lug_konbini", "rp_lug_recepcao", "rp_lug_chave"],
+  },
 ];
 
 const TITULO: Record<TipoLicao, string> = {

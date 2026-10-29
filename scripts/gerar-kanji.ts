@@ -28,6 +28,9 @@ const SIG_EXTRA: Record<string, string[]> = {
   戻: ["voltar", "retornar"],
   何: ["o quê", "quanto"],
   様: ["senhor(a)", "estilo", "maneira"],
+  鍵: ["chave", "fechadura"],
+  歩: ["andar", "caminhar", "passo"],
+  曲: ["curvar", "virar", "música"],
 };
 
 const NOMES_PROPRIOS = /^(Japão|China|Coreia|Tóquio|Buda)/;

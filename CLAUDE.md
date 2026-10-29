@@ -5,6 +5,12 @@ PWA de uso pessoal para aprender japonês do zero ao B1 em 12 meses, com **orali
 **Sem servidor:** site estático no GitHub Pages; o banco SQLite roda no navegador e fica salvo no aparelho.
 Backup e troca de aparelho pelo cartão "Seu progresso" do Dashboard (baixar/carregar arquivo `.db`).
 
+## Plano de conteúdo
+
+`docs/plano-12-meses.md`: metas do B1, unidades e gramática mês a mês, peças que o app ainda precisa (novas
+formas no Ping-Pong, leitura, simulado completo, kanji N3, fala longa) e o roteiro para produzir cada unidade.
+Unidades novas seguem a ordem do plano; ao terminar uma, marcar no plano.
+
 ## Estrutura do app
 
 - **Abas:** Aprender (`/`, trilha) · Revisar (`/study`, FSRS) · Praticar (`/drills`, Ping-Pong) ·
@@ -129,6 +135,8 @@ drizzle.config.ts · next.config.ts · postcss.config.mjs · tsconfig.json
 scripts/publicar.sh              # npm run publicar → build + envio para a branch gh-pages
 scripts/gerar-migracoes.mjs      # embute migrações + copia o wasm do SQLite
 scripts/servir.mjs               # servidor estático mínimo para testar o build (npm start)
+scripts/validar-pitch.ts         # confere a entonação dos cards e missões com o OJAD
+docs/plano-12-meses.md           # plano de conteúdo até o B1
 drizzle/                         # migrações SQL geradas
 public/sw.js · public/icon.svg · public/audio/
 src/
@@ -160,8 +168,8 @@ src/
     roleplay/ RoleplayArena.tsx · JaBubble.tsx · CoachWhisper.tsx
   db/
     schema.ts · index.ts (sql.js + IndexedDB) · seed-run.ts · migrations.generated.ts (gerado)
-    seed-data/cards.ts (+ cards-trabalho.ts) · seed-data/scenarios.ts (+ scenarios-cotidiano.ts, scenarios-extra.ts,
-      scenarios-trabalho.ts) · seed-data/helpers.ts
+    seed-data/cards.ts (+ cards-trabalho.ts, cards-lugares.ts) · seed-data/scenarios.ts (+ scenarios-cotidiano.ts,
+      scenarios-extra.ts, scenarios-trabalho.ts, scenarios-lugares.ts) · seed-data/helpers.ts
   lib/
     types.ts · fsrs.ts · roles.ts · text.ts (normalização/similaridade/furigana) · idb.ts
     queries.ts                   # consultas e gravações (fila, revisão, dashboard, atividade, coach offline)
@@ -210,8 +218,13 @@ imediatamente anterior). `src/lib/text.ts` converte para `<ruby>` (Fase 3) ou te
 
 Padrão de Tóquio conforme convenções NHK/OJAD (heiban, atamadaka, nakadaka, odaka; `です` após palavra
 heiban = H‑L, após queda = L‑L; formas `-ます` = queda depois de `ma`; `-ません` = queda depois de `se`).
-Ao adicionar cards, valide em OJAD (Suzuki-kun) e escreva os cards com o helper `b()` de
-`src/db/seed-data/helpers.ts`: `b("ko.re", "LH", "isto", "topico")`.
+Ao adicionar cards, escreva com o helper `b()` de `src/db/seed-data/helpers.ts`
+(`b("ko.re", "LH", "isto", "topico")`) e valide com `npx tsx scripts/validar-pitch.ts card_043 rp_lug_konbini`
+(compara cards e falas das missões com o Suzuki-kun do OJAD, frase inteira; `--frase=駅の前にあります。` mostra só a
+previsão, para escrever cards novos; respostas em cache em `.ojad-cache/`). Divergência é alerta, não verdade: o
+OJAD às vezes lê errado (明日 como "asu", 何 como "nan") ou junta palavras numa frase só; na dúvida, conferir o
+acento da palavra no dicionário (NHK/Wiktionary). Ex.: うえ é plano sozinho e odaka depois de modificador
+(机の上), ふたり é odaka.
 
 ## Comandos
 

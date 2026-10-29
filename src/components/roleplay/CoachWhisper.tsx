@@ -111,9 +111,12 @@ export function CoachWhisper({
       {!open && (
         <button
           onClick={() => onOpenChange(true)}
-          className="fixed bottom-48 right-4 z-40 flex items-center gap-2 rounded-full bg-violet-500 px-4 py-3 text-sm font-bold text-white shadow-lg shadow-violet-900/40 md:bottom-40"
+          aria-label="Como eu digo…?"
+          title="Como eu digo…?"
+          // no celular fica só o ícone, logo acima das abas, para não cobrir o botão de responder
+          className="fixed bottom-24 right-4 z-40 flex h-12 w-12 items-center justify-center gap-2 rounded-full bg-violet-500 text-sm font-bold text-white shadow-lg shadow-violet-900/40 md:bottom-40 md:h-auto md:w-auto md:px-4 md:py-3"
         >
-          <Sparkles size={18} /> Como eu digo…?
+          <Sparkles size={20} /> <span className="hidden md:inline">Como eu digo…?</span>
         </button>
       )}
       {open && (

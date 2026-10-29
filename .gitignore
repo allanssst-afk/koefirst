@@ -12,3 +12,5 @@ next-env.d.ts
 src/db/migrations.generated.ts
 public/sql-wasm-browser.wasm
 .claude/
+
+.ojad-cache/
