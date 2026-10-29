@@ -11,11 +11,12 @@ export const seedCards = [
     tipo: "speaking",
     situacao_pt: "Você encontra o vizinho à tarde. Cumprimente-o.",
     significado_cognitivo: "Olá! / Boa tarde! — expressão pronta, usada do fim da manhã ao fim da tarde",
+    traducao: "Olá! / Boa tarde!",
     kana: "こんにちは",
     kanji: "今日[こんにち]は",
     blocos: [b("ko.n.ni.chi.wa", "LHHHH", "olá / boa tarde", "expressao")],
     notas:
-      "Diga como um bloco só, sem pensar nas partes. Heiban (plano): sobe na 2ª mora e não cai mais; cada 'n' é uma batida inteira: ko-n-ni-chi-wa = 5 batidas. Curiosidade: vem de 今日は ('quanto ao dia de hoje…'), uma frase antiga que ficou pela metade — por isso o final se escreve は e se lê 'wa'.",
+      "Diga como um bloco só, sem pensar nas partes. Heiban (plano): sobe na 2ª mora e não cai mais; cada 'n' é uma batida inteira: ko-n-ni-chi-wa = 5 batidas. Curiosidade: vem de uma frase antiga, 'quanto ao dia de hoje…', que ficou pela metade — por isso o 'wa' final é a partícula de tópico.",
     tags: ["saudacao", "sobrevivencia", "ctx:social", "ctx:cidade"],
   }),
   card({
@@ -23,6 +24,7 @@ export const seedCards = [
     tipo: "speaking",
     situacao_pt: "Você chega ao escritório de manhã. Cumprimente a equipe de forma educada.",
     significado_cognitivo: "Bom dia! (forma educada) — expressão pronta",
+    traducao: "Bom dia!",
     kana: "おはようございます",
     kanji: "おはようございます",
     blocos: [
@@ -38,6 +40,7 @@ export const seedCards = [
     tipo: "speaking",
     situacao_pt: "Você precisa chamar o garçom (ou pedir licença para passar).",
     significado_cognitivo: "Com licença! / Desculpe! — também serve para chamar alguém (garçom, atendente)",
+    traducao: "Com licença.",
     kana: "すみません",
     kanji: "すみません",
     blocos: [b("su.mi.ma.se.n", "LHHHL", "com licença / desculpe", "expressao")],
@@ -50,6 +53,7 @@ export const seedCards = [
     tipo: "speaking",
     situacao_pt: "Você está conhecendo um colega novo pela primeira vez.",
     significado_cognitivo: "Muito prazer! — só no primeiro encontro com alguém",
+    traducao: "Muito prazer.",
     kana: "はじめまして",
     kanji: "初[はじ]めまして",
     blocos: [b("ha.ji.me.ma._shi.te", "LHHHLL", "muito prazer", "expressao")],
@@ -62,6 +66,7 @@ export const seedCards = [
     tipo: "speaking",
     situacao_pt: "Um colega te ajudou com um arquivo. Agradeça educadamente.",
     significado_cognitivo: "Obrigado! (forma educada) — expressão pronta",
+    traducao: "Obrigado.",
     kana: "ありがとうございます",
     kanji: "ありがとうございます",
     blocos: [
@@ -77,6 +82,7 @@ export const seedCards = [
     tipo: "speaking",
     situacao_pt: "Seu chefe explicou uma tarefa na reunião. Diga que entendeu.",
     significado_cognitivo: "Ficou compreensível [para mim] + [polido] + [passado]",
+    traducao: "Entendi.",
     kana: "わかりました",
     kanji: "分[わ]かりました",
     blocos: [b("wa.ka.ri", "LHH", "ficar compreensível", "verbo"), b("ma._shi.ta", "HLL", "[polido] + [passado]", "verbo")],
@@ -89,6 +95,7 @@ export const seedCards = [
     tipo: "speaking",
     situacao_pt: "Pergunte ao colega o que é aquilo na mesa.",
     significado_cognitivo: "Quanto a isto [tópico], o-que é [pergunta]?",
+    traducao: "O que é isto?",
     kana: "これはなんですか",
     kanji: "これは何[なん]ですか",
     blocos: [
@@ -107,6 +114,7 @@ export const seedCards = [
     tipo: "speaking",
     situacao_pt: "Numa loja, aponte para o objeto na mão do vendedor e pergunte o preço.",
     significado_cognitivo: "Quanto a isso [perto de você] [tópico], quanto-dinheiro é [?]",
+    traducao: "Quanto custa isso?",
     kana: "それはいくらですか",
     kanji: "それはいくらですか",
     blocos: [
@@ -124,6 +132,7 @@ export const seedCards = [
     tipo: "speaking",
     situacao_pt: "Você está num restaurante e precisa achar o banheiro.",
     significado_cognitivo: "Quanto ao banheiro [tópico], onde é [?]",
+    traducao: "Onde fica o banheiro?",
     kana: "トイレはどこですか",
     kanji: "トイレはどこですか",
     blocos: [
@@ -142,6 +151,7 @@ export const seedCards = [
     tipo: "speaking",
     situacao_pt: "Peça um copo d'água ao garçom.",
     significado_cognitivo: "Água [objeto], dê-me (por favor)",
+    traducao: "Água, por favor.",
     kana: "みずをください",
     kanji: "水[みず]をください",
     blocos: [
@@ -158,6 +168,7 @@ export const seedCards = [
     tipo: "speaking",
     situacao_pt: "Alguém pergunta se você entende japonês. Diga que entende um pouco.",
     significado_cognitivo: "Japonês [foco: sujeito] um pouco é-compreensível",
+    traducao: "Eu entendo um pouco de japonês.",
     kana: "にほんごがすこしわかります",
     kanji: "日本語[にほんご]が少[すこ]しわかります",
     blocos: [
@@ -175,6 +186,7 @@ export const seedCards = [
     tipo: "speaking",
     situacao_pt: "Explicaram algo rápido demais e você não entendeu bem.",
     significado_cognitivo: "Bem, [isso] não é compreensível [para mim]",
+    traducao: "Eu não entendo bem.",
     kana: "よくわかりません",
     kanji: "よく分[わ]かりません",
     blocos: [
@@ -189,6 +201,7 @@ export const seedCards = [
     tipo: "speaking",
     situacao_pt: "Perguntam sua profissão. Diga que é funcionário de empresa.",
     significado_cognitivo: "[Eu, subentendido] empresa-membro é",
+    traducao: "Eu sou funcionário de empresa.",
     kana: "かいしゃいんです",
     kanji: "会社員[かいしゃいん]です",
     blocos: [b("ka.i.sha.i.n", "LHHLL", "empresa-membro (funcionário)", "substantivo"), b("de._su", "LL", "é", "copula")],
@@ -201,6 +214,7 @@ export const seedCards = [
     tipo: "speaking",
     situacao_pt: "Apresente-se dizendo que você é brasileiro(a).",
     significado_cognitivo: "Quanto a eu [tópico], Brasil-pessoa é",
+    traducao: "Eu sou brasileiro.",
     kana: "わたしはブラジルじんです",
     kanji: "私[わたし]はブラジル人[じん]です",
     blocos: [
@@ -217,6 +231,7 @@ export const seedCards = [
     tipo: "listening",
     situacao_pt: "Um colega japonês te pergunta isto num evento. Entenda e responda.",
     significado_cognitivo: "Quanto ao trabalho [tópico], o-que é [?] → Qual é o seu trabalho?",
+    traducao: "Qual é o seu trabalho?",
     kana: "しごとはなんですか",
     kanji: "仕事[しごと]は何[なん]ですか",
     blocos: [
@@ -234,6 +249,7 @@ export const seedCards = [
     tipo: "speaking",
     situacao_pt: "Explique que você trabalha de casa (home office).",
     significado_cognitivo: "Casa [local da ação], trabalho [objeto], faço",
+    traducao: "Eu trabalho em casa.",
     kana: "うちでしごとをします",
     kanji: "家[うち]で仕事[しごと]をします",
     blocos: [
@@ -252,6 +268,7 @@ export const seedCards = [
     tipo: "speaking",
     situacao_pt: "Você está numa reunião e quer dizer que vai verificar os dados agora.",
     significado_cognitivo: "Agora, dados [objeto], verificação faço",
+    traducao: "Vou verificar os dados agora.",
     kana: "いまデータをかくにんします",
     kanji: "今[いま]データを確認[かくにん]します",
     blocos: [
@@ -270,6 +287,7 @@ export const seedCards = [
     tipo: "speaking",
     situacao_pt: "Um colega pergunta quando é a reunião. Diga que começa às 3 horas.",
     significado_cognitivo: "Quanto à reunião [tópico], 3-horas a-partir-de é",
+    traducao: "A reunião começa às três.",
     kana: "かいぎはさんじからです",
     kanji: "会議[かいぎ]は三時[さんじ]からです",
     blocos: [
@@ -287,6 +305,7 @@ export const seedCards = [
     tipo: "listening",
     situacao_pt: "Um amigo japonês te pergunta isto ao combinar um encontro. Entenda.",
     significado_cognitivo: "Que-hora [ponto no tempo] encontremo-nos [?] → A que horas nos encontramos?",
+    traducao: "A que horas nos encontramos?",
     kana: "なんじにあいましょうか",
     kanji: "何時[なんじ]に会[あ]いましょうか",
     blocos: [
@@ -303,6 +322,7 @@ export const seedCards = [
     tipo: "speaking",
     situacao_pt: "Seu colega sugere almoçar juntos. Concorde com entusiasmo.",
     significado_cognitivo: "Bom é, né [busca concordância]",
+    traducao: "Que bom!",
     kana: "いいですね",
     kanji: "いいですね",
     blocos: [b("i.i", "HL", "bom", "adjetivo"), b("de.su", "LL", "é", "copula"), b("ne", "L", "[né? — concordância]", "particula")],
@@ -314,6 +334,7 @@ export const seedCards = [
     tipo: "speaking",
     situacao_pt: "Você está perdido e quer dizer ao policial que quer ir à estação.",
     significado_cognitivo: "Estação [destino →] ir-quero é",
+    traducao: "Eu quero ir à estação.",
     kana: "えきにいきたいです",
     kanji: "駅[えき]に行[い]きたいです",
     blocos: [
@@ -330,6 +351,7 @@ export const seedCards = [
     tipo: "speaking",
     situacao_pt: "Conte a um colega que amanhã você vai a Tóquio.",
     significado_cognitivo: "Amanhã, Tóquio [destino →] vou",
+    traducao: "Amanhã eu vou a Tóquio.",
     kana: "あしたとうきょうにいきます",
     kanji: "明日[あした]東京[とうきょう]に行[い]きます",
     blocos: [
@@ -346,6 +368,7 @@ export const seedCards = [
     tipo: "speaking",
     situacao_pt: "Comente que você toma café todos os dias.",
     significado_cognitivo: "Todo-dia, café [objeto], bebo",
+    traducao: "Eu tomo café todo dia.",
     kana: "まいにちコーヒーをのみます",
     kanji: "毎日[まいにち]コーヒーを飲[の]みます",
     blocos: [
@@ -362,6 +385,7 @@ export const seedCards = [
     tipo: "speaking",
     situacao_pt: "Explique que hoje você não tomou café da manhã.",
     significado_cognitivo: "Manhã-refeição [objeto], comer-não-[passado]",
+    traducao: "Eu não tomei café da manhã.",
     kana: "あさごはんをたべませんでした",
     kanji: "朝[あさ]ご飯[はん]を食[た]べませんでした",
     blocos: [
@@ -378,6 +402,7 @@ export const seedCards = [
     tipo: "speaking",
     situacao_pt: "Seu amigo pergunta o que você quer comer. Diga que quer sushi.",
     significado_cognitivo: "Sushi [foco do desejo], comer-quero é",
+    traducao: "Eu quero comer sushi.",
     kana: "すしがたべたいです",
     kanji: "寿司[すし]が食[た]べたいです",
     blocos: [
@@ -394,6 +419,7 @@ export const seedCards = [
     tipo: "speaking",
     situacao_pt: "Um colega te chama para conversar. Diga que hoje você está ocupado.",
     significado_cognitivo: "Quanto a hoje [tópico / contraste], ocupado é",
+    traducao: "Hoje eu estou ocupado.",
     kana: "きょうはいそがしいです",
     kanji: "今日[きょう]は忙[いそが]しいです",
     blocos: [
@@ -410,6 +436,7 @@ export const seedCards = [
     tipo: "speaking",
     situacao_pt: "Alguém te chama, mas você precisa de um momento. Peça para esperar.",
     significado_cognitivo: "Um pouco, esperando, dê-me [esse favor]",
+    traducao: "Espere um pouco, por favor.",
     kana: "ちょっとまってください",
     kanji: "ちょっと待[ま]ってください",
     blocos: [
@@ -425,6 +452,7 @@ export const seedCards = [
     tipo: "listening",
     situacao_pt: "Um japonês te pergunta isto sobre seus planos. Entenda.",
     significado_cognitivo: "Japão [local da ação], o-quê [objeto] fazer-quero é [?]",
+    traducao: "O que você quer fazer no Japão?",
     kana: "にほんでなにをしたいですか",
     kanji: "日本[にほん]で何[なに]をしたいですか",
     blocos: [
@@ -444,6 +472,7 @@ export const seedCards = [
     tipo: "speaking",
     situacao_pt: "Oferecem café ou chá. Diga que você gosta de chá.",
     significado_cognitivo: "Chá [foco: o que agrada] gostável é",
+    traducao: "Eu gosto de chá.",
     kana: "おちゃがすきです",
     kanji: "お茶[ちゃ]が好[す]きです",
     blocos: [
@@ -460,6 +489,7 @@ export const seedCards = [
     tipo: "listening",
     situacao_pt: "Na segunda-feira, um colega te pergunta isto. Entenda.",
     significado_cognitivo: "Quanto a ontem [tópico], o-quê [objeto] fiz [?] → O que você fez ontem?",
+    traducao: "O que você fez ontem?",
     kana: "きのうはなにをしましたか",
     kanji: "昨日[きのう]は何[なに]をしましたか",
     blocos: [

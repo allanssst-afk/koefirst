@@ -1,12 +1,15 @@
 "use client";
 
+import { Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import { RoleplayArena, type ScenarioView } from "@/components/roleplay/RoleplayArena";
 import type { RoteiroPasso } from "@/db/seed-data/scenarios";
 import { getCardsByIds, getLearnedVocab, getScenarios } from "@/lib/queries";
 import type { Categoria } from "@/lib/roleplay";
 import type { JaLine } from "@/lib/types";
 
-export default function RoleplayPage() {
+function Arena() {
+  const params = useSearchParams();
   const raw = getScenarios();
   const learned = new Set(getLearnedVocab().map((v) => v.id));
 
@@ -42,5 +45,13 @@ export default function RoleplayPage() {
     })),
   }));
 
-  return <RoleplayArena scenarios={scenarios} />;
+  return <RoleplayArena scenarios={scenarios} missaoInicial={params.get("missao")} licao={params.get("licao")} />;
+}
+
+export default function RoleplayPage() {
+  return (
+    <Suspense>
+      <Arena />
+    </Suspense>
+  );
 }

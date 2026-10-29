@@ -430,3 +430,50 @@ export function fraseMaisProxima(pergunta: string): CardDTO | null {
   return melhor?.card ?? null;
 }
 
+
+// ───────────────────────── Trilha (lições, XP, sequência)
+
+/** Registra a lição feita e agenda no FSRS as frases que ela apresentou pela primeira vez. */
+export async function concluirLicao(licaoId: string, xp: number, acertos: number, total: number, cardsApresentados: string[] = []) {
+  const db = getDb();
+  db.insert(schema.licaoLog).values({ licao_id: licaoId, xp, acertos, total }).run();
+  for (const id of cardsApresentados) {
+    const st = db.select({ state: fsrsStates.state }).from(fsrsStates).where(eq(fsrsStates.card_id, id)).get();
+    if (st?.state === 0) await salvarRevisao({ card_id: id, rating: 3 });
+  }
+  salvar();
+}
+
+export function getProgressoTrilha() {
+  const db = getDb();
+  const { licaoLog } = schema;
+  const feitas = new Set(db.selectDistinct({ id: licaoLog.licao_id }).from(licaoLog).all().map((r) => r.id));
+  const xpTotal = db.select({ n: sql<number>`coalesce(sum(${licaoLog.xp}),0)` }).from(licaoLog).get()?.n ?? 0;
+  const xpHoje =
+    db
+      .select({ n: sql<number>`coalesce(sum(${licaoLog.xp}),0)` })
+      .from(licaoLog)
+      .where(gte(licaoLog.created_at, startOfToday()))
+      .get()?.n ?? 0;
+  return { feitas, xpTotal, xpHoje, sequencia: diasSeguidos() };
+}
+
+/** Dias seguidos com qualquer estudo (lição, revisão ou fala), contando até hoje (ou ontem, se hoje ainda não). */
+export function diasSeguidos(): number {
+  const db = getDb();
+  const dia = (col: unknown) => sql<string>`date(${col} / 1000, 'unixepoch', 'localtime')`;
+  const dias = new Set<string>([
+    ...db.selectDistinct({ d: dia(schema.licaoLog.created_at) }).from(schema.licaoLog).all().map((r) => r.d),
+    ...db.selectDistinct({ d: dia(reviewLogs.reviewed_at) }).from(reviewLogs).all().map((r) => r.d),
+    ...db.selectDistinct({ d: dia(speechActivity.created_at) }).from(speechActivity).all().map((r) => r.d),
+  ]);
+  const chave = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+  const d = new Date();
+  if (!dias.has(chave(d))) d.setDate(d.getDate() - 1);
+  let n = 0;
+  while (dias.has(chave(d))) {
+    n++;
+    d.setDate(d.getDate() - 1);
+  }
+  return n;
+}

@@ -1,26 +1,28 @@
 @import "tailwindcss";
 
-/* Tema escuro de alto contraste e baixa fadiga visual */
+/* Tema escuro acolhedor (inspirado em apps de idiomas): verde para ações, dourado para a entonação */
 :root {
-  --bg: #0b0d12;
-  --panel: #12151c;
-  --panel-2: #181c25;
-  --line: #262b36;
-  --grid: #2f3542;
-  --fg: #eef1f6;
-  --muted: #8b93a3;
-  --accent: #f5c542;
-  --pitch: #f5c542;
-  --drop: #ff5d5d;
-  --user: #5ee6ff;
-  --ok: #3ddc97;
-  --warn: #ffb547;
-  --bad: #ff6b6b;
+  --bg: #131f24;
+  --panel: #1b2b32;
+  --panel-2: #22343c;
+  --line: #37464f;
+  --grid: #37464f;
+  --fg: #f1f7fb;
+  --muted: #94a7b1;
+  --accent: #58cc02;
+  --accent-dark: #46a302;
+  --azul: #1cb0f6;
+  --pitch: #ffc800;
+  --drop: #ff4b4b;
+  --user: #1cb0f6;
+  --ok: #58cc02;
+  --warn: #ff9600;
+  --bad: #ff4b4b;
   color-scheme: dark;
 }
 
 @theme inline {
-  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-sans: var(--font-nunito), ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
 }
 
@@ -66,4 +68,56 @@ button:disabled {
 
 .animate-rise {
   animation: rise 0.25s ease-out both;
+}
+
+/* Botões "3D": borda inferior mais escura que afunda ao tocar (fora de camada, para vencer o border-2).
+   As cores ficam em @layer components para que utilitários como disabled:bg-… possam sobrescrever. */
+.btn-3d {
+  border-bottom-width: 4px;
+  transition: transform 0.05s, border-bottom-width 0.05s;
+}
+.btn-3d:active:not(:disabled) {
+  transform: translateY(2px);
+  border-bottom-width: 2px;
+}
+@layer components {
+  .btn-primario {
+    background: var(--accent);
+    border-color: var(--accent-dark);
+    color: #0f1a0a;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .btn-secundario {
+    background: transparent;
+    border: 2px solid var(--line);
+    border-bottom-width: 4px;
+    color: var(--fg);
+  }
+}
+
+@keyframes pulo {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+.animate-pulo {
+  animation: pulo 1.6s ease-in-out infinite;
+}
+
+@keyframes subir {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: none;
+  }
+}
+.animate-subir {
+  animation: subir 0.22s ease-out both;
 }

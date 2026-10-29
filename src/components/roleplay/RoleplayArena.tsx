@@ -18,9 +18,11 @@ import { usePhase } from "../PhaseProvider";
 import { useVoiceCapture } from "../useVoiceCapture";
 import { CoachWhisper } from "./CoachWhisper";
 import { JaBubble } from "./JaBubble";
+import { useRouter } from "next/navigation";
+import { somConclusao } from "@/lib/audio/som";
 import { playUrl, speakJa, stopAll } from "@/lib/audio/tts";
 import { CATEGORIAS, type Categoria, type Pessoa } from "@/lib/roleplay";
-import { registrarAtividade } from "@/lib/queries";
+import { concluirLicao, registrarAtividade } from "@/lib/queries";
 import { containsAny } from "@/lib/text";
 import type { JaLine } from "@/lib/types";
 
@@ -51,8 +53,19 @@ type Msg =
   | { kind: "feedback"; ok: boolean; text: string }
   | { kind: "modelo"; line: JaLine };
 
-export function RoleplayArena({ scenarios }: { scenarios: ScenarioView[] }) {
-  const [active, setActive] = useState<ScenarioView | null>(null);
+export function RoleplayArena({
+  scenarios,
+  missaoInicial,
+  licao,
+}: {
+  scenarios: ScenarioView[];
+  /** missão aberta direto (vindo de um nó de Diálogo da trilha) */
+  missaoInicial?: string | null;
+  /** lição da trilha a marcar como concluída quando a missão terminar */
+  licao?: string | null;
+}) {
+  const router = useRouter();
+  const [active, setActive] = useState<ScenarioView | null>(() => scenarios.find((s) => s.id === missaoInicial) ?? null);
   const [rodada, setRodada] = useState(0);
   const [filtro, setFiltro] = useState<Categoria | "todas">("todas");
 
@@ -70,8 +83,10 @@ export function RoleplayArena({ scenarios }: { scenarios: ScenarioView[] }) {
         <Conversation
           key={`${active.id}-${rodada}`}
           scenario={active}
-          onExit={() => setActive(null)}
+          onExit={() => (licao ? router.push("/") : setActive(null))}
           onRestart={() => setRodada((r) => r + 1)}
+          daTrilha={!!licao}
+          aoConcluir={licao ? (acertos, etapas) => void concluirLicao(licao, 15, acertos, etapas) : undefined}
         />
       </div>
     );
@@ -170,10 +185,14 @@ function Conversation({
   scenario,
   onExit,
   onRestart,
+  daTrilha = false,
+  aoConcluir,
 }: {
   scenario: ScenarioView;
   onExit: () => void;
   onRestart: () => void;
+  daTrilha?: boolean;
+  aoConcluir?: (acertos: number, etapas: number) => void;
 }) {
   const { fase } = usePhase();
   const voice = useVoiceCapture();
@@ -190,6 +209,15 @@ function Conversation({
   const started = useRef(false);
   const categoria = CATEGORIAS.find((c) => c.id === scenario.categoria);
   const etapas = scenario.roteiro.filter((p) => p.chaves.length > 0).length;
+
+  const concluiu = useRef(false);
+  useEffect(() => {
+    if (fim && !concluiu.current) {
+      concluiu.current = true;
+      somConclusao();
+      aoConcluir?.(acertos, etapas);
+    }
+  }, [fim, acertos, etapas, aoConcluir]);
 
   const lastIa = [...msgs].reverse().find((m): m is Extract<Msg, { kind: "ia" }> => m.kind === "ia")?.line;
 
@@ -384,7 +412,7 @@ function Conversation({
               <RotateCcw size={16} /> Repetir missão
             </button>
             <button onClick={onExit} className="rounded-xl bg-[var(--accent)] px-4 py-2 text-sm font-bold text-black">
-              Escolher outra missão
+              {daTrilha ? "Voltar para a trilha" : "Escolher outra missão"}
             </button>
           </div>
         </div>

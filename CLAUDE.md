@@ -5,6 +5,24 @@ PWA de uso pessoal para aprender japonês do zero ao B1 em 12 meses, com **orali
 **Sem servidor:** site estático no GitHub Pages; o banco SQLite roda no navegador e fica salvo no aparelho.
 Backup e troca de aparelho pelo cartão "Seu progresso" do Dashboard (baixar/carregar arquivo `.db`).
 
+## Estrutura do app (estilo Duolingo)
+
+- **Abas:** Aprender (`/`, trilha) · Revisar (`/study`, FSRS) · Praticar (`/drills`, Ping-Pong) ·
+  Conversar (`/roleplay`, Arena) · Perfil (`/perfil`, estatísticas, camada ortográfica e backup).
+- **Trilha** (`src/lib/trilha.ts`): unidades por situação de vida (`UNIDADES`, cada uma com cards, contexto do
+  Ping-Pong e missões da Arena) → lições geradas por `licoesDa`: tutorial (unidade 0, "Como funciona o mapa de
+  som"), Frases novas (até 3 cards), Ping-Pong, Diálogo (missão da Arena, abre `/roleplay/?missao=…&licao=…`) e
+  Revisão. Progresso linear: a próxima lição desbloqueia quando a anterior é concluída.
+- **Lição** (`/licao/?id=u1:l2`, `src/components/licao/`): um exercício por tela, barra de progresso, botão
+  VERIFICAR → painel verde/vermelho → CONTINUAR; erros voltam no fim. Exercícios (`montarLicao`): nova frase,
+  ouvir e escolher a tradução, montar a tradução (banco de palavras), falar, escolher a resposta japonesa
+  (diálogo do Ping-Pong), quiz e slides do tutorial. Concluir grava em `licao_log` (XP: 10, +5 sem erros;
+  missão da Arena: 15) e agenda no FSRS as frases apresentadas.
+- **Visual:** paleta escura azul-petróleo com verde para ações (`--accent`), dourado para a entonação
+  (`--pitch`), fonte Nunito, botões "3D" (`.btn-3d`, `.btn-primario`, `.btn-secundario` em `globals.css`) e a
+  mascote Koe (`src/components/Mascote.tsx`, personagem original — um balão de fala).
+- Cada card do seed tem `traducao` (tradução natural; alternativas com " / ") usada pelos exercícios.
+
 ## Regra pedagógica fundamental (não quebrar)
 
 - **Fase 1 (meses 1–3) = zero escrita japonesa.** Nada de hiragana, katakana, kanji ou romaji corrido
@@ -34,6 +52,7 @@ Backup e troca de aparelho pelo cartão "Seu progresso" do Dashboard (baixar/car
 - **Expressões prontas** (こんにちは, ありがとうございます, すみません, はじめまして…) aparecem como um bloco
   `papel: "expressao"` com o significado real ("olá / boa tarde"), nunca decompostas pela etimologia
   ("este dia + [Tópico]"). A origem histórica, quando ajuda, vai nas `notas` como curiosidade.
+- Textos em português (notas, dicas, funções) nunca levam escrita japonesa: na Fase 1 eles aparecem para todos.
 - Toda frase nova na UI deve vir com `moras` (som, pitch H/L, bloco, função, papel).
 
 ## Stack
@@ -68,7 +87,9 @@ public/sw.js · public/icon.svg · public/audio/
 src/
   app/
     layout.tsx · globals.css · manifest.ts
-    page.tsx                     # Tela 1 — Dashboard de Comando (+ backup do progresso)
+    page.tsx                     # Aprender — trilha de unidades e lições
+    licao/page.tsx               # player de lição (?id=u1:l2)
+    perfil/page.tsx              # estatísticas, camada ortográfica, backup
     study/page.tsx               # Tela 2 — Estúdio SRS de Reflexo Oral
     drills/page.tsx              # Tela 3 — Ping-Pong de Ginástica Gramatical
     roleplay/page.tsx            # Tela 4 — Arena de Diálogos + Coach
@@ -83,15 +104,18 @@ src/
     PitchContourView.tsx         # F0 da gravação vs padrão H/L
     ReflexTimer.tsx · RatingButtons.tsx · NavBar.tsx · ServiceWorker.tsx
     study/LearnPanel.tsx
+    licao/ LessonPlayer.tsx · Exercicios.tsx · Tutorial.tsx · comuns.tsx
+    Mascote.tsx
     roleplay/ RoleplayArena.tsx · JaBubble.tsx · CoachWhisper.tsx
   db/
     schema.ts · index.ts (sql.js + IndexedDB) · seed-run.ts · migrations.generated.ts (gerado)
-    seed-data/cards.ts · seed-data/scenarios.ts (+ scenarios-cotidiano.ts) · seed-data/helpers.ts
+    seed-data/cards.ts · seed-data/scenarios.ts (+ scenarios-cotidiano.ts, scenarios-extra.ts) · seed-data/helpers.ts
   lib/
     types.ts · fsrs.ts · roles.ts · text.ts (normalização/similaridade/furigana) · idb.ts
     queries.ts                   # consultas e gravações (fila, revisão, dashboard, atividade, coach offline)
     drills.ts                    # verbos, cenas com complemento em japonês, montarDialogo
     roleplay.ts                  # categorias de contexto
+    trilha.ts                    # unidades, lições e geração dos exercícios
     audio/ tts.ts · capture.ts (MediaRecorder + STT + VAD) · pitch.ts (F0)
 ```
 
@@ -109,6 +133,8 @@ src/
 - `user_settings` — linha única (`id = 1`): `fase_atual`, `meta_novos_dia`, `meta_revisoes_dia`,
   `meta_minutos_fala`, `data_inicio`.
 - `speech_activity` — tempo de fala em drills/roleplay/coach (alimenta "tempo de fala acumulada").
+- `licao_log` — uma linha por lição concluída (`licao_id`, `xp`, `acertos`, `total`): progresso da trilha,
+  XP e, com revisões e fala, a sequência de dias (`diasSeguidos`).
 
 ### Formato de mora (`moras_json`)
 

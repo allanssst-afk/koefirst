@@ -15,6 +15,13 @@
       "when": 1793213974224,
       "tag": "0001_roleplay_categorias",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1793271781611,
+      "tag": "0002_classy_spyke",
+      "breakpoints": true
     }
   ]
 }

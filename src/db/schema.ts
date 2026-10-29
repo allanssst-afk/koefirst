@@ -103,3 +103,15 @@ export const speechActivity = sqliteTable("speech_activity", {
     .notNull()
     .default(sql`(unixepoch() * 1000)`),
 });
+
+/** Lições concluídas na trilha (uma linha por vez que a lição é feita) — base do XP e do progresso. */
+export const licaoLog = sqliteTable("licao_log", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  licao_id: text("licao_id").notNull(),
+  xp: integer("xp").notNull().default(0),
+  acertos: integer("acertos").notNull().default(0),
+  total: integer("total").notNull().default(0),
+  created_at: integer("created_at", { mode: "timestamp_ms" })
+    .notNull()
+    .default(sql`(unixepoch() * 1000)`),
+});

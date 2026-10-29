@@ -1,192 +1,194 @@
 "use client";
 
+import { useMemo, useState } from "react";
 import Link from "next/link";
-import { Flame, MessagesSquare, Mic, Repeat2, Target, Timer, Waves, Zap } from "lucide-react";
-import { BackupCard } from "@/components/BackupCard";
-import { PhaseCard } from "@/components/PhaseCard";
-import { getDashboardStats, getQueue } from "@/lib/queries";
+import { useRouter } from "next/navigation";
+import { BookOpen, Check, Lock, MessagesSquare, NotebookText, Repeat2, Star, Trophy, X } from "lucide-react";
+import { BotoesSom } from "@/components/licao/comuns";
+import { Mascote } from "@/components/Mascote";
+import { PitchAccentVisualizer } from "@/components/PitchAccentVisualizer";
+import { getProgressoTrilha, getQueue } from "@/lib/queries";
+import { cardPorId, hrefDaLicao, licoesDa, UNIDADES, type Licao, type TipoLicao, type Unidade } from "@/lib/trilha";
 
-const META_B1_PALAVRAS = 2000;
+const ICONE: Record<TipoLicao, typeof Star> = {
+  tutorial: BookOpen,
+  frases: Star,
+  pingpong: Repeat2,
+  dialogo: MessagesSquare,
+  revisao: Trophy,
+};
 
-function fmtDur(ms: number) {
-  const min = Math.round(ms / 60_000);
-  if (min < 60) return `${min} min`;
-  return `${Math.floor(min / 60)}h ${String(min % 60).padStart(2, "0")}`;
+/** Deslocamento horizontal dos nós (o caminho em zigue-zague). */
+const ZIGUE = [0, 44, 70, 44, 0, -44, -70, -44];
+
+function escurecer(hex: string, f = 0.78) {
+  const n = parseInt(hex.slice(1), 16);
+  const c = (s: number) => Math.round(((n >> s) & 255) * f);
+  return `rgb(${c(16)}, ${c(8)}, ${c(0)})`;
 }
 
-export default function Dashboard() {
-  const s = getDashboardStats();
-  const q = getQueue();
-  const total = s.porEstado.reduce((a, b) => a + b, 0);
-  const metaFalaMs = s.settings.meta_minutos_fala * 60_000;
-  const maxAtiv = Math.max(1, ...s.atividade.map((a) => a.n));
+export default function Trilha() {
+  const router = useRouter();
+  const { feitas, xpTotal, xpHoje, sequencia } = useMemo(() => getProgressoTrilha(), []);
+  const revisoes = useMemo(() => getQueue().dueCount, []);
+  const [aviso, setAviso] = useState("");
+  const [guia, setGuia] = useState<Unidade | null>(null);
+
+  const unidades = UNIDADES.map((u) => ({ u, licoes: licoesDa(u) }));
+  const todas = unidades.flatMap((x) => x.licoes);
+  const atual = todas.find((l) => !feitas.has(l.id))?.id;
+  const desbloqueada = (l: Licao) => feitas.has(l.id) || l.id === atual;
+
+  const abrir = (l: Licao) => {
+    if (!desbloqueada(l)) {
+      setAviso("Complete as lições anteriores para desbloquear esta.");
+      setTimeout(() => setAviso(""), 2500);
+      return;
+    }
+    router.push(hrefDaLicao(l));
+  };
 
   return (
-    <div className="space-y-6 animate-rise">
-      {/* Jornada */}
-      <section className="rounded-2xl border border-[var(--line)] bg-[var(--panel)] p-5">
-        <div className="flex flex-wrap items-end justify-between gap-2">
-          <div>
-            <p className="text-xs uppercase tracking-wider text-[var(--muted)]">Jornada rumo ao B1</p>
-            <h1 className="text-3xl font-black tracking-tight">
-              Dia {s.dia} <span className="text-[var(--muted)]">/ 365</span>
-            </h1>
-          </div>
-          <p className="flex items-center gap-1.5 text-sm text-[var(--warn)]">
-            <Flame size={16} /> {s.sequencia} {s.sequencia === 1 ? "dia seguido" : "dias seguidos"}
-          </p>
-        </div>
-        <div className="mt-4 h-2 overflow-hidden rounded-full bg-[var(--line)]">
-          <div className="h-full rounded-full bg-[var(--accent)]" style={{ width: `${(s.dia / 365) * 100}%` }} />
-        </div>
-        <div className="mt-2 grid grid-cols-4 text-[10px] uppercase tracking-wider text-[var(--muted)]">
-          <span>F1 · Som</span>
-          <span>F2 · Kana</span>
-          <span>F3 · Kanji</span>
-          <span>F4 · B1</span>
-        </div>
-      </section>
-
-      {/* Ação rápida */}
-      <section className="grid gap-3 md:grid-cols-[2fr_1fr_1fr]">
-        <Link
-          href="/study"
-          className="group flex items-center gap-4 rounded-2xl bg-[var(--accent)] p-5 text-black transition hover:brightness-110"
-        >
-          <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-black/15">
-            <Mic size={28} />
-          </span>
-          <span>
-            <span className="block text-xl font-black">Iniciar revisão do dia</span>
-            <span className="block text-sm font-medium opacity-80">
-              {q.dueCount} revisões · {q.newCount} frases novas
-              {q.items.length === 0 && " — tudo em dia!"}
-            </span>
-          </span>
-        </Link>
-        <Link
-          href="/drills"
-          className="flex items-center gap-3 rounded-2xl border border-[var(--line)] bg-[var(--panel)] p-4 hover:border-[var(--accent)]/60"
-        >
-          <Repeat2 className="text-[var(--accent)]" />
-          <span>
-            <span className="block font-bold">Ping-Pong</span>
-            <span className="block text-xs text-[var(--muted)]">Conjugação no reflexo</span>
-          </span>
-        </Link>
-        <Link
-          href="/roleplay"
-          className="flex items-center gap-3 rounded-2xl border border-[var(--line)] bg-[var(--panel)] p-4 hover:border-[var(--accent)]/60"
-        >
-          <MessagesSquare className="text-[var(--accent)]" />
-          <span>
-            <span className="block font-bold">Arena</span>
-            <span className="block text-xs text-[var(--muted)]">Diálogos guiados + Coach</span>
-          </span>
-        </Link>
-      </section>
-
-      {/* Indicadores */}
-      <section className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <Kpi
-          icon={<Target size={16} />}
-          label="Palavras faladas dominadas"
-          value={String(s.palavrasDominadas)}
-          sub={`${s.palavrasAtivas} em prática · meta B1 ≈ ${META_B1_PALAVRAS.toLocaleString("pt-BR")}`}
-          frac={s.palavrasDominadas / META_B1_PALAVRAS}
-        />
-        <Kpi
-          icon={<Waves size={16} />}
-          label="Tempo de fala acumulado"
-          value={fmtDur(s.falaTotalMs)}
-          sub={`hoje ${fmtDur(s.falaHojeMs)} de ${s.settings.meta_minutos_fala} min`}
-          frac={metaFalaMs ? s.falaHojeMs / metaFalaMs : 0}
-        />
-        <Kpi
-          icon={<Zap size={16} />}
-          label="Retenção FSRS (30 dias)"
-          value={s.retencao === null ? "—" : `${Math.round(s.retencao * 100)}%`}
-          sub="alvo do agendador: 90%"
-          frac={s.retencao ?? 0}
-          tone={s.retencao === null ? undefined : s.retencao >= 0.88 ? "ok" : s.retencao >= 0.8 ? "warn" : "bad"}
-        />
-        <Kpi
-          icon={<Timer size={16} />}
-          label="Latência média de reflexo"
-          value={s.latenciaMedia === null ? "—" : `${(s.latenciaMedia / 1000).toFixed(1)}s`}
-          sub="tempo até começar a falar (meta < 2s)"
-          frac={s.latenciaMedia === null ? 0 : Math.max(0, 1 - s.latenciaMedia / 5000)}
-        />
-      </section>
-
-      <div className="grid gap-3 lg:grid-cols-2">
-        {/* Estados */}
-        <section className="rounded-2xl border border-[var(--line)] bg-[var(--panel)] p-5">
-          <h2 className="text-sm font-semibold">Baralho ({total} frases)</h2>
-          <div className="mt-3 flex h-3 overflow-hidden rounded-full bg-[var(--line)]">
-            {[
-              { n: s.porEstado[0], c: "bg-slate-500" },
-              { n: s.porEstado[1] + s.porEstado[3], c: "bg-[var(--warn)]" },
-              { n: s.porEstado[2], c: "bg-[var(--ok)]" },
-            ].map((seg, i) => (
-              <div key={i} className={seg.c} style={{ width: `${total ? (seg.n / total) * 100 : 0}%` }} />
-            ))}
-          </div>
-          <div className="mt-2 flex flex-wrap gap-4 text-xs text-[var(--muted)]">
-            <span>● Novas {s.porEstado[0]}</span>
-            <span className="text-[var(--warn)]">● Aprendendo {s.porEstado[1] + s.porEstado[3]}</span>
-            <span className="text-[var(--ok)]">● Em revisão {s.porEstado[2]}</span>
-          </div>
-          <h2 className="mt-5 text-sm font-semibold">Atividade · 14 dias</h2>
-          <div className="mt-3 flex h-16 items-end gap-1">
-            {s.atividade.map((a) => (
-              <div key={a.dia} className="flex flex-1 flex-col items-center gap-1" title={`${a.dia}: ${a.n} exercícios`}>
-                <div
-                  className={`w-full rounded-sm ${a.n ? "bg-[var(--accent)]" : "bg-[var(--line)]"}`}
-                  style={{ height: `${a.n ? 12 + (a.n / maxAtiv) * 52 : 4}px` }}
-                />
-              </div>
-            ))}
-          </div>
-          <p className="mt-2 text-xs text-[var(--muted)]">{s.revisoesHoje} revisões hoje</p>
-        </section>
-
-        <PhaseCard faseRecomendada={s.faseRecomendada} />
+    <div className="mx-auto max-w-md space-y-8 pb-8">
+      {/* status do dia */}
+      <div className="flex items-center justify-between rounded-2xl border-2 border-[var(--line)] px-4 py-3 text-lg font-extrabold">
+        <span className="text-[var(--warn)]" title="Dias seguidos">🔥 {sequencia}</span>
+        <span className="text-[var(--pitch)]" title="XP total">⚡ {xpTotal}</span>
+        <span className="text-[var(--azul)]" title="XP de hoje">+{xpHoje} hoje</span>
       </div>
 
-      <BackupCard />
+      {revisoes > 0 && (
+        <Link href="/study" className="btn-3d btn-secundario flex items-center gap-3 rounded-2xl p-4">
+          <Mascote humor="feliz" tamanho={52} />
+          <span className="flex-1">
+            <span className="block font-extrabold">Hora de revisar!</span>
+            <span className="block text-sm text-[var(--muted)]">
+              {revisoes} {revisoes === 1 ? "frase quer" : "frases querem"} voltar à memória
+            </span>
+          </span>
+          <span className="rounded-xl bg-[var(--azul)] px-3 py-2 text-sm font-extrabold uppercase text-white">Revisar</span>
+        </Link>
+      )}
+
+      {unidades.map(({ u, licoes }) => (
+        <section key={u.id} className="space-y-8">
+          {/* banner da unidade */}
+          <div
+            className="flex items-stretch overflow-hidden rounded-2xl text-white"
+            style={{ background: u.cor, boxShadow: `0 4px 0 ${escurecer(u.cor)}` }}
+          >
+            <div className="flex-1 p-4">
+              <p className="text-xs font-extrabold uppercase tracking-wider opacity-80">
+                {u.numero === 0 ? "Introdução" : `Seção 1, Unidade ${u.numero}`}
+              </p>
+              <h2 className="text-xl font-black leading-tight">{u.titulo}</h2>
+              <p className="text-sm opacity-90">{u.descricao}</p>
+            </div>
+            {u.cards.length > 0 && (
+              <button
+                onClick={() => setGuia(u)}
+                aria-label="Guia da unidade"
+                className="flex w-16 items-center justify-center border-l-2"
+                style={{ borderColor: escurecer(u.cor) }}
+              >
+                <NotebookText size={28} />
+              </button>
+            )}
+          </div>
+
+          {/* caminho */}
+          <div className="flex flex-col items-center gap-6 pt-12">
+            {licoes.map((l, i) => {
+              const Icone = ICONE[l.tipo];
+              const feita = feitas.has(l.id);
+              const ehAtual = l.id === atual;
+              const livre = feita || ehAtual;
+              const cor = livre ? u.cor : "#37464f";
+              return (
+                <div key={l.id} className="relative" style={{ transform: `translateX(${ZIGUE[i % ZIGUE.length]}px)` }}>
+                  {ehAtual && (
+                    <div className="absolute -top-14 left-1/2 z-10 -translate-x-1/2 animate-pulo">
+                      <div className="whitespace-nowrap rounded-xl border-2 border-[var(--line)] bg-[var(--bg)] px-3 py-2 text-sm font-extrabold uppercase tracking-wider" style={{ color: u.cor }}>
+                        Começar
+                      </div>
+                      <div className="mx-auto -mt-[7px] h-3 w-3 rotate-45 border-b-2 border-r-2 border-[var(--line)] bg-[var(--bg)]" />
+                    </div>
+                  )}
+                  <button
+                    onClick={() => abrir(l)}
+                    aria-label={`${l.titulo}${feita ? " (concluída)" : livre ? "" : " (bloqueada)"}`}
+                    title={l.titulo}
+                    className={`relative flex h-[68px] w-[76px] items-center justify-center rounded-[50%] transition active:translate-y-1 ${
+                      ehAtual ? "ring-8 ring-offset-4 ring-offset-[var(--bg)]" : ""
+                    }`}
+                    style={{
+                      background: cor,
+                      boxShadow: `0 7px 0 ${livre ? escurecer(u.cor) : "#2a373e"}`,
+                      ["--tw-ring-color" as string]: `${u.cor}55`,
+                    }}
+                  >
+                    {feita ? (
+                      <Check size={34} strokeWidth={4} className="text-white" />
+                    ) : livre ? (
+                      <Icone size={32} className="fill-white text-white" />
+                    ) : (
+                      <Lock size={26} className="text-[#52656d]" />
+                    )}
+                  </button>
+                  <p className={`mt-3 text-center text-xs font-bold ${livre ? "" : "text-[var(--muted)]"}`}>
+                    {l.titulo}
+                  </p>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+      ))}
+
+      {aviso && (
+        <div className="fixed inset-x-4 bottom-24 z-40 mx-auto max-w-md rounded-2xl bg-[var(--panel-2)] p-4 text-center text-sm font-bold shadow-xl animate-subir">
+          🔒 {aviso}
+        </div>
+      )}
+
+      {guia && <GuiaDaUnidade unidade={guia} onClose={() => setGuia(null)} />}
     </div>
   );
 }
 
-function Kpi({
-  icon,
-  label,
-  value,
-  sub,
-  frac,
-  tone,
-}: {
-  icon: React.ReactNode;
-  label: string;
-  value: string;
-  sub: string;
-  frac: number;
-  tone?: "ok" | "warn" | "bad";
-}) {
-  const color = tone ? `var(--${tone})` : "var(--accent)";
+/** Guia da unidade: todas as frases com som, para estudar antes ou consultar a qualquer momento. */
+function GuiaDaUnidade({ unidade, onClose }: { unidade: Unidade; onClose: () => void }) {
   return (
-    <div className="rounded-2xl border border-[var(--line)] bg-[var(--panel)] p-4">
-      <p className="flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-[var(--muted)]">
-        {icon} {label}
-      </p>
-      <p className="mt-2 text-3xl font-black tabular-nums" style={{ color: tone ? color : undefined }}>
-        {value}
-      </p>
-      <div className="mt-2 h-1 overflow-hidden rounded-full bg-[var(--line)]">
-        <div className="h-full rounded-full" style={{ width: `${Math.min(100, Math.max(0, frac * 100))}%`, background: color }} />
+    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 sm:items-center" onClick={onClose}>
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="max-h-[88dvh] w-full max-w-md space-y-4 overflow-y-auto rounded-t-3xl bg-[var(--bg)] p-5 animate-subir sm:rounded-3xl"
+      >
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <p className="text-xs font-extrabold uppercase tracking-wider" style={{ color: unidade.cor }}>
+              Guia · Unidade {unidade.numero}
+            </p>
+            <h2 className="text-xl font-black">{unidade.titulo}</h2>
+          </div>
+          <button onClick={onClose} aria-label="Fechar" className="text-[var(--muted)]">
+            <X size={26} />
+          </button>
+        </div>
+        {unidade.cards.map((id) => {
+          const c = cardPorId(id);
+          return (
+            <div key={id} className="space-y-2 rounded-2xl border-2 border-[var(--line)] p-3">
+              <div className="flex items-center justify-between gap-2">
+                <p className="font-extrabold">{c.traducao}</p>
+                <BotoesSom texto={c.kana} />
+              </div>
+              <PitchAccentVisualizer moras={c.moras} size="sm" />
+              <p className="text-xs text-[var(--muted)]">{c.notas}</p>
+            </div>
+          );
+        })}
       </div>
-      <p className="mt-2 text-xs text-[var(--muted)]">{sub}</p>
     </div>
   );
 }

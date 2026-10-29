@@ -32,6 +32,8 @@ export interface SeedCard {
   tipo: CardTipo;
   situacao_pt: string;
   significado_cognitivo: string;
+  /** tradução natural em português (exercícios da trilha); alternativas separadas por " / " */
+  traducao: string;
   kana: string;
   /** Kanji com furigana em colchetes: `何[なん]` */
   kanji: string;
