@@ -54,7 +54,11 @@ const PREFERRED: Record<string, RegExp> = {
   "pt-BR": /(Google português do Brasil|Luciana|Francisca|Felipe|Maria)/i,
 };
 
-export async function speakSynth(text: string, lang: "ja-JP" | "pt-BR", rate = 1): Promise<boolean> {
+/**
+ * `voz`: escolhe uma das vozes do idioma pelo índice (treino de ouvido com várias vozes);
+ * sem ela, usa a voz preferida.
+ */
+export async function speakSynth(text: string, lang: "ja-JP" | "pt-BR", rate = 1, voz?: number): Promise<boolean> {
   if (typeof speechSynthesis === "undefined") return false;
   stopAll();
   const minha = geracao;
@@ -63,7 +67,10 @@ export async function speakSynth(text: string, lang: "ja-JP" | "pt-BR", rate = 1
   if (minha !== geracao) return false;
   speechSynthesis.cancel(); // fila sempre vazia: nunca duas frases enfileiradas
   const sameLang = voices.filter((v) => v.lang.replace("_", "-").startsWith(lang.slice(0, 2)));
-  const voice = sameLang.find((v) => PREFERRED[lang].test(v.name)) ?? sameLang[0];
+  const voice =
+    voz !== undefined && sameLang.length
+      ? sameLang[voz % sameLang.length]
+      : (sameLang.find((v) => PREFERRED[lang].test(v.name)) ?? sameLang[0]);
   return new Promise((resolve) => {
     const u = new SpeechSynthesisUtterance(text);
     u.lang = lang;
@@ -83,7 +90,7 @@ export async function speakSynth(text: string, lang: "ja-JP" | "pt-BR", rate = 1
 }
 
 /** Fala uma frase japonesa (kana de preferência). */
-export async function speakJa(text: string, opts: { url?: string | null; rate?: number } = {}): Promise<boolean> {
+export async function speakJa(text: string, opts: { url?: string | null; rate?: number; voz?: number } = {}): Promise<boolean> {
   const rate = opts.rate ?? 1;
   if (opts.url) {
     try {
@@ -92,7 +99,7 @@ export async function speakJa(text: string, opts: { url?: string | null; rate?: 
       /* cai para TTS */
     }
   }
-  return speakSynth(text, "ja-JP", rate);
+  return speakSynth(text, "ja-JP", rate, opts.voz);
 }
 
 export function speakPt(text: string, rate = 1.05) {

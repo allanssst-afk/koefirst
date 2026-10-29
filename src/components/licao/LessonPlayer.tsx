@@ -1,20 +1,26 @@
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { CheckCircle2, Target, Volume2, X, XCircle, Zap } from "lucide-react";
 import { Mascote } from "../Mascote";
-import { ExDialogo, ExEscuta, ExFalar, ExMontar, ExNova, ExQuiz } from "./Exercicios";
+import { ExDialogo, ExEscuta, ExFalar, ExImediata, ExMelodia, ExMontar, ExNova, ExQuiz, ExSituacao, ExSombra } from "./Exercicios";
 import { ExExplica } from "./Tutorial";
 import type { ExProps, Resposta } from "./comuns";
 import { somAcerto, somConclusao, somErro } from "@/lib/audio/som";
 import { speakJa, stopAll } from "@/lib/audio/tts";
 import { concluirLicao, notaDaLicao } from "@/lib/queries";
-import { cardPorId, montarLicao, traducaoPrincipal, type Exercicio, type Licao } from "@/lib/trilha";
+import { cardPorId, montarLicao, PARTES_SIMULADO, traducaoPrincipal, type Exercicio, type Licao } from "@/lib/trilha";
 
 /** Exercícios só de leitura/apresentação: o botão é CONTINUAR direto, sem verificar. */
-const INFORMATIVO: Exercicio["tipo"][] = ["nova", "explica"];
+const INFORMATIVO: Exercicio["tipo"][] = ["nova", "explica", "sombra"];
+
+/** Uma questão respondida no simulado (a correção só aparece no fim). */
+interface Questao {
+  tipo: Exercicio["tipo"];
+  r: Resposta;
+}
 
 interface Item {
   ex: Exercicio;
@@ -24,7 +30,8 @@ interface Item {
 
 /**
  * Lição: um exercício por tela, barra de progresso no topo, botão grande embaixo
- * (VERIFICAR → painel verde/vermelho → CONTINUAR). Exercícios errados voltam no fim da lição.
+ * (VERIFICAR → painel de acerto/erro → CONTINUAR). Exercícios errados voltam no fim da lição.
+ * Simulado = modo prova: sem correção a cada questão, sem repetir erros; o resultado por parte vem no fim.
  */
 export function LessonPlayer({ licao }: { licao: Licao }) {
   const router = useRouter();
@@ -39,6 +46,8 @@ export function LessonPlayer({ licao }: { licao: Licao }) {
   /** erros por frase (card): viram a nota FSRS de cada uma no fim da lição */
   const [errosPorFrase, setErrosPorFrase] = useState<Record<string, number>>({});
   const [fim, setFim] = useState<{ xp: number; resultados: { card: string; erros: number }[] } | null>(null);
+  const prova = licao.tipo === "simulado";
+  const [folha, setFolha] = useState<Questao[]>([]);
 
   const item = fila[idx];
   const concluidos = idx + (resposta?.ok ? 1 : 0);
@@ -49,7 +58,8 @@ export function LessonPlayer({ licao }: { licao: Licao }) {
   const responder = useCallback(
     (r: Resposta) => {
       setResposta(r);
-      if (r.ok) somAcerto();
+      if (prova) setFolha((f) => [...f, { tipo: item.ex.tipo, r }]);
+      else if (r.ok) somAcerto();
       else somErro();
       if (!item.repetido) {
         setRespondidos((n) => n + 1);
@@ -57,15 +67,16 @@ export function LessonPlayer({ licao }: { licao: Licao }) {
       }
       if (!r.ok) setErros((n) => n + 1);
       const ex = item.ex;
-      if ("card" in ex) setErrosPorFrase((m) => ({ ...m, [ex.card.id]: (m[ex.card.id] ?? 0) + (r.ok ? 0 : 1) }));
+      // o treino de ouvido mede percepção da melodia, não a memória da frase: fica fora da nota FSRS
+      if ("card" in ex && ex.tipo !== "melodia") setErrosPorFrase((m) => ({ ...m, [ex.card.id]: (m[ex.card.id] ?? 0) + (r.ok ? 0 : 1) }));
     },
-    [item],
+    [item, prova],
   );
 
   const avancar = useCallback(async () => {
     stopAll();
     let novaFila = fila;
-    if (resposta && !resposta.ok && !item.repetido) {
+    if (resposta && !resposta.ok && !item.repetido && !prova) {
       novaFila = [...fila, { ex: item.ex, repetido: true }];
       setFila(novaFila);
     }
@@ -76,13 +87,13 @@ export function LessonPlayer({ licao }: { licao: Licao }) {
       setIdx(idx + 1);
       return;
     }
-    const xp = 10 + (erros === 0 ? 5 : 0);
+    const xp = prova ? 20 : 10 + (erros === 0 ? 5 : 0);
     // Lição de frases: toda frase apresentada entra no FSRS com a nota do desempenho.
-    // Lição de revisão: só as frases erradas voltam ao FSRS (como lapso).
+    // Revisão e simulado: só as frases erradas voltam ao FSRS (como lapso).
     const resultados =
       licao.tipo === "frases"
         ? licao.cards.map((card) => ({ card, erros: errosPorFrase[card] ?? 0 }))
-        : licao.tipo === "revisao"
+        : licao.tipo === "revisao" || prova
           ? Object.entries(errosPorFrase)
               .filter(([, e]) => e > 0)
               .map(([card, e]) => ({ card, erros: e }))
@@ -90,7 +101,12 @@ export function LessonPlayer({ licao }: { licao: Licao }) {
     await concluirLicao(licao.id, xp, acertos, respondidos, resultados);
     somConclusao();
     setFim({ xp, resultados });
-  }, [fila, item, resposta, idx, erros, acertos, respondidos, licao, errosPorFrase]);
+  }, [fila, item, resposta, idx, erros, acertos, respondidos, licao, errosPorFrase, prova]);
+
+  // Modo prova: registrou a resposta, segue direto para a próxima questão.
+  useEffect(() => {
+    if (prova && resposta) void avancar();
+  }, [prova, resposta, avancar]);
 
   if (fim) {
     const pct = respondidos ? Math.round((acertos / respondidos) * 100) : 100;
@@ -100,7 +116,7 @@ export function LessonPlayer({ licao }: { licao: Licao }) {
           <Mascote humor="feliz" tamanho={140} />
         </div>
         <div>
-          <p className="text-sm font-semibold text-[var(--muted)]">Estação concluída</p>
+          <p className="text-sm font-semibold text-[var(--muted)]">{prova ? "Simulado concluído" : "Estação concluída"}</p>
           <h1 className="text-3xl font-bold">{licao.titulo}</h1>
         </div>
         <div className="grid w-full grid-cols-2 gap-3">
@@ -118,7 +134,8 @@ export function LessonPlayer({ licao }: { licao: Licao }) {
           </div>
         </div>
         {licao.tipo === "frases" && <ResumoAgenda resultados={fim.resultados} />}
-        {licao.tipo === "revisao" && fim.resultados.length > 0 && (
+        {prova && <ResultadoSimulado folha={folha} />}
+        {(licao.tipo === "revisao" || prova) && fim.resultados.length > 0 && (
           <p className="text-sm text-[var(--muted)]">
             {fim.resultados.length === 1 ? "A frase que você errou volta" : `As ${fim.resultados.length} frases que você errou voltam`}{" "}
             para a revisão daqui a pouco, para fixar de novo.
@@ -134,6 +151,7 @@ export function LessonPlayer({ licao }: { licao: Licao }) {
   if (!item) return null;
 
   const informativo = INFORMATIVO.includes(item.ex.tipo);
+  const painel = prova ? null : resposta;
   const travado = resposta !== null;
   const props: Omit<ExProps<never>, "ex"> = {
     travado,
@@ -162,6 +180,7 @@ export function LessonPlayer({ licao }: { licao: Licao }) {
 
       {/* exercício */}
       <div key={idx} className="flex-1 py-6 pb-44 animate-rise">
+        {prova && <CabecalhoParte tipo={item.ex.tipo} />}
         {item.repetido && (
           <p className="mb-3 text-sm font-semibold text-[var(--warn)]">De novo: você errou esta antes</p>
         )}
@@ -182,50 +201,58 @@ export function LessonPlayer({ licao }: { licao: Licao }) {
               return <ExDialogo ex={ex} {...props} />;
             case "quiz":
               return <ExQuiz ex={ex} {...props} />;
+            case "melodia":
+              return <ExMelodia ex={ex} {...props} />;
+            case "sombra":
+              return <ExSombra ex={ex} {...props} />;
+            case "situacao":
+              return <ExSituacao ex={ex} {...props} />;
+            case "imediata":
+              return <ExImediata ex={ex} {...props} />;
           }
         })()}
       </div>
 
-      {/* rodapé fixo: botão ou painel de resposta */}
+      {/* rodapé fixo: botão ou painel de resposta (no simulado não há painel) */}
       <div
         className={`fixed inset-x-0 bottom-0 z-40 pb-[max(1rem,env(safe-area-inset-bottom))] ${
-          resposta
+          painel
             ? "rounded-t-3xl border-t-4 bg-[var(--panel-2)] animate-subir"
             : "border-t border-[var(--line)] bg-[var(--bg)]"
         }`}
-        style={resposta ? { borderTopColor: resposta.ok ? "var(--ok)" : "var(--bad)" } : undefined}
+        style={painel ? { borderTopColor: painel.ok ? "var(--ok)" : "var(--bad)" } : undefined}
       >
         <div className="mx-auto max-w-xl space-y-3 px-4 pt-4">
-          {resposta && (
+          {painel && (
             <div className="flex items-start gap-3">
-              {resposta.ok ? (
+              {painel.ok ? (
                 <CheckCircle2 size={28} className="shrink-0 text-[var(--ok)]" />
               ) : (
                 <XCircle size={28} className="shrink-0 text-[var(--bad)]" />
               )}
               <div className="min-w-0 flex-1">
-                <p className="text-lg font-bold" style={{ color: resposta.ok ? "var(--ok)" : "var(--bad)" }}>
-                  {resposta.ok ? "Isso mesmo" : "Resposta certa:"}
+                <p className="text-lg font-bold" style={{ color: painel.ok ? "var(--ok)" : "var(--bad)" }}>
+                  {painel.ok ? "Isso mesmo" : "Resposta certa:"}
                 </p>
-                {!resposta.ok && resposta.correta && <p className="text-base font-medium">{resposta.correta}</p>}
-                {resposta.literal && (
+                {!painel.ok && painel.correta && <p className="text-base font-medium">{painel.correta}</p>}
+                {painel.literal && (
                   <p className="mt-1 text-sm text-[var(--muted)]">
-                    <span className="font-semibold text-[var(--pitch)]">Lógica japonesa:</span> {resposta.literal}
+                    <span className="font-semibold text-[var(--pitch)]">Lógica japonesa:</span> {painel.literal}
                   </p>
                 )}
               </div>
-              {resposta.ouvir && (
-                <button onClick={() => speakJa(resposta.ouvir!)} aria-label="Ouvir a frase" className="rounded-xl p-2 text-[var(--azul)]">
+              {painel.ouvir && (
+                <button onClick={() => speakJa(painel.ouvir!)} aria-label="Ouvir a frase" className="rounded-xl p-2 text-[var(--azul)]">
                   <Volume2 size={24} />
                 </button>
               )}
             </div>
           )}
-          {resposta ? (
+          {painel ? (
             <button
               onClick={avancar}
               className="btn w-full rounded-2xl py-4 text-[1.05rem] font-bold text-[#11131c]"
-              style={{ background: resposta.ok ? "var(--ok)" : "var(--bad)" }}
+              style={{ background: painel.ok ? "var(--ok)" : "var(--bad)" }}
             >
               Continuar
             </button>
@@ -239,7 +266,7 @@ export function LessonPlayer({ licao }: { licao: Licao }) {
               disabled={!verificador}
               className="btn btn-primario w-full rounded-2xl py-4 disabled:bg-[var(--line)] disabled:text-[var(--muted)]"
             >
-              Verificar
+              {prova ? "Confirmar" : "Verificar"}
             </button>
           )}
         </div>
@@ -270,6 +297,81 @@ function ResumoAgenda({ resultados }: { resultados: { card: string; erros: numbe
           </p>
         );
       })}
+    </div>
+  );
+}
+
+function CabecalhoParte({ tipo }: { tipo: Exercicio["tipo"] }) {
+  const i = PARTES_SIMULADO.findIndex((p) => p.tipo === tipo);
+  if (i < 0) return null;
+  const p = PARTES_SIMULADO[i];
+  return (
+    <p className="mb-3 text-xs text-[var(--muted)]">
+      <b className="text-[var(--fg)]">Parte {i + 1} · {p.nome}</b> — {p.descricao}. Sem correção agora: o resultado vem no fim.
+    </p>
+  );
+}
+
+/**
+ * Resultado no estilo do JLPT, que exige a nota total e um mínimo em cada seção (nota alta numa parte não
+ * compensa outra zerada). Aqui: 60% no total e pelo menos 1/3 de cada parte.
+ */
+function ResultadoSimulado({ folha }: { folha: Questao[] }) {
+  const partes = PARTES_SIMULADO.map((p) => {
+    const qs = folha.filter((q) => q.tipo === p.tipo);
+    return { ...p, total: qs.length, certas: qs.filter((q) => q.r.ok).length };
+  }).filter((p) => p.total > 0);
+  const certas = folha.filter((q) => q.r.ok).length;
+  const aprovado = certas / Math.max(1, folha.length) >= 0.6 && partes.every((p) => p.certas / p.total >= 1 / 3);
+  const erradas = folha.filter((q) => !q.r.ok);
+  const cor = aprovado ? "var(--ok)" : "var(--warn)";
+  return (
+    <div className="w-full space-y-3 text-left">
+      <div className="rounded-2xl border-l-4 bg-[var(--panel)] p-4" style={{ borderLeftColor: cor }}>
+        <p className="text-sm font-semibold" style={{ color: cor }}>
+          {aprovado ? "Aprovado no simulado" : "Ainda não passou — refaça depois de revisar"}
+        </p>
+        <p className="text-2xl font-bold">
+          {certas} de {folha.length} questões
+        </p>
+        <p className="mt-1 text-xs text-[var(--muted)]">
+          Critério no estilo do JLPT: nota total (60%) e um mínimo em cada parte (1/3).
+        </p>
+      </div>
+      {partes.map((p) => {
+        const passou = p.certas / p.total >= 1 / 3;
+        return (
+          <div key={p.tipo} className="space-y-1">
+            <p className="flex justify-between text-sm">
+              <span className="font-semibold">{p.nome}</span>
+              <span style={{ color: passou ? "var(--fg)" : "var(--bad)" }}>
+                {p.certas}/{p.total}
+              </span>
+            </p>
+            <div className="h-1.5 overflow-hidden rounded-full bg-[var(--line)]">
+              <div className="h-full rounded-full" style={{ width: `${(p.certas / p.total) * 100}%`, background: passou ? "var(--ok)" : "var(--bad)" }} />
+            </div>
+          </div>
+        );
+      })}
+      {erradas.length > 0 && (
+        <div className="space-y-2 rounded-2xl bg-[var(--panel)] p-3">
+          <p className="text-xs font-semibold text-[var(--muted)]">Correção</p>
+          {erradas.map((q, i) => (
+            <div key={i} className="flex items-start gap-2 text-sm">
+              <div className="min-w-0 flex-1">
+                <p className="font-medium">{q.r.correta}</p>
+                {q.r.literal && <p className="text-xs text-[var(--muted)]">Lógica japonesa: {q.r.literal}</p>}
+              </div>
+              {q.r.ouvir && (
+                <button onClick={() => speakJa(q.r.ouvir!)} aria-label="Ouvir" className="shrink-0 p-1 text-[var(--azul)]">
+                  <Volume2 size={18} />
+                </button>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

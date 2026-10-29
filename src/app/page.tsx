@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import {
   BookOpen,
   Check,
+  ClipboardCheck,
   ChevronRight,
   Flame,
   Lock,
@@ -30,6 +31,7 @@ const ICONE: Record<TipoLicao, typeof Star> = {
   pingpong: Repeat2,
   dialogo: MessagesSquare,
   revisao: Trophy,
+  simulado: ClipboardCheck,
 };
 
 export default function Trilha() {
@@ -42,8 +44,11 @@ export default function Trilha() {
 
   const unidades = UNIDADES.map((u) => ({ u, licoes: licoesDa(u) }));
   const todas = unidades.flatMap((x) => x.licoes);
-  const atual = todas.find((l) => !feitas.has(l.id))?.id;
-  const desbloqueada = (l: Licao) => feitas.has(l.id) || l.id === atual;
+  // lições opcionais (simulado) não travam a trilha: abrem quando o resto da unidade termina
+  const atual = todas.find((l) => !l.opcional && !feitas.has(l.id))?.id;
+  const opcionalLivre = (l: Licao) =>
+    !!l.opcional && todas.filter((x) => x.unidade.id === l.unidade.id && !x.opcional).every((x) => feitas.has(x.id));
+  const desbloqueada = (l: Licao) => feitas.has(l.id) || l.id === atual || opcionalLivre(l);
 
   // Espaçamento: frases novas por dia têm limite (meta do Perfil, somando trilha e aba Revisar).
   // Uma lição de frases novas só abre se couber na meta de hoje — o resto do dia é para revisar e praticar.
@@ -61,7 +66,12 @@ export default function Trilha() {
   };
 
   const abrir = (l: Licao) => {
-    if (!desbloqueada(l)) return avisar("🔒 Complete as lições anteriores para desbloquear esta.");
+    if (!desbloqueada(l))
+      return avisar(
+        l.opcional
+          ? "🔒 O simulado abre quando você terminar as outras estações desta linha."
+          : "🔒 Complete as lições anteriores para desbloquear esta.",
+      );
     if (passaDaMeta(l))
       return avisar(
         `🌙 Você já aprendeu ${novos.feitos} frases novas hoje (meta: ${novos.meta}). A memória precisa de intervalo: revise e pratique agora; amanhã a trilha continua.`,
@@ -148,7 +158,7 @@ export default function Trilha() {
                 const Icone = ICONE[l.tipo];
                 const feita = feitas.has(l.id);
                 const ehAtual = l.id === atual;
-                const livre = feita || ehAtual;
+                const livre = feita || ehAtual || opcionalLivre(l);
                 const ultima = i === licoes.length - 1;
                 return (
                   <li key={l.id} className="relative py-1 pl-11">
@@ -191,6 +201,9 @@ export default function Trilha() {
                       </span>
                       <span className="min-w-0 flex-1">
                         <span className={`block leading-tight ${ehAtual ? "font-bold" : "font-medium"}`}>{l.titulo}</span>
+                        {l.opcional && !ehAtual && (
+                          <span className="block text-xs text-[var(--muted)]">Opcional · formato da prova de escuta do JLPT</span>
+                        )}
                         {ehAtual && (
                           <span className="block text-xs font-semibold" style={{ color: u.cor }}>
                             {atualBloqueadaPelaMeta ? "Amanhã — meta de hoje cumprida" : "Próxima estação"}

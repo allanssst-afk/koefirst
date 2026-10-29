@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import { Loader2, Mic, Square } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { Loader2, Mic, Play, RotateCcw, Square, Volume2 } from "lucide-react";
 import { CognitiveBreakdown } from "../CognitiveBreakdown";
 import { PitchAccentVisualizer } from "../PitchAccentVisualizer";
 import { usePhase } from "../PhaseProvider";
@@ -9,7 +9,7 @@ import { ScriptLayer } from "../ScriptLayer";
 import { useVoiceCapture } from "../useVoiceCapture";
 import { BalaoMascote, BotoesSom, Enunciado, Opcao, type ExProps } from "./comuns";
 import { browserSttSupported } from "@/lib/audio/capture";
-import { speakJa, stopAll } from "@/lib/audio/tts";
+import { speakJa, stopAll, wait } from "@/lib/audio/tts";
 import { FORMAS } from "@/lib/drills";
 import { registrarAtividade } from "@/lib/queries";
 import { roleOf } from "@/lib/roles";
@@ -20,11 +20,11 @@ import type { Mora } from "@/lib/types";
 type Ex<T extends Exercicio["tipo"]> = Extract<Exercicio, { tipo: T }>;
 
 /** Toca a frase uma vez quando o exercício aparece. */
-function useTocarAoAbrir(texto: string, aoTocar?: (on: boolean) => void) {
+function useTocarAoAbrir(texto: string, aoTocar?: (on: boolean) => void, voz?: number) {
   useEffect(() => {
     const t = setTimeout(async () => {
       aoTocar?.(true);
-      await speakJa(texto);
+      await speakJa(texto, { voz });
       aoTocar?.(false);
     }, 350);
     return () => {
@@ -312,6 +312,205 @@ export function ExQuiz({ ex, travado, aoPronto }: ExProps<Ex<"quiz">>) {
           <Opcao key={i} numero={i + 1} ativo={escolha === i} travado={travado} onClick={() => escolher(i)}>
             {o.falar ? `🔊 ${o.texto}` : o.texto}
           </Opcao>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ───────────── Melodia: treino de ouvido com pares mínimos de entonação
+
+export function ExMelodia({ ex, travado, aoPronto }: ExProps<Ex<"melodia">>) {
+  const [escolha, setEscolha] = useState<number | null>(null);
+  useTocarAoAbrir(ex.card.kana, undefined, ex.voz);
+  const escolher = (i: number) => {
+    setEscolha(i);
+    aoPronto(() => ({
+      ok: i === ex.correta,
+      correta: `${traducaoPrincipal(ex.card)} — a melodia certa é a ${ex.correta === 0 ? "1" : "2"}`,
+      ouvir: ex.card.kana,
+    }));
+  };
+  return (
+    <div className="space-y-5">
+      <Enunciado rotulo="Treino de ouvido">Qual melodia você ouviu?</Enunciado>
+      <p className="text-sm text-[var(--muted)]">
+        Mesmos sons, entonação diferente. Siga a voz subindo e descendo. A voz muda de um treino para outro, para o
+        ouvido aprender a melodia e não um falante só.
+      </p>
+      <div className="flex justify-center">
+        <BotoesSom texto={ex.card.kana} voz={ex.voz} grande />
+      </div>
+      <div className="space-y-3">
+        {ex.opcoes.map((m, i) => (
+          <Opcao key={i} numero={i + 1} ativo={escolha === i} travado={travado} onClick={() => escolher(i)}>
+            <PitchAccentVisualizer moras={m} size="sm" showFuncao={false} />
+          </Opcao>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ───────────── Sombra (shadowing): falar junto com o áudio
+
+const RODADAS = [0.7, 0.7, 1, 1];
+
+export function ExSombra({ ex }: ExProps<Ex<"sombra">>) {
+  const { card } = ex;
+  /** -1 = parado; 0…3 = rodada atual; 4 = terminou */
+  const [passo, setPasso] = useState(-1);
+  const vivo = useRef(true);
+  useEffect(() => {
+    vivo.current = true;
+    return () => {
+      vivo.current = false;
+      stopAll();
+    };
+  }, []);
+
+  const rodar = async () => {
+    for (let i = 0; i < RODADAS.length; i++) {
+      if (!vivo.current) return;
+      setPasso(i);
+      const ate = await speakJa(card.kana, { rate: RODADAS[i] });
+      if (!ate || !vivo.current) return setPasso(-1);
+      await wait(1200);
+    }
+    if (vivo.current) setPasso(RODADAS.length);
+  };
+
+  const rodando = passo >= 0 && passo < RODADAS.length;
+  return (
+    <div className="space-y-5">
+      <Enunciado rotulo="Shadowing">Fale junto com a voz</Enunciado>
+      <p className="text-sm text-[var(--muted)]">
+        Fale <b className="text-[var(--fg)]">ao mesmo tempo</b> que o áudio, como uma sombra, copiando a melodia e o ritmo, não
+        só os sons. São 4 rodadas: 2 devagar e 2 na velocidade normal.
+      </p>
+      <div className="space-y-3 rounded-2xl bg-[var(--panel)] p-4">
+        <PitchAccentVisualizer moras={card.moras} size="sm" playing={rodando} />
+        <ScriptLayer kana={card.kana} kanji={card.kanji} className="text-lg" />
+        <p className="text-center font-bold">{card.traducao}</p>
+      </div>
+      <div className="flex justify-center gap-2">
+        {RODADAS.map((r, i) => (
+          <span
+            key={i}
+            className={`flex h-9 w-16 items-center justify-center rounded-full text-xs font-semibold ${
+              i < passo || passo === RODADAS.length
+                ? "bg-[var(--ok)]/20 text-[var(--ok)]"
+                : i === passo
+                  ? "bg-[var(--accent)] text-[#1c0b05]"
+                  : "bg-[var(--panel-2)] text-[var(--muted)]"
+            }`}
+          >
+            {r < 1 ? "devagar" : "normal"}
+          </span>
+        ))}
+      </div>
+      <button
+        onClick={rodando ? stopAll : rodar}
+        className="btn mx-auto flex h-14 w-full max-w-sm items-center justify-center gap-2 rounded-full border border-[var(--accent)]/50 bg-[var(--accent)]/10 text-lg font-bold text-[var(--accent)]"
+      >
+        {rodando ? <Square size={20} /> : passo === RODADAS.length ? <RotateCcw size={20} /> : <Play size={20} />}
+        {rodando ? `Rodada ${passo + 1} de 4 — fale junto!` : passo === RODADAS.length ? "Fazer de novo" : "Começar a sombra"}
+      </button>
+    </div>
+  );
+}
+
+// ───────────── Simulado: opções só em áudio (como na prova de escuta)
+
+function OpcaoAudio({ i, texto, ativo, travado, legenda, onClick }: {
+  i: number;
+  texto: string;
+  ativo: boolean;
+  travado: boolean;
+  legenda?: string;
+  onClick: () => void;
+}) {
+  return (
+    <Opcao
+      numero={i + 1}
+      ativo={ativo}
+      travado={travado}
+      onClick={() => {
+        speakJa(texto);
+        onClick();
+      }}
+    >
+      <span className="flex items-center gap-2">
+        <Volume2 size={18} className="text-[var(--azul)]" /> Opção {"ABC"[i]}
+      </span>
+      {legenda && <span className="block text-sm text-[var(--muted)]">{legenda}</span>}
+    </Opcao>
+  );
+}
+
+export function ExSituacao({ ex, travado, aoPronto }: ExProps<Ex<"situacao">>) {
+  const [escolha, setEscolha] = useState<number | null>(null);
+  const escolher = (i: number) => {
+    setEscolha(i);
+    aoPronto(() => ({
+      ok: i === ex.correta,
+      correta: `Opção ${"ABC"[ex.correta]}: ${traducaoPrincipal(ex.card)}`,
+      literal: ex.card.significado_cognitivo,
+      ouvir: ex.card.kana,
+    }));
+  };
+  return (
+    <div className="space-y-5">
+      <Enunciado>O que você diz?</Enunciado>
+      <BalaoMascote humor="feliz">
+        <p className="text-lg font-bold">{ex.card.situacao_pt}</p>
+      </BalaoMascote>
+      <p className="text-sm text-[var(--muted)]">Toque em cada opção para ouvir e escolha a que serve.</p>
+      <div className="space-y-3">
+        {ex.opcoes.map((c, i) => (
+          <OpcaoAudio
+            key={c.id}
+            i={i}
+            texto={c.kana}
+            ativo={escolha === i}
+            travado={travado}
+            legenda={travado ? traducaoPrincipal(c) : undefined}
+            onClick={() => escolher(i)}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export function ExImediata({ ex, travado, aoPronto }: ExProps<Ex<"imediata">>) {
+  const [escolha, setEscolha] = useState<number | null>(null);
+  const { pergunta, resposta } = ex.dialogo;
+  useTocarAoAbrir(pergunta.kana);
+  const escolher = (i: number) => {
+    setEscolha(i);
+    aoPronto(() => ({ ok: i === ex.correta, correta: `“${pergunta.pt}” → ${resposta.pt}`, ouvir: resposta.kana }));
+  };
+  return (
+    <div className="space-y-5">
+      <Enunciado>Ouça e escolha a melhor resposta</Enunciado>
+      <BalaoMascote>
+        <div className="flex items-center gap-3">
+          <BotoesSom texto={pergunta.kana} />
+          <span className="text-sm text-[var(--muted)]">Só o som: sem texto, como na prova.</span>
+        </div>
+      </BalaoMascote>
+      <div className="space-y-3">
+        {ex.opcoes.map((o, i) => (
+          <OpcaoAudio
+            key={i}
+            i={i}
+            texto={o.kana}
+            ativo={escolha === i}
+            travado={travado}
+            legenda={travado ? o.pt : undefined}
+            onClick={() => escolher(i)}
+          />
         ))}
       </div>
     </div>

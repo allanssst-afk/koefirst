@@ -30,12 +30,23 @@ export interface ExProps<E> {
 }
 
 /** Botão azul de áudio (normal) e o botão da tartaruga… aqui um caracol (devagar). */
-export function BotoesSom({ texto, grande = false, aoTocar }: { texto: string; grande?: boolean; aoTocar?: (on: boolean, rate: number) => void }) {
+export function BotoesSom({
+  texto,
+  grande = false,
+  aoTocar,
+  voz,
+}: {
+  texto: string;
+  grande?: boolean;
+  aoTocar?: (on: boolean, rate: number) => void;
+  /** índice de voz japonesa (treino de ouvido); sem ele, a voz preferida */
+  voz?: number;
+}) {
   const [tocando, setTocando] = useState(false);
   const tocar = async (rate: number) => {
     setTocando(true);
     aoTocar?.(true, rate);
-    await speakJa(texto, { rate });
+    await speakJa(texto, { rate, voz });
     aoTocar?.(false, rate);
     setTocando(false);
   };
@@ -60,7 +71,7 @@ export function BotoesSom({ texto, grande = false, aoTocar }: { texto: string; g
   );
 }
 
-/** Mascote com balão de fala ao lado (como o personagem dos exercícios do Duolingo). */
+/** Mascote com balão de fala ao lado. */
 export function BalaoMascote({ children, humor = "falando" }: { children: ReactNode; humor?: "feliz" | "falando" }) {
   return (
     <div className="flex items-end gap-2">

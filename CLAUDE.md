@@ -19,11 +19,25 @@ Backup e troca de aparelho pelo cartão "Seu progresso" do Dashboard (baixar/car
   VERIFICAR → painel verde/vermelho → CONTINUAR; erros voltam no fim. Exercícios (`montarLicao`): nova frase
   (com a `CognitiveBreakdown`: lógica literal + blocos na ordem japonesa), ouvir e escolher a tradução, **montar a
   frase em japonês** (blocos com função + som, na ordem japonesa, com 2 blocos intrusos; só frases de 2+ blocos),
-  falar, escolher a resposta japonesa (diálogo do Ping-Pong), quiz e slides do tutorial. O painel de resposta
+  falar, escolher a resposta japonesa (diálogo do Ping-Pong), quiz e slides do tutorial; e, com base em pesquisa:
+  **sombra** (shadowing: 4 rodadas falando junto com o áudio, 2 devagar + 2 normais, logo depois da 1ª frase de
+  fala da lição; informativo) e **melodia** (treino de ouvido com pares mínimos de entonação: a frase certa contra
+  a mesma frase com um bloco plano↔queda trocado, voz sorteada entre as do aparelho; 1 por lição de frases e 2
+  na revisão; erro de melodia não entra na nota FSRS da frase). O painel de resposta
   mostra a "Lógica japonesa" (`significado_cognitivo`). Concluir grava em `licao_log` (XP: 10, +5 sem erros;
   missão da Arena: 15) e leva o desempenho ao FSRS (`concluirLicao`): frase nova recebe a primeira nota pelos
   erros dela na lição (`notaDaLicao`: 0 = Good, 1 = Hard, 2+ = Again); na lição de revisão, só as frases
   erradas recebem Again. Nunca dar "Good" automático.
+- **Simulado de escuta** (`tipo: "simulado"`, `opcional: true`): última estação de cada unidade com 3+ frases,
+  no formato da prova de escuta do JLPT N5/N4 adaptado à fase só de som (`PARTES_SIMULADO`): Compreensão (ouvir
+  e escolher o sentido) · Expressão na situação (`situacao`: lê a situação e escolhe entre 3 frases só em áudio) ·
+  Resposta rápida (`imediata`: ouve a pergunta e escolhe a resposta em áudio; só formas cuja pergunta traz a
+  situação, para haver uma resposta única). Modo prova no `LessonPlayer`: sem correção a cada questão, sem
+  repetir erros; no fim, nota por parte e aprovação no critério do JLPT (60% no total + 1/3 em cada parte) e a
+  correção. Erros viram Again no FSRS; XP 20. Lição opcional não trava a trilha: abre quando o resto da unidade
+  termina. Novas lições entram sempre no FIM de `licoesDa` (os ids `uN:lM` são a chave do progresso salvo).
+- **Técnicas do método** (`src/components/TecnicasCard.tsx`, no Perfil): cada técnica, a base de pesquisa e onde
+  está no app. Atualizar ao criar exercícios novos.
 - **Limite diário de frases novas:** `meta_novos_dia` (Perfil → "Frases novas por dia") vale para trilha e aba
   Revisar juntas (`novosDeHoje`). Lição de frases que passaria da meta não abre ("Amanhã"); o resto do dia é
   revisão e prática.
@@ -109,7 +123,7 @@ src/
     CognitiveBreakdown.tsx       # ordem lógica japonesa (Tópico → Tempo → Objeto → Verbo)
     ScriptLayer.tsx              # aplica a camada ortográfica da fase atual
     PhaseProvider.tsx            # abre o banco do aparelho + fase global + seletor
-    PhaseCard.tsx · BackupCard.tsx · ContextPicker.tsx
+    PhaseCard.tsx · BackupCard.tsx · ContextPicker.tsx · TecnicasCard.tsx
     AudioControls.tsx            # Ouvir / Devagar / "Nativo vs Eu"
     useVoiceCapture.ts           # hook de gravação + STT + latência
     PitchContourView.tsx         # F0 da gravação vs padrão H/L

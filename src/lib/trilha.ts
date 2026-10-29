@@ -1,5 +1,5 @@
 /**
- * Trilha de aprendizagem (estilo Duolingo): unidades por situação de vida, cada uma com lições curtas.
+ * Trilha de aprendizagem: unidades por situação de vida, cada uma com lições curtas.
  * As lições reaproveitam o conteúdo existente: frases do baralho (seed), cenas do Ping-Pong e missões da Arena.
  */
 import type { SeedCard } from "@/db/seed-data/helpers";
@@ -20,7 +20,7 @@ export interface Unidade {
   missoes: string[];
 }
 
-export type TipoLicao = "tutorial" | "frases" | "pingpong" | "dialogo" | "revisao";
+export type TipoLicao = "tutorial" | "frases" | "pingpong" | "dialogo" | "revisao" | "simulado";
 
 export interface Licao {
   /** "u2:l3" — também é a chave do progresso salvo */
@@ -30,6 +30,8 @@ export interface Licao {
   titulo: string;
   cards: string[];
   missao?: string;
+  /** não trava a trilha: abre quando o resto da unidade termina (simulado) */
+  opcional?: boolean;
 }
 
 export const UNIDADES: Unidade[] = [
@@ -126,6 +128,7 @@ const TITULO: Record<TipoLicao, string> = {
   pingpong: "Ping-Pong",
   dialogo: "Diálogo",
   revisao: "Revisão da unidade",
+  simulado: "Simulado de escuta",
 };
 
 export function licoesDa(u: Unidade): Licao[] {
@@ -140,6 +143,8 @@ export function licoesDa(u: Unidade): Licao[] {
   if (u.contexto) l.push({ tipo: "pingpong", titulo: TITULO.pingpong, cards: [] });
   for (const m of u.missoes) l.push({ tipo: "dialogo", titulo: TITULO.dialogo, cards: [], missao: m });
   if (u.cards.length) l.push({ tipo: "revisao", titulo: TITULO.revisao, cards: u.cards });
+  // sempre por último: ids das lições anteriores não mudam (são a chave do progresso salvo)
+  if (u.cards.length >= 3) l.push({ tipo: "simulado", titulo: TITULO.simulado, cards: u.cards, opcional: true });
   return l.map((x, i) => ({ ...x, id: `${u.id}:l${i + 1}`, unidade: u }));
 }
 
@@ -168,7 +173,15 @@ export type Exercicio =
   /** monte a frase em japonês com os blocos (na ordem japonesa); `banco` = blocos embaralhados + 2 intrusos */
   | { tipo: "montar"; card: CardTrilha; banco: Mora[][]; resposta: string[] }
   | { tipo: "falar"; card: CardTrilha }
-  | { tipo: "dialogo"; dialogo: DialogoDrill; forma: Forma; opcoes: FalaDrill[]; correta: number };
+  | { tipo: "dialogo"; dialogo: DialogoDrill; forma: Forma; opcoes: FalaDrill[]; correta: number }
+  /** treino de ouvido (pares mínimos de entonação): a mesma frase com a melodia certa e uma alterada */
+  | { tipo: "melodia"; card: CardTrilha; opcoes: Mora[][]; correta: number; voz: number }
+  /** shadowing: falar junto com o áudio, 2 rodadas devagar + 2 na velocidade normal */
+  | { tipo: "sombra"; card: CardTrilha }
+  /** simulado, expressão na situação: lê a situação e escolhe, só pelo som, o que dizer */
+  | { tipo: "situacao"; card: CardTrilha; opcoes: CardTrilha[]; correta: number }
+  /** simulado, resposta rápida: ouve uma pergunta e escolhe, só pelo som, a resposta que combina */
+  | { tipo: "imediata"; dialogo: DialogoDrill; opcoes: FalaDrill[]; correta: number };
 
 /** Frase do baralho pronta para os exercícios (com as moras já achatadas). */
 export type CardTrilha = SeedCard & { moras: Mora[] };
@@ -240,6 +253,56 @@ function dialogo(ctx: Categoria): Exercicio {
   }
 }
 
+/**
+ * Treino de percepção da entonação (pares mínimos, como no treino fonético de alta variabilidade):
+ * a frase certa contra a mesma frase com um bloco de melodia trocada (plano ↔ queda no início).
+ * A voz é sorteada para o ouvido aprender a melodia, não a voz de um falante só.
+ */
+function melodia(card: CardTrilha): Exercicio | null {
+  const i = embaralhar(card.blocos.map((_, k) => k)).find((k) => card.blocos[k].length >= 2 && card.blocos[k][0].papel !== "particula");
+  if (i === undefined) return null;
+  const alto = card.blocos[i][0].pitch === "H";
+  const trocado = card.blocos[i].map((m, j): Mora => ({ ...m, pitch: (j === 0) === alto ? "L" : "H" }));
+  const errada = card.blocos.map((b, k) => (k === i ? trocado : b)).flat();
+  const opcoes = embaralhar([card.moras, errada]);
+  return { tipo: "melodia", card, opcoes, correta: opcoes.indexOf(card.moras), voz: Math.floor(Math.random() * 8) };
+}
+
+/** Simulado: a situação em português e três frases só em áudio (a certa + duas da mesma unidade). */
+function situacao(card: CardTrilha, daUnidade: CardTrilha[]): Exercicio {
+  const pool = daUnidade.length >= 3 ? daUnidade : (seedCards as CardTrilha[]);
+  const outras = embaralhar(pool.filter((c) => c.id !== card.id)).slice(0, 2).map((c) => cardPorId(c.id));
+  const opcoes = embaralhar([card, ...outras]);
+  return { tipo: "situacao", card, opcoes, correta: opcoes.indexOf(card) };
+}
+
+/**
+ * Simulado: resposta rápida. Só formas cuja pergunta traz a situação (ontem / todo dia + complemento),
+ * para haver uma única resposta certa; as erradas respondem com outra situação.
+ */
+function imediata(ctx: Categoria): Exercicio {
+  const cenas = cenasDoContexto(ctx);
+  const formas: Forma[] = ["mashita", "masen", "masen_deshita"];
+  const pode = (c: (typeof cenas)[number], f: Forma) => !verboPorDict(c.verbo).sem?.includes(f) && !c.sem?.includes(f);
+  for (;;) {
+    const cena = cenas[Math.floor(Math.random() * cenas.length)];
+    const forma = formas[Math.floor(Math.random() * formas.length)];
+    if (!pode(cena, forma)) continue;
+    const outras = embaralhar(cenas.filter((c) => c.ja.kana !== cena.ja.kana && c.verbo !== cena.verbo && pode(c, forma))).slice(0, 2);
+    if (outras.length < 2) continue;
+    const d = montarDialogo(cena, forma);
+    const opcoes = embaralhar([d.resposta, ...outras.map((c) => montarDialogo(c, forma).resposta)]);
+    return { tipo: "imediata", dialogo: d, opcoes, correta: opcoes.indexOf(d.resposta) };
+  }
+}
+
+/** Partes do simulado de escuta (formato da prova de escuta do JLPT N5/N4, adaptado à fase só de som). */
+export const PARTES_SIMULADO: { tipo: Exercicio["tipo"]; nome: string; descricao: string }[] = [
+  { tipo: "escuta", nome: "Compreensão", descricao: "ouça a frase e escolha o sentido" },
+  { tipo: "situacao", nome: "Expressão na situação", descricao: "leia a situação e escolha o que dizer" },
+  { tipo: "imediata", nome: "Resposta rápida", descricao: "ouça a pergunta e escolha a resposta" },
+];
+
 const TUTORIAL: Exercicio[] = [
   { tipo: "explica", slide: "mora" },
   {
@@ -274,17 +337,37 @@ export function montarLicao(l: Licao): Exercicio[] {
       return TUTORIAL;
     case "frases": {
       const ex: Exercicio[] = [];
-      for (const c of cards) ex.push({ tipo: "nova", card: c }, escuta(c));
+      // shadowing logo depois de conhecer a primeira frase de fala (ouvir → imitar)
+      const sombra = cards.find((c) => c.tipo === "speaking");
+      for (const c of cards) {
+        ex.push({ tipo: "nova", card: c });
+        if (c === sombra) ex.push({ tipo: "sombra", card: c });
+        ex.push(escuta(c));
+      }
+      const m = melodia(embaralhar(cards)[0]);
+      if (m) ex.push(m);
       for (const c of cards.filter(montavel)) ex.push(montar(c));
       for (const c of cards.filter((c) => c.tipo === "speaking").slice(0, 2)) ex.push({ tipo: "falar", card: c });
       return ex;
     }
     case "pingpong":
       return Array.from({ length: 6 }, () => dialogo(l.unidade.contexto ?? "social"));
-    case "revisao":
-      return embaralhar(cards)
+    case "revisao": {
+      const ex = embaralhar(cards)
         .slice(0, 10)
         .map((c, i) => [escuta, (x: CardTrilha) => (montavel(x) ? montar(x) : escuta(x)), (x: CardTrilha): Exercicio => ({ tipo: "falar", card: x })][i % 3](c));
+      // dois treinos de ouvido no meio da revisão
+      const ouvido = embaralhar(cards).map(melodia).filter((x): x is Exercicio => x !== null).slice(0, 2);
+      ouvido.forEach((o, i) => ex.splice(3 + i * 4, 0, o));
+      return ex;
+    }
+    case "simulado": {
+      const parte1 = embaralhar(cards).slice(0, 4).map(escuta);
+      const parte2 = embaralhar(cards).slice(0, 4).map((c) => situacao(c, cards));
+      const ctx = l.unidade.contexto;
+      const parte3 = ctx ? Array.from({ length: 4 }, () => imediata(ctx)) : [];
+      return [...parte1, ...parte2, ...parte3];
+    }
     case "dialogo":
       return [];
   }
