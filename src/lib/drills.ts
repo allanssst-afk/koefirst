@@ -49,6 +49,9 @@ export const VERBOS: Verbo[] = [
   { dict: "tsukuru", pt: "preparar", ptPres: "preparo", ptPret: "preparei", vcPres: "prepara", vcPret: "preparou", raiz: ["tsu", "ku", "ri"], raizKana: "つくり", raizKanji: "作[つく]り", heiban: false },
   { dict: "harau", pt: "pagar", ptPres: "pago", ptPret: "paguei", vcPres: "paga", vcPret: "pagou", raiz: ["ha", "ra", "i"], raizKana: "はらい", raizKanji: "払[はら]い", heiban: false },
   { dict: "noru", pt: "pegar", ptPres: "pego", ptPret: "peguei", vcPres: "pega", vcPret: "pegou", raiz: ["no", "ri"], raizKana: "のり", raizKanji: "乗[の]り", heiban: true },
+  { dict: "hajimeru", pt: "começar", ptPres: "começo", ptPret: "comecei", vcPres: "começa", vcPret: "começou", raiz: ["ha", "ji", "me"], raizKana: "はじめ", raizKanji: "始[はじ]め", heiban: true },
+  { dict: "tetsudau", pt: "ajudar", ptPres: "ajudo", ptPret: "ajudei", vcPres: "ajuda", vcPret: "ajudou", raiz: ["te", "tsu", "da", "i"], raizKana: "てつだい", raizKanji: "手伝[てつだ]い", heiban: false },
+  { dict: "modoru", pt: "retornar", ptPres: "retorno", ptPret: "retornei", vcPres: "retorna", vcPret: "retornou", raiz: ["mo", "do", "ri"], raizKana: "もどり", raizKanji: "戻[もど]り", heiban: false },
   { dict: "aruku", pt: "andar", ptPres: "ando", ptPret: "andei", vcPres: "anda", vcPret: "andou", raiz: ["a", "ru", "ki"], raizKana: "あるき", raizKanji: "歩[ある]き", heiban: false },
   {
     dict: "benkyou suru",
@@ -306,6 +309,18 @@ export const CENAS_DRILL: Record<Categoria, CenaDrill[]> = {
     { verbo: "kaeru", obj: "tarde", ja: OSOKU },
     { verbo: "benkyou suru", obj: "inglês", ja: comp("えいごを", "英語[えいご]を", ["えいご", "英語"], b("e.i.go", "LHH", "inglês", "objeto"), o("H")) },
     { verbo: "noru", obj: "o trem", ja: comp("でんしゃに", "電車[でんしゃ]に", ["でんしゃ", "電車"], DENSHA(ni("H"))) },
+    { verbo: "hajimeru", obj: "a reunião", ja: comp("かいぎを", "会議[かいぎ]を", ["かいぎ", "会議"], b("ka.i.gi", "HLL", "reunião", "objeto"), o("L")) },
+    { verbo: "hajimeru", obj: "o trabalho", ja: comp("しごとを", "仕事[しごと]を", ["しごと", "仕事"], b("shi.go.to", "LHH", "trabalho", "objeto"), o("H")) },
+    { verbo: "tetsudau", obj: "o colega", ja: comp("どうりょうを", "同僚[どうりょう]を", ["どうりょう", "同僚"], b("do.o.ryo.o", "LHHH", "colega de trabalho", "objeto"), o("H")) },
+    { verbo: "tetsudau", obj: "o gerente", ja: comp("ぶちょうを", "部長[ぶちょう]を", ["ぶちょう", "部長"], BUCHOU(o("H"))) },
+    { verbo: "modoru", obj: "ao escritório", ja: comp("じむしょに", "事務所[じむしょ]に", ["じむしょ", "事務所"], b("ji.mu.sho", "LHL", "escritório", "lugar"), ni("L")) },
+    { verbo: "modoru", obj: "para a empresa", ja: comp("かいしゃに", "会社[かいしゃ]に", ["かいしゃ", "会社"], b("ka.i.sha", "LHH", "empresa", "lugar"), ni("H")) },
+    {
+      verbo: "okuru",
+      obj: "os documentos ao cliente",
+      ja: comp("おきゃくさんにしりょうを", "お客[きゃく]さんに資料[しりょう]を", ["しりょう", "資料"], OKYAKU(ni("H")), b("shi.ryo.o", "HLL", "documentos", "objeto"), o("L")),
+    },
+    { verbo: "kaku", obj: "o relatório", ja: comp("ほうこくしょを", "報告書[ほうこくしょ]を", ["ほうこくしょ", "報告書"], b("ho.o.ko.ku.sho", "LHHHH", "relatório", "objeto"), o("H")) },
   ],
   social: [
     { verbo: "au", obj: "os amigos", ja: comp("ともだちに", "友達[ともだち]に", ["ともだち", "友達"], TOMODACHI, niAlvo("H")) },

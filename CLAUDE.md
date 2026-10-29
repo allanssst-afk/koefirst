@@ -116,7 +116,8 @@ src/
     roleplay/ RoleplayArena.tsx · JaBubble.tsx · CoachWhisper.tsx
   db/
     schema.ts · index.ts (sql.js + IndexedDB) · seed-run.ts · migrations.generated.ts (gerado)
-    seed-data/cards.ts · seed-data/scenarios.ts (+ scenarios-cotidiano.ts, scenarios-extra.ts) · seed-data/helpers.ts
+    seed-data/cards.ts (+ cards-trabalho.ts) · seed-data/scenarios.ts (+ scenarios-cotidiano.ts, scenarios-extra.ts,
+      scenarios-trabalho.ts) · seed-data/helpers.ts
   lib/
     types.ts · fsrs.ts · roles.ts · text.ts (normalização/similaridade/furigana) · idb.ts
     queries.ts                   # consultas e gravações (fila, revisão, dashboard, atividade, coach offline)

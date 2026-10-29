@@ -1,0 +1,223 @@
+import { b, card } from "./helpers";
+
+/**
+ * Frases de trabalho mais longas: expressões do escritório, prazos, atrasos, e-mails, ajuda e saída.
+ * Pitch de Tóquio na frase; verbos e adjetivos conferidos no OJAD (送る, 遅れる, 終わる, 手伝う, 戻る,
+ * 待つ, 助かる, 忙しい). Formas -masu caem depois de "ma"; -mashou depois de "sho".
+ */
+export const cardsTrabalho = [
+  card({
+    id: "card_031",
+    tipo: "speaking",
+    situacao_pt: "Você cruza com um colega no corredor do escritório (qualquer hora do dia).",
+    significado_cognitivo: "Bom trabalho! / Oi! — expressão pronta entre colegas: reconhece o esforço do outro",
+    traducao: "Bom trabalho! / Oi!",
+    kana: "おつかれさまです",
+    kanji: "お疲[つか]れ様[さま]です",
+    blocos: [
+      b("o._tsu.ka.re.sa.ma", "LHHHHH", "bom trabalho (reconhecimento)", "expressao"),
+      b("de._su", "HL", "[educado]", "expressao"),
+    ],
+    notas:
+      "O cumprimento mais usado no trabalho: ao chegar, no corredor, ao encerrar uma ligação. Plano (heiban): sobe e fica alto; o 'desu' depois cai. O 'tsu' quase some: o-ts'-kare-sama. Curiosidade: a origem é 'você está cansado (de tanto trabalhar)'.",
+    tags: ["trabalho", "saudacao", "ctx:trabalho"],
+  }),
+  card({
+    id: "card_032",
+    tipo: "speaking",
+    situacao_pt: "Seu expediente acabou e os colegas ainda estão trabalhando. Despeça-se.",
+    significado_cognitivo: "Com licença, vou indo antes de vocês — expressão pronta de saída do trabalho",
+    traducao: "Com licença, vou indo.",
+    kana: "おさきにしつれいします",
+    kanji: "お先[さき]に失礼[しつれい]します",
+    blocos: [
+      b("o.sa.ki.ni", "LHHH", "antes (de vocês)", "expressao"),
+      b("_shi.tsu.re.i.shi.ma._su", "LHLLLLL", "peço licença", "expressao"),
+    ],
+    notas:
+      "Dois arcos: 'osaki ni' sobe e fica alto; 'shitsurei' sobe de novo e cai depois de 'tsu' — o resto fica baixo. O 'shi' inicial quase some (sh'tsurei). Os colegas respondem 'otsukaresama deshita'.",
+    tags: ["trabalho", "despedida", "ctx:trabalho"],
+  }),
+  card({
+    id: "card_033",
+    tipo: "speaking",
+    situacao_pt: "Um cliente chega e pede para falar com o seu chefe. Peça para ele aguardar.",
+    significado_cognitivo: "Um pouco (educado), espera [honorífico] faça-me o favor → Um momento, por favor",
+    traducao: "Um momento, por favor.",
+    kana: "しょうしょうおまちください",
+    kanji: "少々[しょうしょう]お待[ま]ちください",
+    blocos: [
+      b("sho.o.sho.o", "HLLL", "um pouquinho (formal)", "adverbio"),
+      b("o.ma.chi", "LHH", "espera (o- = respeito)", "verbo"),
+      b("ku.da.sa.i", "HHHL", "faça-me o favor", "verbo"),
+    ],
+    notas:
+      "Fórmula de atendimento: 'shoushou' é o 'um pouco' formal (no dia a dia seria 'chotto'). 'o-machi kudasai' = o verbo esperar em forma de respeito. A voz cai depois de 'sho', sobe de novo em 'omachi' e só cai depois de 'sa'.",
+    tags: ["trabalho", "keigo", "kudasai", "ctx:trabalho"],
+  }),
+  card({
+    id: "card_034",
+    tipo: "speaking",
+    situacao_pt: "Seu chefe pergunta pelo material da reunião. Diga que mandou para o diretor hoje de manhã.",
+    significado_cognitivo: "Hoje de manhã, diretor [destino →], material [objeto], enviei",
+    traducao: "Hoje de manhã enviei o material ao diretor.",
+    kana: "けさぶちょうにしりょうをおくりました",
+    kanji: "今朝[けさ]部長[ぶちょう]に資料[しりょう]を送[おく]りました",
+    blocos: [
+      b("ke.sa", "HL", "hoje de manhã", "tempo"),
+      b("bu.cho.o", "LHH", "diretor (do setor)", "substantivo"),
+      b("ni", "H", "[Destino →]", "particula"),
+      b("shi.ryo.o", "HLL", "material, documentos", "objeto"),
+      b("o", "L", "[Objeto]", "particula"),
+      b("o.ku.ri.ma._shi.ta", "LHHHLL", "enviei", "verbo"),
+    ],
+    notas:
+      "Ordem japonesa: QUANDO → PARA QUEM (ni) → O QUÊ (o) → VERBO no fim. 'ni' marca o destino da ação (para quem vai). 'buchou' é plano, por isso o 'ni' fica alto; 'shiryou' cai logo depois do 'shi'.",
+    tags: ["trabalho", "ni", "wo", "mashita", "ctx:trabalho"],
+  }),
+  card({
+    id: "card_035",
+    tipo: "speaking",
+    situacao_pt: "Você pede a um colega que mande o relatório até amanhã.",
+    significado_cognitivo: "Amanhã até [prazo], envie [por favor]",
+    traducao: "Envie até amanhã, por favor.",
+    kana: "あしたまでにおくってください",
+    kanji: "明日[あした]までに送[おく]ってください",
+    blocos: [
+      b("a._shi.ta", "LHH", "amanhã", "tempo"),
+      b("ma.de.ni", "LLL", "[até — prazo]", "particula"),
+      b("o._ku.t.te", "LHHH", "envie (forma -te)", "verbo"),
+      b("ku.da.sa.i", "HHHL", "[por favor]", "verbo"),
+    ],
+    notas:
+      "'made' = até; 'made ni' = até (no máximo), um PRAZO. Pedido educado = verbo na forma -te + kudasai. 'ashita' cai no fim (o 'made ni' fica baixo); 'okutte kudasai' sobe e só cai depois de 'sa'. O 'shi' e o 'ku' quase somem.",
+    tags: ["trabalho", "kudasai", "te", "prazo", "ctx:trabalho"],
+  }),
+  card({
+    id: "card_036",
+    tipo: "speaking",
+    situacao_pt: "Você avisa o chefe que vai chegar atrasado porque o trem atrasou.",
+    significado_cognitivo: "Trem [foco: sujeito] atrasou, por isso, um pouco atrasarei",
+    traducao: "O trem atrasou, então vou me atrasar um pouco.",
+    kana: "でんしゃがおくれましたから、すこしおくれます",
+    kanji: "電車[でんしゃ]が遅[おく]れましたから、少[すこ]し遅[おく]れます",
+    blocos: [
+      b("de.n.sha", "LHH", "trem", "sujeito"),
+      b("ga", "H", "[Foco / sujeito]", "particula"),
+      b("o.ku.re.ma._shi.ta", "LHHHLL", "atrasou", "verbo"),
+      b("ka.ra", "LL", "[por isso →]", "particula"),
+      b("_su.ko.shi", "LHL", "um pouco", "adverbio"),
+      b("o.ku.re.ma._su", "LHHHL", "vou me atrasar", "verbo"),
+    ],
+    notas:
+      "Duas frases ligadas por 'kara' (porque/por isso): o MOTIVO vem primeiro e o resultado depois — o contrário do português 'vou atrasar porque…'. O mesmo verbo aparece no passado (okuremashita) e no presente-futuro (okuremasu).",
+    tags: ["trabalho", "kara", "mashita", "ga", "ctx:trabalho", "ctx:cidade"],
+  }),
+  card({
+    id: "card_037",
+    tipo: "speaking",
+    situacao_pt: "Você precisa planejar a tarde. Pergunte a que horas termina a reunião.",
+    significado_cognitivo: "Quanto à reunião [tópico], que horas [ponto no tempo] termina [?]",
+    traducao: "A que horas termina a reunião?",
+    kana: "かいぎはなんじにおわりますか",
+    kanji: "会議[かいぎ]は何時[なんじ]に終[お]わりますか",
+    blocos: [
+      b("ka.i.gi", "HLL", "reunião", "topico"),
+      b("wa", "L", "[Tópico]", "particula"),
+      b("na.n.ji", "HLL", "que horas", "pergunta"),
+      b("ni", "L", "[Ponto no tempo]", "particula"),
+      b("o.wa.ri.ma._su", "LHHHL", "termina", "verbo"),
+      b("ka", "L", "[?]", "particula"),
+    ],
+    notas:
+      "'ni' depois de um horário marca o MOMENTO exato (às X horas). A palavra de pergunta (nanji) fica no lugar onde a resposta vai entrar: 'sanji ni owarimasu' = termina às 3.",
+    tags: ["trabalho", "ni", "ka", "tempo", "ctx:trabalho"],
+  }),
+  card({
+    id: "card_038",
+    tipo: "speaking",
+    situacao_pt: "O gerente pede um material. Diga que vai prepará-lo até a semana que vem.",
+    significado_cognitivo: "Semana que vem até [prazo], preparação faço",
+    traducao: "Vou preparar até a semana que vem.",
+    kana: "らいしゅうまでにじゅんびします",
+    kanji: "来週[らいしゅう]までに準備[じゅんび]します",
+    blocos: [
+      b("ra.i.shu.u", "LHHH", "semana que vem", "tempo"),
+      b("ma.de.ni", "HHH", "[até — prazo]", "particula"),
+      b("ju.n.bi", "HLL", "preparação", "substantivo"),
+      b("shi.ma._su", "LLL", "faço", "verbo"),
+    ],
+    notas:
+      "Substantivo + 'shimasu' vira verbo: junbi (preparação) + shimasu = preparar. Depois de uma queda (ju↓nbi), o 'shimasu' fica todo baixo. Compare com 'ashita made ni': 'raishuu' é plano, então o 'made ni' fica alto.",
+    tags: ["trabalho", "suru", "prazo", "ctx:trabalho"],
+  }),
+  card({
+    id: "card_039",
+    tipo: "speaking",
+    situacao_pt: "O cliente fala rápido demais. Peça, com educação, para ele falar devagar.",
+    significado_cognitivo: "Desculpe, devagar, [por favor] peço",
+    traducao: "Desculpe, mais devagar, por favor.",
+    kana: "すみません、ゆっくりおねがいします",
+    kanji: "すみません、ゆっくりお願[ねが]いします",
+    blocos: [
+      b("su.mi.ma.se.n", "LHHHL", "com licença / desculpe", "expressao"),
+      b("yu.k.ku.ri", "LHHL", "devagar, com calma", "adverbio"),
+      b("o.ne.ga.i.shi.ma._su", "LHHHHHL", "peço (por favor)", "verbo"),
+    ],
+    notas:
+      "'onegaishimasu' serve para pedir qualquer coisa: basta pôr antes o que você quer (ou como quer). O pequeno 'tsu' de yukkuri é uma pausa que conta como batida: yu-k-ku-ri = 4 batidas.",
+    tags: ["trabalho", "sobrevivencia", "ctx:trabalho", "ctx:compras", "ctx:cidade"],
+  }),
+  card({
+    id: "card_040",
+    tipo: "speaking",
+    situacao_pt: "Um colega parece sobrecarregado. Pergunte se está ocupado e ofereça ajuda.",
+    significado_cognitivo: "Ocupado é [?]. Ajudemos [?] → Quer que eu ajude?",
+    traducao: "Você está ocupado? Quer que eu ajude?",
+    kana: "いそがしいですか。てつだいましょうか",
+    kanji: "忙[いそが]しいですか。手伝[てつだ]いましょうか",
+    blocos: [
+      b("i.so.ga.shi.i", "LHHHL", "ocupado", "adjetivo"),
+      b("de._su", "LL", "é", "copula"),
+      b("ka", "L", "[?]", "particula"),
+      b("te.tsu.da.i.ma.sho.o", "LHHHHHL", "ajudemos (ajudo?)", "verbo"),
+      b("ka", "L", "[?]", "particula"),
+    ],
+    notas:
+      "'-mashou' (vamos…) + 'ka' vira OFERTA: 'tetsudaimashou ka' = quer que eu ajude? Não precisa dizer 'eu' nem 'você': o contexto mostra. 'isogashii' cai no 'shi'; 'tetsudaimashou' cai depois de 'sho'.",
+    tags: ["trabalho", "mashou", "ka", "adjetivo", "ctx:trabalho"],
+  }),
+  card({
+    id: "card_041",
+    tipo: "speaking",
+    situacao_pt: "Seu chefe (ou um cliente) te dá uma instrução. Confirme com o máximo de respeito.",
+    significado_cognitivo: "Entendido, com todo o respeito — forma humilde de 'wakarimashita'",
+    traducao: "Entendido. (muito educado)",
+    kana: "かしこまりました",
+    kanji: "かしこまりました",
+    blocos: [b("ka._shi.ko.ma.ri.ma._shi.ta", "LHHHHHLL", "entendido (com respeito)", "expressao")],
+    notas:
+      "Com chefes e clientes, use no lugar de 'wakarimashita'. Como toda forma -mashita, a voz cai depois do último 'ma'. Os dois 'shi' quase somem: ka-sh'-komarima-sh'-ta.",
+    tags: ["trabalho", "keigo", "mashita", "ctx:trabalho", "ctx:restaurante"],
+  }),
+  card({
+    id: "card_042",
+    tipo: "speaking",
+    situacao_pt: "Você vai sair da sala de reunião. Avise que depois volta para o escritório.",
+    significado_cognitivo: "Reunião [de] depois, escritório [destino →] volto",
+    traducao: "Depois da reunião, volto para o escritório.",
+    kana: "かいぎのあと、じむしょにもどります",
+    kanji: "会議[かいぎ]の後[あと]、事務所[じむしょ]に戻[もど]ります",
+    blocos: [
+      b("ka.i.gi", "HLL", "reunião", "tempo"),
+      b("no", "L", "[de]", "particula"),
+      b("a.to", "HL", "depois", "tempo"),
+      b("ji.mu.sho", "LHL", "escritório", "lugar"),
+      b("ni", "L", "[Destino →]", "particula"),
+      b("mo.do.ri.ma._su", "LHHHL", "volto", "verbo"),
+    ],
+    notas:
+      "'X no ato' = depois de X (literal: o depois da reunião). O japonês põe a referência ANTES: 'reunião-de-depois'. 'ni' com verbo de movimento marca para onde.",
+    tags: ["trabalho", "no", "ni", "tempo", "ctx:trabalho"],
+  }),
+];

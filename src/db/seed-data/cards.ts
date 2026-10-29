@@ -1,3 +1,4 @@
+import { cardsTrabalho } from "./cards-trabalho";
 import { b, card } from "./helpers";
 
 /**
@@ -5,7 +6,7 @@ import { b, card } from "./helpers";
  * Pitch: padrão de Tóquio (NHK/OJAD) já aplicado no contexto da frase.
  * `_` antes da mora = mora devozeada (ex.: o "su" final de desu).
  */
-export const seedCards = [
+const cardsBase = [
   card({
     id: "card_002",
     tipo: "speaking",
@@ -504,3 +505,5 @@ export const seedCards = [
     tags: ["wa", "wo", "mashita", "ka", "listening", "rotina", "ctx:social", "ctx:trabalho"],
   }),
 ];
+
+export const seedCards = [...cardsBase, ...cardsTrabalho];

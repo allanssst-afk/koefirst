@@ -103,6 +103,21 @@ export const UNIDADES: Unidade[] = [
     cards: ["card_028", "card_017", "card_016"],
     missoes: ["rp_03_rotina"],
   },
+  {
+    id: "u7",
+    numero: 7,
+    titulo: "Dia a dia no escritório",
+    descricao: "Prazos, atrasos, clientes e fim do expediente",
+    cor: "#00cd9c",
+    contexto: "trabalho",
+    cards: [
+      "card_031", "card_041", "card_033",
+      "card_032", "card_039", "card_037",
+      "card_042", "card_034", "card_035",
+      "card_038", "card_036", "card_040",
+    ],
+    missoes: ["rp_trab_atraso", "rp_trab_prazo", "rp_trab_cliente", "rp_trab_saida"],
+  },
 ];
 
 const TITULO: Record<TipoLicao, string> = {
