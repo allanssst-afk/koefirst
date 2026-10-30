@@ -236,6 +236,21 @@ export const UNIDADES: Unidade[] = [
       { titulo: "Revisão: comida e opiniões", unidades: ["u2", "u12"] },
     ],
   },
+  {
+    id: "u15",
+    numero: 15,
+    titulo: "Família e pessoas",
+    descricao: "Minha família e a dos outros, idade e como as pessoas são",
+    cor: "#5fa8a0",
+    contexto: "social",
+    cards: [
+      "card_115", "card_116", "card_117",
+      "card_118", "card_119", "card_120",
+      "card_121", "card_122", "card_123",
+      "card_124", "card_125", "card_126",
+    ],
+    missoes: ["rp_fam_fotos", "rp_fam_vizinha", "rp_fam_festa"],
+  },
 ];
 
 const TITULO: Record<TipoLicao, string> = {

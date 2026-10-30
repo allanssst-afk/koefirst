@@ -43,6 +43,9 @@ const SIG_EXTRA: Record<string, string[]> = {
   映: ["refletir", "projetar (filme)"],
   末: ["fim", "final"],
   楽: ["divertido", "confortável", "música"],
+  介: ["intermediar", "apresentar"],
+  歳: ["idade", "anos (de idade)"],
+  奥: ["interior", "fundo"],
 };
 
 const NOMES_PROPRIOS = /^(Japão|China|Coreia|Tóquio|Buda)/;
