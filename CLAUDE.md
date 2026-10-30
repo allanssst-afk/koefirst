@@ -77,14 +77,15 @@ Unidades novas seguem a ordem do plano; ao terminar uma, marcar no plano.
   `src/lib/kana-tracos.generated.ts`, gerado por `scripts/gerar-kana.mjs` a partir do KanjiVG (CC BY-SA 3.0,
   crédito na página). **Exceção à Fase 1:** é um módulo à parte, aberto por atalhos no Perfil e no Praticar
   (`AtalhosEstudo`); na Fase 1 mostra o aviso de que a escrita entra na Fase 2, e o resto do app segue só com som.
-- **Kanji** (`/kanji`, `/kanji/ver/?k=会&g=app`, `src/lib/kanji.ts`, `QuizKanji.tsx`): 335 kanji — os das frases,
-  missões e Ping-Pong do app (`noApp`) + JLPT N5 (103) e N4 (181) — com significados em português, leituras on/kun,
+- **Kanji** (`/kanji`, `/kanji/ver/?k=会&g=app`, `src/lib/kanji.ts`, `QuizKanji.tsx`): 725 kanji — os das frases,
+  missões e Ping-Pong do app (`noApp`) + JLPT N5 (103), N4 (181) e N3 (341) — com significados em português, leituras on/kun,
   nível, ordem dos traços e as palavras das frases que usam cada um (`PALAVRAS`: tiradas de `漢字[よみ]` nos cards;
   o okurigana e o prefixo お/ご vêm do bloco de moras que contém a leitura). Caligrafia igual à dos kana
   (`Caligrafia` com `dados`), quiz kanji→sentido, sentido→kanji e palavra→leitura (o quiz genérico fica em
   `escrita/Quiz.tsx`). Progresso no mesmo `kana_log`. Dados em `src/lib/kanji-dados.generated.ts`, gerado por
   `scripts/gerar-kanji.ts` a partir do KANJIDIC2 (EDRDG, CC BY-SA 4.0) e do KanjiVG; `SIG_EXTRA` corrige à mão os
-  significados que faltam ou enganam. Os traços já gerados são reaproveitados: `--lista <kanjidic2.xml.gz>` mostra
+  significados que faltam ou enganam, e `scripts/kanji-n3.ts` traz a lista do N3 (Jonathan Waller; o KANJIDIC2 só tem os níveis
+  antigos) com os significados escritos à mão. Os traços já gerados são reaproveitados: `--lista <kanjidic2.xml.gz>` mostra
   só os kanji novos, e basta baixar o .svg deles do KanjiVG. Só as páginas de kanji importam esses dados (o dicionário não). Na Fase < 3
   mostra o aviso de que os kanji entram na Fase 3; no Dicionário, os atalhos para os kanji da frase só aparecem
   na Fase 3+.
@@ -217,6 +218,7 @@ scripts/publicar.sh              # npm run publicar → build + envio para a bra
 scripts/gerar-migracoes.mjs      # embute migrações + copia o wasm do SQLite
 scripts/servir.mjs               # servidor estático mínimo para testar o build (npm start)
 scripts/validar-pitch.ts         # confere a entonação dos cards e missões com o OJAD
+scripts/gerar-kanji.ts · kanji-n3.ts   # gera os dados de kanji; lista e significados do N3
 docs/plano-12-meses.md           # plano de conteúdo até o B1
 drizzle/                         # migrações SQL geradas
 public/sw.js · public/icon.svg · public/audio/

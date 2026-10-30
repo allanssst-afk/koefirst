@@ -1,5 +1,5 @@
-// Gera src/lib/kanji-dados.generated.ts: kanji do JLPT N5 e N4 + todos os que aparecem no app, com significado em
-// português, leituras on/kun, nível e a ordem dos traços.
+// Gera src/lib/kanji-dados.generated.ts: kanji do JLPT N5, N4 e N3 + todos os que aparecem no app, com significado em
+// português, leituras on/kun, nível e a ordem dos traços. A lista e os significados do N3 ficam em scripts/kanji-n3.ts.
 // Fontes: KANJIDIC2 (EDRDG, CC BY-SA 4.0 — https://www.edrdg.org/edrdg/licence.html) e KanjiVG (© Ulrich Apel,
 // CC BY-SA 3.0 — https://kanjivg.tagaini.net).
 //
@@ -14,6 +14,7 @@ import { seedCards } from "../src/db/seed-data/cards";
 import { seedScenarios } from "../src/db/seed-data/scenarios";
 import { cenasDoContexto } from "../src/lib/drills";
 import { KANJI as ANTERIOR } from "../src/lib/kanji-dados.generated";
+import { KANJI_N3 } from "./kanji-n3";
 
 const KANJI_RE = /[一-龯]/g;
 
@@ -165,6 +166,7 @@ const SIG_EXTRA: Record<string, string[]> = {
   診: ["examinar (paciente)", "diagnosticar"],
   活: ["vida", "atividade"],
   多: ["muitos", "muito"],
+  詳: ["detalhado", "conhecer bem"],
 };
 
 const NOMES_PROPRIOS = /^(Japão|China|Coreia|Tóquio|Buda|Inglaterra)/;
@@ -215,7 +217,7 @@ function selecao(dic: Map<string, Bruto>): string[] {
   const app = kanjiDoApp();
   // nível antigo do KANJIDIC2: 4 ≈ N5, 3 ≈ N4
   const jlpt = [...dic].filter(([, v]) => v.jlpt === 4 || v.jlpt === 3).map(([k]) => k);
-  return [...new Set([...jlpt, ...app])].filter((k) => dic.has(k));
+  return [...new Set([...jlpt, ...Object.keys(KANJI_N3), ...app])].filter((k) => dic.has(k));
 }
 
 const args = process.argv.slice(2);
@@ -250,12 +252,12 @@ for (const k of selecao(dic)) {
   } else throw new Error(`falta o KanjiVG de ${k} (${hex}.svg)`);
   if (!tracos.length || tracos.length !== numeros.length) throw new Error(`${k}: ${tracos.length} traços, ${numeros.length} números`);
   saida[k] = {
-    sig: (SIG_EXTRA[k] ?? d.pt)
+    sig: (SIG_EXTRA[k] ?? KANJI_N3[k] ?? d.pt)
       .slice(0, 4)
       .map((x) => (NOMES_PROPRIOS.test(x) ? x : x.charAt(0).toLowerCase() + x.slice(1)).replace(/\.$/, "")),
     on: d.on.slice(0, 3),
     kun: kunLegivel(d.kun),
-    nivel: d.jlpt === 4 ? 5 : d.jlpt === 3 ? 4 : null,
+    nivel: d.jlpt === 4 ? 5 : d.jlpt === 3 ? 4 : KANJI_N3[k] ? 3 : null,
     freq: d.freq,
     noApp: app.has(k),
     tracos,
@@ -274,8 +276,8 @@ export interface KanjiDados {
   /** leituras on (katakana) e kun (hiragana, okurigana entre parênteses) */
   on: string[];
   kun: string[];
-  /** nível do JLPT (5 = N5, 4 = N4) ou null */
-  nivel: 5 | 4 | null;
+  /** nível do JLPT (5 = N5, 4 = N4, 3 = N3) ou null */
+  nivel: 5 | 4 | 3 | null;
   /** posição entre os 2.500 kanji mais usados em jornais */
   freq: number | null;
   /** aparece nas frases, missões ou Ping-Pong do app */

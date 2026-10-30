@@ -10,7 +10,7 @@ independente na fala). Guia a produção de unidades: cada unidade nova sai daqu
 | Frases do baralho (faladas) | ~700 | 598 |
 | Palavras ativas (fala) | ~2.000 | ~1.275 |
 | Palavras reconhecidas (escuta/leitura) | ~3.500 | — |
-| Kanji | ~650 (N5 + N4 + N3) | 521 com dados (N5, N4 e os do app) |
+| Kanji | ~650 (N5 + N4 + N3) | 725 com dados (N5, N4, N3 e os do app) |
 | Formas verbais no Ping-Pong | ~20 | 26 (-masu, -mashita, -masen, -masen deshita, -tai, -mashou, -te kudasai, -te imasu, dicionário + koto, -nakereba, -ta e -nakatta casuais, -ta koto ga arimasu, volitiva + to omoimasu, potencial afirmativo e negativo, -tara ii desu yo, -te kuremashita, -tai n desu ga, -te shimaimashita, o-… shimasu, passiva, causativa + kudasai, -nakute mo ii, -ta sou desu, -te kara) |
 | Fala contínua | 5 min sobre si, narrar, opinar | frases soltas e missões de 6 turnos |
 
@@ -67,8 +67,8 @@ necessárias:
 3. **Leitura** (a partir da Fase 2): textos curtos por unidade, com o mapa de som e a camada de escrita da fase.
 4. **Simulado completo** (Fase 2+): N5 *(pronto, unidade 26: vocabulário, gramática e leitura em kana, além da escuta;
    banco em `src/lib/simulado-n5.ts`)* e N4 *(pronto, unidade 35: com kanji; banco em `src/lib/simulado-n4.ts`)* e N3 *(pronto, unidade 44: vocabulário, gramática, leitura e escuta; banco em `src/lib/simulado-n3.ts`)*.
-5. **Kanji N3**: estender `scripts/gerar-kanji.ts` para o nível antigo 2 do KANJIDIC2 (que mistura N3 e N2;
-   filtrar pela lista de kanji N3 mais usada).
+5. **Kanji N3** *(pronto: 341 kanji em `scripts/kanji-n3.ts`, com a lista de Jonathan Waller e significados escritos à mão;
+   aba JLPT N3 em `/kanji`, com caligrafia e quiz)*.
 6. **Fala longa** *(pronta: turno `aberto` na Arena, com cronômetro, pontos por palavras-chave e balanço; nas unidades 36, 40,
    41 e 42 e na Avaliação oral B1 da unidade 44, com 4 turnos que somam 5 minutos)*.
 

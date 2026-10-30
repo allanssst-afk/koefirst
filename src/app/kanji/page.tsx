@@ -8,7 +8,7 @@ import { QuizKanji, TIPOS_QUIZ_KANJI, type TipoQuizKanji } from "@/components/es
 import { GRUPOS_KANJI, KANJI, KANJI_DO_GRUPO, type GrupoKanji } from "@/lib/kanji";
 import { progressoKana } from "@/lib/queries";
 
-/** Kanji: os das frases do app e os do JLPT N5/N4, com significado, quiz e caligrafia. */
+/** Kanji: os das frases do app e os do JLPT N5, N4 e N3, com significado, quiz e caligrafia. */
 export default function Kanji() {
   const { fase } = usePhase();
   const [grupo, setGrupo] = useState<GrupoKanji>("app");
@@ -37,7 +37,7 @@ export default function Kanji() {
         </div>
       )}
 
-      <div className="grid grid-cols-3 gap-1 rounded-2xl bg-[var(--panel)] p-1">
+      <div className="grid grid-cols-4 gap-1 rounded-2xl bg-[var(--panel)] p-1">
         {GRUPOS_KANJI.map((g) => (
           <button
             key={g.id}
@@ -109,7 +109,7 @@ export default function Kanji() {
       </section>
 
       <p className="text-center text-[11px] text-[var(--muted)]">
-        Significados e leituras: KANJIDIC2 (EDRDG, CC BY-SA 4.0). Ordem dos traços: KanjiVG, de Ulrich Apel (CC BY-SA 3.0).
+        Significados e leituras: KANJIDIC2 (EDRDG, CC BY-SA 4.0). Ordem dos traços: KanjiVG, de Ulrich Apel (CC BY-SA 3.0). Lista do N3: Jonathan Waller.
       </p>
     </div>
   );

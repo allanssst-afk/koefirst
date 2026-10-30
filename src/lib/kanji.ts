@@ -9,12 +9,13 @@ import { morasToKana } from "./text";
 export type { KanjiDados };
 export { KANJI };
 
-export type GrupoKanji = "app" | "n5" | "n4";
+export type GrupoKanji = "app" | "n5" | "n4" | "n3";
 
 export const GRUPOS_KANJI: { id: GrupoKanji; nome: string; descricao: string }[] = [
   { id: "app", nome: "Das suas frases", descricao: "os kanji que aparecem nas frases do app" },
   { id: "n5", nome: "JLPT N5", descricao: "os kanji do primeiro nível da prova" },
   { id: "n4", nome: "JLPT N4", descricao: "os kanji do segundo nível" },
+  { id: "n3", nome: "JLPT N3", descricao: "os kanji do terceiro nível, a meta do B1" },
 ];
 
 const porFrequencia = (a: string, b: string) => (KANJI[a].freq ?? 9999) - (KANJI[b].freq ?? 9999);
@@ -24,8 +25,8 @@ export const KANJI_DO_GRUPO: Record<GrupoKanji, string[]> = (() => {
   const app: string[] = [];
   for (const c of seedCards) for (const k of c.kanji.match(/[一-龯]/g) ?? []) if (KANJI[k] && !app.includes(k)) app.push(k);
   for (const k of Object.keys(KANJI)) if (KANJI[k].noApp && !app.includes(k)) app.push(k);
-  const nivel = (n: 5 | 4) => Object.keys(KANJI).filter((k) => KANJI[k].nivel === n).sort(porFrequencia);
-  return { app, n5: nivel(5), n4: nivel(4) };
+  const nivel = (n: 5 | 4 | 3) => Object.keys(KANJI).filter((k) => KANJI[k].nivel === n).sort(porFrequencia);
+  return { app, n5: nivel(5), n4: nivel(4), n3: nivel(3) };
 })();
 
 export interface PalavraKanji {
