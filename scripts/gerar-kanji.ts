@@ -124,6 +124,11 @@ const SIG_EXTRA: Record<string, string[]> = {
   閉: ["fechar"],
   震: ["tremer", "terremoto"],
   故: ["acidente", "motivo", "falecido"],
+  歯: ["dente"],
+  磨: ["polir", "escovar"],
+  泥: ["lama", "ladrão (em palavras)"],
+  最: ["o mais", "extremo"],
+  局: ["repartição", "conclusão"],
 };
 
 const NOMES_PROPRIOS = /^(Japão|China|Coreia|Tóquio|Buda|Inglaterra)/;

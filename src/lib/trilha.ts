@@ -659,6 +659,23 @@ export const UNIDADES: Unidade[] = [
     ],
     missoes: ["rp_not_tempo", "rp_not_boato", "rp_not_acidente"],
   },
+  {
+    id: "u40",
+    numero: 40,
+    titulo: "Contar uma história",
+    descricao: "Antes, depois, enquanto e no fim",
+    cor: "#6d7fb0",
+    contexto: "trabalho",
+    formasNovas: ["te_kara"],
+    cards: [
+      "card_519", "card_520", "card_521", "card_522",
+      "card_523", "card_524", "card_525", "card_526",
+      "card_527", "card_528", "card_529", "card_530",
+      "card_531", "card_532", "card_533", "card_534",
+      "card_535", "card_536", "card_537", "card_538",
+    ],
+    missoes: ["rp_his_dia", "rp_his_rotina", "rp_his_japones"],
+  },
 ];
 
 const TITULO: Record<TipoLicao, string> = {

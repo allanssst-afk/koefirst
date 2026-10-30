@@ -75,7 +75,7 @@ export const VERBOS: Verbo[] = [
 
 const junta = (...partes: (string | undefined)[]) => partes.filter(Boolean).join(" ");
 
-export type Forma = "masu" | "mashita" | "masen" | "masen_deshita" | "tai" | "mashou" | "te_kudasai" | "te_imasu" | "koto" | "nakereba" | "ta" | "nakatta" | "ta_koto" | "ou_to" | "reru" | "remasen" | "tara" | "te_kureta" | "tai_ga" | "te_shimau" | "o_shimasu" | "rareta" | "sasete" | "nakute" | "ta_sou";
+export type Forma = "masu" | "mashita" | "masen" | "masen_deshita" | "tai" | "mashou" | "te_kudasai" | "te_imasu" | "koto" | "nakereba" | "ta" | "nakatta" | "ta_koto" | "ou_to" | "reru" | "remasen" | "tara" | "te_kureta" | "tai_ga" | "te_shimau" | "o_shimasu" | "rareta" | "sasete" | "nakute" | "ta_sou" | "te_kara";
 
 interface FormaDef {
   label: string;
@@ -404,6 +404,18 @@ export const FORMAS: Record<Forma, FormaDef> = {
     kana: "そうです",
     funcao: "ouvi dizer",
   },
+  te_kara: {
+    pergunta: () => "Quando você volta?",
+    abertura: "",
+    quando: "Dizer o que vem antes de voltar para casa",
+    regra: "forma -te + kara (depois de)",
+    frase: (v, obj) => junta("volto depois de", v.pt, obj),
+    label: "Depois de",
+    comando: "Primeiro isso!",
+    sufixo: [],
+    kana: "からかえります",
+    funcao: "depois de",
+  },
 };
 
 /** Verbos cuja volitiva é base -nai + "you" (grupo de taberu e os irregulares); os outros trocam o último som por "-ou". */
@@ -502,6 +514,7 @@ export interface Conjugacao {
  *   e "kudasai" fica baixo (kaerásete kudasai). OJAD, 17 verbos. Exceção: tabesasete sai plano, e taberu fica fora da lista.
  * - -nakute mo ii: mesma regra do -nakereba; "ii" = HL. OJAD, 18 verbos. Exceção: okinakute sai plano e fica fora da lista.
  * - -ta sou desu: melodia da forma -ta; "sou" = HL depois de verbo plano, LL depois de queda. OJAD, 12 verbos.
+ * - -te kara: melodia da forma -te; "kara" baixo; "kaerimasu" sobe de novo (LHHHL). OJAD, 15 verbos.
  */
 export function conjugar(verbo: Verbo, forma: Forma): Conjugacao {
   const raizBloco = verbo.raiz.join("");
@@ -535,6 +548,17 @@ export function conjugar(verbo: Verbo, forma: Forma): Conjugacao {
     const kana = ta(te.kana);
     const kanji = ta(te.kanji);
     return { verbo, forma, moras, kana, kanji, alvos: [kana, stripFurigana(kanji)] };
+  }
+
+  if (forma === "te_kara") {
+    const te = verbo.te;
+    const moras = [
+      ...b(te.som, pitchTe(te.som.split(".").length, te.acento), `${raizFn} (forma -te)`, "verbo"),
+      ...b("ka.ra", "LL", FORMAS.te_kara.funcao, "particula"),
+      ...b("ka.e.ri.ma._su", "LHHHL", "volto", "verbo"),
+    ];
+    const plain = stripFurigana(te.kanji);
+    return { verbo, forma, moras, kana: `${te.kana}からかえります`, kanji: `${te.kanji}から帰[かえ]ります`, alvos: [`${te.kana}からかえります`, `${plain}から帰ります`, `${te.kana}から`, `${plain}から`] };
   }
 
   if (forma === "ta_sou") {
@@ -1020,6 +1044,11 @@ const OUVI_DIZER_OK = new Set([
 for (const cenas of Object.values(CENAS_DRILL))
   for (const c of cenas) if (!OUVI_DIZER_OK.has(`${c.verbo}|${c.obj}`)) c.sem = [...(c.sem ?? []), "ta_sou"];
 
+/** Depois de (-te kara kaerimasu): tarefas que se terminam antes de ir embora. */
+const ANTES_DE_VOLTAR = new Set(["kaku", "yomu", "hanasu", "au", "matsu", "suru", "okuru", "tsukuru", "benkyou suru", "kau", "harau"]);
+for (const cenas of Object.values(CENAS_DRILL))
+  for (const c of cenas) if (!OBRIGACOES_OK.has(`${c.verbo}|${c.obj}`) || !ANTES_DE_VOLTAR.has(c.verbo)) c.sem = [...(c.sem ?? []), "te_kara"];
+
 /** A transformação combina com a situação (nem o verbo nem a cena a excluem). */
 export const combina = (cena: CenaDrill, forma: Forma) => !verboPorDict(cena.verbo).sem?.includes(forma) && !cena.sem?.includes(forma);
 
@@ -1089,6 +1118,7 @@ const NANIKA_GOYOU = [
   ...b("de._su", "LL", "é", "copula"),
   ...b("ka", "L", "[?]", "particula"),
 ];
+const ITSU_KAERIMASU = [...b("i.tsu", "HL", "quando", "pergunta"), ...b("ka.e.ri.ma._su", "LHHHL", "volta", "verbo"), ...b("ka", "L", "[?]", "particula")];
 const TANAKA_WA = {
   kana: "たなかさんは",
   kanji: "田中[たなか]さんは",
@@ -1138,6 +1168,7 @@ const ponto = (t: string) => (/[.!?]$/.test(t) ? t : `${t}.`);
  * - Deixe-me:          どうしましたか → [complemento][causativa -te]ください
  * - Não precisa:       [complemento][base -nai]なければなりませんか → いいえ、…なくてもいいです
  * - Ouvi dizer:        田中さんはどうしましたか → 田中さんは[complemento][verbo -ta]そうです
+ * - Depois de:         いつ帰りますか → [complemento][forma -te]から帰ります
  */
 export function montarDialogo(cena: CenaDrill, forma: Forma): DialogoDrill {
   const v = verboPorDict(cena.verbo);
@@ -1150,6 +1181,8 @@ export function montarDialogo(cena: CenaDrill, forma: Forma): DialogoDrill {
   if (forma === "ta" || forma === "nakatta") {
     const q = conjugar(v, "ta");
     pergunta = fala(KINOU.kana + c.kana + q.kana + "？", KINOU.kanji + c.kanji + q.kanji + "？", f.pergunta(v, cena.obj), KINOU.moras, c.moras, q.moras);
+  } else if (forma === "te_kara") {
+    pergunta = fala(fim("いつかえりますか"), fim("いつ帰[かえ]りますか"), f.pergunta(v, cena.obj), ITSU_KAERIMASU);
   } else if (forma === "ta_sou") {
     pergunta = fala(fim(`${TANAKA_WA.kana}どうしましたか`), fim(`${TANAKA_WA.kanji}どうしましたか`), f.pergunta(v, cena.obj), TANAKA_WA.moras, DOU_SHIMASHITA);
   } else if (forma === "nakute") {

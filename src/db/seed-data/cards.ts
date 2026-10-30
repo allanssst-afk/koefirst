@@ -28,6 +28,7 @@ import { cardsPassiva } from "./cards-passiva";
 import { cardsCausativa } from "./cards-causativa";
 import { cardsConselhos } from "./cards-conselhos";
 import { cardsNoticias } from "./cards-noticias";
+import { cardsHistoria } from "./cards-historia";
 import { cardsTrabalho } from "./cards-trabalho";
 import { b, card } from "./helpers";
 
@@ -536,4 +537,4 @@ const cardsBase = [
   }),
 ];
 
-export const seedCards = [...cardsBase, ...cardsTrabalho, ...cardsLugares, ...cardsNumeros, ...cardsPedidos, ...cardsAgora, ...cardsAdjetivos, ...cardsFimDeSemana, ...cardsFamilia, ...cardsSaude, ...cardsHobbies, ...cardsRegras, ...cardsCasual, ...cardsOpiniao, ...cardsMotivos, ...cardsExperiencias, ...cardsComparar, ...cardsPlanos, ...cardsViagem, ...cardsConsegue, ...cardsCondicional, ...cardsDarReceber, ...cardsDescrever, ...cardsServicos, ...cardsProblemas, ...cardsKeigo, ...cardsTelefone, ...cardsAparencias, ...cardsPassiva, ...cardsCausativa, ...cardsConselhos, ...cardsNoticias];
+export const seedCards = [...cardsBase, ...cardsTrabalho, ...cardsLugares, ...cardsNumeros, ...cardsPedidos, ...cardsAgora, ...cardsAdjetivos, ...cardsFimDeSemana, ...cardsFamilia, ...cardsSaude, ...cardsHobbies, ...cardsRegras, ...cardsCasual, ...cardsOpiniao, ...cardsMotivos, ...cardsExperiencias, ...cardsComparar, ...cardsPlanos, ...cardsViagem, ...cardsConsegue, ...cardsCondicional, ...cardsDarReceber, ...cardsDescrever, ...cardsServicos, ...cardsProblemas, ...cardsKeigo, ...cardsTelefone, ...cardsAparencias, ...cardsPassiva, ...cardsCausativa, ...cardsConselhos, ...cardsNoticias, ...cardsHistoria];

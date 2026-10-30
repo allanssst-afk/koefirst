@@ -166,6 +166,8 @@ Unidades novas seguem a ordem do plano; ao terminar uma, marcar no plano.
   いいです (forma `nakute`). Mesmo pitch do -nakereba; "ii" = HL. Só tarefas (`OBRIGACOES_OK`, sem okiru).
 - **Ouvi dizer (-ta sou desu)** no Ping-Pong: 田中さんはどうしましたか → 田中さんは[complemento][verbo -ta]そうです (forma
   `ta_sou`). "sou" = HL depois de verbo plano, LL depois de queda. Só fatos que alguém passaria adiante (`OUVI_DIZER_OK`).
+- **Depois de (-te kara)** no Ping-Pong: いつ帰りますか → [complemento][forma -te]から帰ります (forma `te_kara`). "kara" baixo e
+  "kaerimasu" = LHHHL. Só tarefas que se terminam antes de ir embora (`OBRIGACOES_OK` + `ANTES_DE_VOLTAR`).
 - Isso vale também para o que *o usuário* fala: na Fase 1 a transcrição do STT **não é exibida**
   (mostra-se só a % de correspondência). Na Fase 2+ ela aparece.
 - Camadas ortográficas (`user_settings.fase_atual`), aplicadas pelo componente `ScriptLayer`:
@@ -240,7 +242,7 @@ src/
     schema.ts · index.ts (sql.js + IndexedDB) · seed-run.ts · migrations.generated.ts (gerado)
     seed-data/cards.ts (+ cards-trabalho.ts, cards-lugares.ts, cards-numeros.ts, cards-pedidos.ts,
       cards-agora.ts, cards-adjetivos.ts, cards-fimdesemana.ts, cards-familia.ts, cards-saude.ts, cards-hobbies.ts,
-      cards-regras.ts, cards-casual.ts, cards-opiniao.ts, cards-motivos.ts, cards-experiencias.ts, cards-comparar.ts, cards-planos.ts, cards-viagem.ts, cards-consegue.ts, cards-condicional.ts, cards-dar-receber.ts, cards-descrever.ts, cards-servicos.ts, cards-problemas.ts, cards-keigo.ts, cards-telefone.ts, cards-aparencias.ts, cards-passiva.ts, cards-causativa.ts, cards-conselhos.ts, cards-noticias.ts) ·
+      cards-regras.ts, cards-casual.ts, cards-opiniao.ts, cards-motivos.ts, cards-experiencias.ts, cards-comparar.ts, cards-planos.ts, cards-viagem.ts, cards-consegue.ts, cards-condicional.ts, cards-dar-receber.ts, cards-descrever.ts, cards-servicos.ts, cards-problemas.ts, cards-keigo.ts, cards-telefone.ts, cards-aparencias.ts, cards-passiva.ts, cards-causativa.ts, cards-conselhos.ts, cards-noticias.ts, cards-historia.ts) ·
       seed-data/scenarios.ts
       (+ scenarios-cotidiano.ts,
       scenarios-extra.ts, scenarios-trabalho.ts, scenarios-lugares.ts, scenarios-numeros.ts, scenarios-pedidos.ts,
@@ -251,7 +253,7 @@ src/
       scenarios-dar-receber.ts, scenarios-descrever.ts, scenarios-servicos.ts, scenarios-problemas.ts, scenarios-keigo.ts,
       scenarios-telefone.ts, scenarios-aparencias.ts,
       scenarios-passiva.ts, scenarios-causativa.ts, scenarios-conselhos.ts,
-      scenarios-noticias.ts) ·
+      scenarios-noticias.ts, scenarios-historia.ts) ·
       seed-data/helpers.ts
   lib/
     types.ts · fsrs.ts · roles.ts · text.ts (normalização/similaridade/furigana) · idb.ts
