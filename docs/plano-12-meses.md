@@ -5,12 +5,12 @@ independente na fala). Guia a produção de unidades: cada unidade nova sai daqu
 
 ## Metas finais (mês 12)
 
-| Medida | Meta B1 | Hoje (unidades 1–12) |
+| Medida | Meta B1 | Hoje (unidades 1–13) |
 | --- | --- | --- |
-| Frases do baralho (faladas) | ~700 | 102 |
-| Palavras ativas (fala) | ~2.000 | ~280 |
+| Frases do baralho (faladas) | ~700 | 114 |
+| Palavras ativas (fala) | ~2.000 | ~315 |
 | Palavras reconhecidas (escuta/leitura) | ~3.500 | — |
-| Kanji | ~650 (N5 + N4 + N3) | 362 com dados (N5, N4 e os do app) |
+| Kanji | ~650 (N5 + N4 + N3) | 368 com dados (N5, N4 e os do app) |
 | Formas verbais no Ping-Pong | ~20 | 8 (-masu, -mashita, -masen, -masen deshita, -tai, -mashou, -te kudasai, -te imasu) |
 | Fala contínua | 5 min sobre si, narrar, opinar | frases soltas e missões de 6 turnos |
 
@@ -27,7 +27,7 @@ Fases = camadas de escrita do app (Perfil): 1 som · 2 + kana · 3 + kanji com f
 | --- | --- | --- | --- | --- |
 | 1 | 1 Cumprimente e se apresente · 2 Comida e bebida · 3 Compras e perguntas · 4 Pela cidade *(prontas)* | X wa Y desu · ~ka · ~o kudasai · -masu / -masen / -tai | 120 | apresentar-se em 30 s |
 | 2 | 5 No trabalho · 6 Sua rotina · 7 Dia a dia no escritório *(prontas)* · 8 Onde fica, o que tem *(pronta)* · 9 Números, horas e preços *(pronta)* | aru / iru · ~ni ~ga arimasu · posição (mae, ue, chikaku) · ~kara ~made · contadores (~ji, ~fun, ~en, ~tsu, ~nin, ~mai) · datas | 300 | pedir e entender direções |
-| 3 | 10 Peça e oriente *(pronta)* · 11 Agora e sempre *(pronta)* · 12 Como é? *(pronta)* · **13 Fim de semana** (próxima) · 14 Revisão geral | -te kudasai · -te mo ii desu ka · -te wa ikemasen · -te imasu (ação e estado) · adjetivos -i / -na (presente, negativo, passado) · totemo / amari · sequência com -te | 500 | conversa de 2 min sobre rotina; simulado de escuta N5 |
+| 3 | 10 Peça e oriente *(pronta)* · 11 Agora e sempre *(pronta)* · 12 Como é? *(pronta)* · 13 Fim de semana *(pronta)* · **14 Revisão geral** (próxima) | -te kudasai · -te mo ii desu ka · -te wa ikemasen · -te imasu (ação e estado) · adjetivos -i / -na (presente, negativo, passado) · totemo / amari · sequência com -te | 500 | conversa de 2 min sobre rotina; simulado de escuta N5 |
 
 ### Fase 2 — som + kana (meses 4–6)
 

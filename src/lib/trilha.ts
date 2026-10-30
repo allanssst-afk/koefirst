@@ -199,6 +199,21 @@ export const UNIDADES: Unidade[] = [
     ],
     missoes: ["rp_adj_viagem", "rp_adj_ramen", "rp_adj_chefe"],
   },
+  {
+    id: "u13",
+    numero: 13,
+    titulo: "Fim de semana",
+    descricao: "Contar o que fez, em ordem, com quem e convidar",
+    cor: "#e07b39",
+    contexto: "social",
+    cards: [
+      "card_103", "card_104", "card_105",
+      "card_106", "card_107", "card_108",
+      "card_109", "card_110", "card_111",
+      "card_112", "card_113", "card_114",
+    ],
+    missoes: ["rp_fds_segunda", "rp_fds_convite", "rp_fds_manha"],
+  },
 ];
 
 const TITULO: Record<TipoLicao, string> = {

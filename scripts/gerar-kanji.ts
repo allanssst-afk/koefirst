@@ -39,6 +39,10 @@ const SIG_EXTRA: Record<string, string[]> = {
   頑: ["teimoso", "persistente"],
   難: ["difícil", "problema"],
   優: ["gentil", "excelente"],
+  誰: ["quem"],
+  映: ["refletir", "projetar (filme)"],
+  末: ["fim", "final"],
+  楽: ["divertido", "confortável", "música"],
 };
 
 const NOMES_PROPRIOS = /^(Japão|China|Coreia|Tóquio|Buda)/;
