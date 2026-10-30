@@ -591,6 +591,23 @@ export const UNIDADES: Unidade[] = [
     ],
     missoes: ["rp_apa_tempo", "rp_apa_boato", "rp_apa_doce"],
   },
+  {
+    id: "u36",
+    numero: 36,
+    titulo: "O que me aconteceu",
+    descricao: "Passiva: contar o que alguém fez com você",
+    cor: "#8c5a5a",
+    contexto: "restaurante",
+    formasNovas: ["rareta"],
+    cards: [
+      "card_439", "card_440", "card_441", "card_442",
+      "card_443", "card_444", "card_445", "card_446",
+      "card_447", "card_448", "card_449", "card_450",
+      "card_451", "card_452", "card_453", "card_454",
+      "card_455", "card_456", "card_457", "card_458",
+    ],
+    missoes: ["rp_pas_incidente", "rp_pas_bronca", "rp_pas_noticia"],
+  },
 ];
 
 const TITULO: Record<TipoLicao, string> = {

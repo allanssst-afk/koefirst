@@ -108,6 +108,15 @@ const SIG_EXTRA: Record<string, string[]> = {
   商: ["comércio", "vender"],
   混: ["misturar", "lotar"],
   若: ["jovem"],
+  踏: ["pisar"],
+  褒: ["elogiar"],
+  叱: ["repreender"],
+  騒: ["fazer barulho", "agitar"],
+  誘: ["convidar", "atrair"],
+  警: ["alertar", "polícia"],
+  察: ["observar", "polícia"],
+  届: ["entregar", "chegar"],
+  離: ["separar", "afastar"],
 };
 
 const NOMES_PROPRIOS = /^(Japão|China|Coreia|Tóquio|Buda|Inglaterra)/;
