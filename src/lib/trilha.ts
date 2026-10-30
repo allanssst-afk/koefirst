@@ -344,6 +344,23 @@ export const UNIDADES: Unidade[] = [
     ],
     missoes: ["rp_mot_atraso", "rp_mot_convite", "rp_mot_japones"],
   },
+  {
+    id: "u22",
+    numero: 22,
+    titulo: "Experiências",
+    descricao: "Já fiz, nunca fiz e como foi",
+    cor: "#5b9e7a",
+    contexto: "social",
+    formasNovas: ["ta_koto"],
+    cards: [
+      "card_199", "card_200", "card_201",
+      "card_202", "card_203", "card_204",
+      "card_205", "card_206", "card_207",
+      "card_208", "card_209", "card_210",
+      "card_211", "card_212", "card_213",
+    ],
+    missoes: ["rp_exp_viagem", "rp_exp_natto", "rp_exp_entrevista"],
+  },
 ];
 
 const TITULO: Record<TipoLicao, string> = {

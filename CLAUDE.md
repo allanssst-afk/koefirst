@@ -123,6 +123,10 @@ Unidades novas seguem a ordem do plano; ao terminar uma, marcar no plano.
 - **Casual (-ta / -nakatta)** no Ping-Pong: o amigo pergunta 昨日、[complemento][verbo -ta]？ (sem "ka") e o usuário
   responde うん、…た ou ううん、…なかった. A forma -ta sai da forma -te (mesma melodia: tábete → tábeta); -nakatta sai
   da base -nai com a regra de pitch do -nakereba.
+- **Experiência (-ta koto ga arimasu)** no Ping-Pong: [complemento][verbo -ta]ことがありますか → はい、…ことがあります
+  ("Sim, (eu) já …"). O -ta mantém a melodia do verbo; "koto" = HH depois de verbo plano e LH depois de queda; "ga"
+  baixo; "arimasu" = LHHL. Só cenas da lista `EXPERIENCIAS_OK` (coisas de poucas vezes na vida, não a rotina). O STT
+  aceita também o casual "-ta koto aru".
 - Isso vale também para o que *o usuário* fala: na Fase 1 a transcrição do STT **não é exibida**
   (mostra-se só a % de correspondência). Na Fase 2+ ela aparece.
 - Camadas ortográficas (`user_settings.fase_atual`), aplicadas pelo componente `ScriptLayer`:
@@ -197,13 +201,13 @@ src/
     schema.ts · index.ts (sql.js + IndexedDB) · seed-run.ts · migrations.generated.ts (gerado)
     seed-data/cards.ts (+ cards-trabalho.ts, cards-lugares.ts, cards-numeros.ts, cards-pedidos.ts,
       cards-agora.ts, cards-adjetivos.ts, cards-fimdesemana.ts, cards-familia.ts, cards-saude.ts, cards-hobbies.ts,
-      cards-regras.ts, cards-casual.ts, cards-opiniao.ts, cards-motivos.ts) ·
+      cards-regras.ts, cards-casual.ts, cards-opiniao.ts, cards-motivos.ts, cards-experiencias.ts) ·
       seed-data/scenarios.ts
       (+ scenarios-cotidiano.ts,
       scenarios-extra.ts, scenarios-trabalho.ts, scenarios-lugares.ts, scenarios-numeros.ts, scenarios-pedidos.ts,
       scenarios-agora.ts, scenarios-adjetivos.ts, scenarios-fimdesemana.ts, scenarios-revisao.ts,
       scenarios-familia.ts, scenarios-saude.ts, scenarios-hobbies.ts, scenarios-regras.ts, scenarios-casual.ts,
-      scenarios-opiniao.ts, scenarios-motivos.ts) ·
+      scenarios-opiniao.ts, scenarios-motivos.ts, scenarios-experiencias.ts) ·
       seed-data/helpers.ts
   lib/
     types.ts · fsrs.ts · roles.ts · text.ts (normalização/similaridade/furigana) · idb.ts

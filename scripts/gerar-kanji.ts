@@ -60,6 +60,8 @@ const SIG_EXTRA: Record<string, string[]> = {
   安: ["barato", "tranquilo"],
   計: ["plano", "medir"],
   画: ["desenho", "traçar um plano"],
+  納: ["entregar", "guardar", "pagar"],
+  豆: ["feijão", "soja", "ervilha"],
 };
 
 const NOMES_PROPRIOS = /^(Japão|China|Coreia|Tóquio|Buda|Inglaterra)/;

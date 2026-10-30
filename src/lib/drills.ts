@@ -75,7 +75,7 @@ export const VERBOS: Verbo[] = [
 
 const junta = (...partes: (string | undefined)[]) => partes.filter(Boolean).join(" ");
 
-export type Forma = "masu" | "mashita" | "masen" | "masen_deshita" | "tai" | "mashou" | "te_kudasai" | "te_imasu" | "koto" | "nakereba" | "ta" | "nakatta";
+export type Forma = "masu" | "mashita" | "masen" | "masen_deshita" | "tai" | "mashou" | "te_kudasai" | "te_imasu" | "koto" | "nakereba" | "ta" | "nakatta" | "ta_koto";
 
 interface FormaDef {
   label: string;
@@ -248,6 +248,18 @@ export const FORMAS: Record<Forma, FormaDef> = {
     kana: "なかった",
     funcao: "não + [passado, casual]",
   },
+  ta_koto: {
+    pergunta: (v, obj) => `${junta("Você já", v.vcPret, obj)}?`,
+    abertura: "Sim,",
+    quando: "Contar uma experiência de vida, sem data",
+    regra: "forma -ta + koto ga arimasu",
+    frase: (v, obj) => junta("eu já", v.ptPret, obj),
+    label: "Experiência",
+    comando: "Já fiz!",
+    sufixo: [],
+    kana: "ことがあります",
+    funcao: "o fato, a experiência",
+  },
 };
 
 /** Pitch da forma -te pela mora da queda: 0 = plano (LHH…), 1 = cai depois da 1ª (HLL…), n = LH…H depois L. */
@@ -283,6 +295,8 @@ export interface Conjugacao {
  *   cai depois do "na" (ikaná-kereba); "narimasen" sobe de novo e cai depois de "se". OJAD, 27 verbos.
  * - -ta (passado casual): mesma melodia da forma -te (tábete → tábeta). -nakatta: mesma regra do -nakereba
  *   (kaká-nakatta, ikaná-katta). OJAD.
+ * - -ta koto ga arimasu: -ta com a melodia do verbo; depois de verbo plano "koto" fica alto e cai no "ga"
+ *   (itta kotó ga); depois de verbo com queda sobe de novo (tábeta kotó ga). "arimasu" sobe de novo. OJAD, 12 verbos.
  */
 export function conjugar(verbo: Verbo, forma: Forma): Conjugacao {
   const raizBloco = verbo.raiz.join("");
@@ -316,6 +330,19 @@ export function conjugar(verbo: Verbo, forma: Forma): Conjugacao {
     const kana = ta(te.kana);
     const kanji = ta(te.kanji);
     return { verbo, forma, moras, kana, kanji, alvos: [kana, stripFurigana(kanji)] };
+  }
+
+  if (forma === "ta_koto") {
+    const ta = conjugar(verbo, "ta");
+    const moras = [
+      ...ta.moras.map((m) => ({ ...m, funcao: `${raizFn} (forma -ta)` })),
+      ...b("ko.to", verbo.te.acento ? "LH" : "HH", FORMAS.ta_koto.funcao, "substantivo"),
+      ...b("ga", "L", "[Foco / sujeito]", "particula"),
+      ...b("a.ri.ma._su", "LHHL", "existe", "verbo"),
+    ];
+    const suf = FORMAS.ta_koto.kana;
+    const plain = stripFurigana(ta.kanji);
+    return { verbo, forma, moras, kana: ta.kana + suf, kanji: ta.kanji + suf, alvos: [ta.kana + suf, plain + suf, ta.kana + "ことある", plain + "ことある"] };
   }
 
   if (forma === "nakereba" || forma === "nakatta") {
@@ -586,9 +613,16 @@ const OBRIGACOES_OK = new Set([
   "okuru|os documentos ao cliente", "kaku|o relatório", "hataraku|na empresa", "neru|cedo", "okiru|cedo",
   "harau|a conta", "iku|ao supermercado", "kau|um presente", "kau|a passagem", "iku|à estação", "noru|o trem",
 ]);
+/** Experiência (-ta koto) responde a "Você já…?": coisas que se faz poucas vezes na vida, não a rotina. */
+const EXPERIENCIAS_OK = new Set([
+  "taberu|sushi", "taberu|ramen", "taberu|um bentô", "nomu|cerveja", "iku|ao karaokê", "iku|à praia", "iku|ao templo",
+  "kuru|ao Japão", "noru|o trem", "noru|o ônibus", "noru|o táxi", "benkyou suru|japonês", "benkyou suru|inglês",
+  "iku|à loja de departamentos", "hataraku|na empresa", "kau|uma lembrancinha", "hanasu|com o gerente",
+]);
 for (const cenas of Object.values(CENAS_DRILL))
   for (const c of cenas) {
     const chave = `${c.verbo}|${c.obj}`;
+    if (!EXPERIENCIAS_OK.has(chave)) c.sem = [...(c.sem ?? []), "ta_koto"];
     if (!OBRIGACOES_OK.has(chave)) c.sem = [...(c.sem ?? []), "nakereba"];
     if (!PEDIDOS_OK.has(chave)) c.sem = [...(c.sem ?? []), "te_kudasai"];
     if (!HOBBIES_OK.has(chave)) c.sem = [...(c.sem ?? []), "koto"];
@@ -668,6 +702,7 @@ const ponto = (t: string) => (/[.!?]$/.test(t) ? t : `${t}.`);
  * - Hobby:             趣味は何ですか → [complemento][forma de dicionário]ことです
  * - Obrigação:         明日、何をしなければなりませんか → [complemento][base -nai]なければなりません
  * - Casual:            昨日、[complemento][verbo -ta]？ → うん、…た / ううん、…なかった
+ * - Experiência:       [complemento][verbo -ta]ことがありますか → はい、…ことがあります
  */
 export function montarDialogo(cena: CenaDrill, forma: Forma): DialogoDrill {
   const v = verboPorDict(cena.verbo);
@@ -680,6 +715,9 @@ export function montarDialogo(cena: CenaDrill, forma: Forma): DialogoDrill {
   if (forma === "ta" || forma === "nakatta") {
     const q = conjugar(v, "ta");
     pergunta = fala(KINOU.kana + c.kana + q.kana + "？", KINOU.kanji + c.kanji + q.kanji + "？", f.pergunta(v, cena.obj), KINOU.moras, c.moras, q.moras);
+  } else if (forma === "ta_koto") {
+    const q = conjugar(v, "ta_koto");
+    pergunta = fala(fim(c.kana + q.kana + "か"), fim(c.kanji + q.kanji + "か"), f.pergunta(v, cena.obj), c.moras, q.moras, KA);
   } else if (forma === "nakereba") {
     const q = conjugar(suru, "nakereba");
     pergunta = fala(fim(ASHITA.kana + NANI_O.kana + q.kana + "か"), fim(ASHITA.kanji + NANI_O.kanji + q.kanji + "か"), f.pergunta(v, cena.obj), ASHITA.moras, NANI_O.moras, q.moras, KA);
@@ -709,7 +747,7 @@ export function montarDialogo(cena: CenaDrill, forma: Forma): DialogoDrill {
   }
 
   const alvo = conjugar(v, forma);
-  const inicio = forma === "ta" ? UN : forma === "nakatta" ? UUN : forma === "mashita" || forma === "te_kudasai" ? HAI : forma === "masen" || forma === "masen_deshita" ? IIE : null;
+  const inicio = forma === "ta" ? UN : forma === "nakatta" ? UUN : forma === "mashita" || forma === "te_kudasai" || forma === "ta_koto" ? HAI : forma === "masen" || forma === "masen_deshita" ? IIE : null;
   const ptResposta = ponto(maiuscula(comEuImplicito([f.abertura, f.frase(v, cena.obj)].filter(Boolean).join(" "))));
   const resposta = fala(
     fim((inicio?.kana ?? "") + c.kana + alvo.kana),
