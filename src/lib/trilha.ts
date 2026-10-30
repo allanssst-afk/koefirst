@@ -642,6 +642,23 @@ export const UNIDADES: Unidade[] = [
     ],
     missoes: ["rp_ace_amiga", "rp_ace_novato", "rp_ace_professora"],
   },
+  {
+    id: "u39",
+    numero: 39,
+    titulo: "Notícias e boatos",
+    descricao: "Ouvi dizer, segundo e chamado de",
+    cor: "#b08f4a",
+    contexto: "trabalho",
+    formasNovas: ["ta_sou"],
+    cards: [
+      "card_499", "card_500", "card_501", "card_502",
+      "card_503", "card_504", "card_505", "card_506",
+      "card_507", "card_508", "card_509", "card_510",
+      "card_511", "card_512", "card_513", "card_514",
+      "card_515", "card_516", "card_517", "card_518",
+    ],
+    missoes: ["rp_not_tempo", "rp_not_boato", "rp_not_acidente"],
+  },
 ];
 
 const TITULO: Record<TipoLicao, string> = {

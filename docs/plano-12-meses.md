@@ -5,13 +5,13 @@ independente na fala). Guia a produção de unidades: cada unidade nova sai daqu
 
 ## Metas finais (mês 12)
 
-| Medida | Meta B1 | Hoje (unidades 1–38) |
+| Medida | Meta B1 | Hoje (unidades 1–39) |
 | --- | --- | --- |
-| Frases do baralho (faladas) | ~700 | 498 |
-| Palavras ativas (fala) | ~2.000 | ~1.080 |
+| Frases do baralho (faladas) | ~700 | 518 |
+| Palavras ativas (fala) | ~2.000 | ~1.120 |
 | Palavras reconhecidas (escuta/leitura) | ~3.500 | — |
-| Kanji | ~650 (N5 + N4 + N3) | 475 com dados (N5, N4 e os do app) |
-| Formas verbais no Ping-Pong | ~20 | 24 (-masu, -mashita, -masen, -masen deshita, -tai, -mashou, -te kudasai, -te imasu, dicionário + koto, -nakereba, -ta e -nakatta casuais, -ta koto ga arimasu, volitiva + to omoimasu, potencial afirmativo e negativo, -tara ii desu yo, -te kuremashita, -tai n desu ga, -te shimaimashita, o-… shimasu, passiva, causativa + kudasai, -nakute mo ii) |
+| Kanji | ~650 (N5 + N4 + N3) | 479 com dados (N5, N4 e os do app) |
+| Formas verbais no Ping-Pong | ~20 | 25 (-masu, -mashita, -masen, -masen deshita, -tai, -mashou, -te kudasai, -te imasu, dicionário + koto, -nakereba, -ta e -nakatta casuais, -ta koto ga arimasu, volitiva + to omoimasu, potencial afirmativo e negativo, -tara ii desu yo, -te kuremashita, -tai n desu ga, -te shimaimashita, o-… shimasu, passiva, causativa + kudasai, -nakute mo ii, -ta sou desu) |
 | Fala contínua | 5 min sobre si, narrar, opinar | frases soltas e missões de 6 turnos |
 
 Ritmo de referência: 5 frases novas por dia (meta do Perfil) ≈ 150 por mês, mais revisões FSRS. As unidades
@@ -50,7 +50,7 @@ Fases = camadas de escrita do app (Perfil): 1 som · 2 + kana · 3 + kanji com f
 | Mês | Unidades | Gramática nova | Vocabulário | Marco |
 | --- | --- | --- | --- | --- |
 | 10 | 36 O que me aconteceu (passiva) *(pronta)* · 37 Pedir e permitir (causativa) *(pronta)* · 38 Conselhos *(pronta)* | passiva (inclusive a de incômodo) · causativa · ~sasete kudasai · ~you ni shite kudasai · ~nakute mo ii | 2.000 | contar um incidente em 2 min |
-| 11 | **39 Notícias e boatos** (próxima) · 40 Contar uma história · 41 Discutir e negociar | ~sou desu (ouvi dizer) · ~ni yoru to · ~to iu · ~te kara · ~mae ni · ~aida ni · ~uchi ni · ~nagara · ~noni · ~ba ~hodo · ~kedo | 2.300 (passivo 3.000) | kanji N3 (+370) |
+| 11 | 39 Notícias e boatos *(pronta)* · **40 Contar uma história** (próxima) · 41 Discutir e negociar | ~sou desu (ouvi dizer) · ~ni yoru to · ~to iu · ~te kara · ~mae ni · ~aida ni · ~uchi ni · ~nagara · ~noni · ~ba ~hodo · ~kedo | 2.300 (passivo 3.000) | kanji N3 (+370) |
 | 12 | 42 Entrevista e apresentação profissional · 43 Vida no Japão (moradia, médico, documentos) · 44 Revisão final | consolidação; discurso longo (introdução → fatos → opinião → conclusão) | 2.000 ativas / 3.500 passivas | simulado N3 (escuta + leitura); avaliação oral B1: 5 min sobre si, narrar e opinar |
 
 ## O que o app precisa ganhar no caminho
