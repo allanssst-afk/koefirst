@@ -54,6 +54,9 @@ Unidades novas seguem a ordem do plano; ao terminar uma, marcar no plano.
   banco de `src/lib/simulado-n4.ts`. No lugar do simulado opcional da unidade, e obrigatório. Vocabulário cobra a leitura
   do kanji, sem furigana; gramática e leitura usam `漢字[よみ]` (furigana na Fase 3, sem na Fase 4). Parte escrita só da
   Fase 3 em diante (`faseMinimaDaProva`).
+- **Simulado N3 completo** (u44, Revisão final, `simuladoCompleto: "n3"`): mesma prova, com as frases das unidades 27–43 e o
+  banco de `src/lib/simulado-n3.ts` (gramática das unidades 36–43; textos mais longos, que pedem a ideia). Na mesma unidade
+  fica a Avaliação oral B1 (`rp_rev4_avaliacao`), missão longa com turnos guiados: falar de si, narrar e opinar.
 - **Técnicas do método** (`src/components/TecnicasCard.tsx`, no Perfil): cada técnica, a base de pesquisa e onde
   está no app. Atualizar ao criar exercícios novos.
 - **Dicionário** (`/dicionario`, `src/lib/dicionario.ts`): cada bloco das frases do baralho vira um verbete
@@ -253,10 +256,11 @@ src/
       scenarios-dar-receber.ts, scenarios-descrever.ts, scenarios-servicos.ts, scenarios-problemas.ts, scenarios-keigo.ts,
       scenarios-telefone.ts, scenarios-aparencias.ts,
       scenarios-passiva.ts, scenarios-causativa.ts, scenarios-conselhos.ts,
-      scenarios-noticias.ts, scenarios-historia.ts, scenarios-negociar.ts, scenarios-entrevista.ts, scenarios-vida-japao.ts) ·
+      scenarios-noticias.ts, scenarios-historia.ts, scenarios-negociar.ts, scenarios-entrevista.ts, scenarios-vida-japao.ts, scenarios-revisao-final.ts) ·
       seed-data/helpers.ts
   lib/
     types.ts · fsrs.ts · roles.ts · text.ts (normalização/similaridade/furigana) · idb.ts
+    simulado-n5.ts · simulado-n4.ts · simulado-n3.ts   # bancos das partes escritas dos simulados
     queries.ts                   # consultas e gravações (fila, revisão, dashboard, atividade, coach offline)
     drills.ts                    # verbos, cenas com complemento em japonês, montarDialogo
     roleplay.ts                  # categorias de contexto

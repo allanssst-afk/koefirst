@@ -4,6 +4,7 @@
  */
 import type { SeedCard } from "@/db/seed-data/helpers";
 import { seedCards } from "@/db/seed-data/cards";
+import { GRAMATICA_N3, LEITURA_N3, VOCABULARIO_N3 } from "./simulado-n3";
 import { GRAMATICA_N4, LEITURA_N4, VOCABULARIO_N4 } from "./simulado-n4";
 import { GRAMATICA_N5, LEITURA_N5, VOCABULARIO_N5, type PalavraProva, type QuestaoGramatica, type TextoLeitura } from "./simulado-n5";
 import { stripFurigana } from "./text";
@@ -35,7 +36,7 @@ export interface Unidade {
   simuladoDe?: string[];
 }
 
-export type NivelProva = "n5" | "n4";
+export type NivelProva = "n5" | "n4" | "n3";
 
 export type TipoLicao = "tutorial" | "frases" | "pingpong" | "dialogo" | "revisao" | "simulado";
 
@@ -723,6 +724,24 @@ export const UNIDADES: Unidade[] = [
     ],
     missoes: ["rp_vid_apartamento", "rp_vid_prefeitura", "rp_vid_clinica"],
   },
+  {
+    id: "u44",
+    numero: 44,
+    titulo: "Revisão final",
+    descricao: "Avaliação oral B1 e simulado N3",
+    cor: "#8a8f9e",
+    contexto: "todos",
+    cards: [],
+    missoes: ["rp_rev4_avaliacao", "rp_rev4_colega"],
+    simuladoCompleto: "n3",
+    revisaoGeral: [
+      { titulo: "Revisão: frases da Fase 3", unidades: ["u27", "u28", "u29", "u30", "u31", "u32", "u33", "u34", "u35"] },
+      { titulo: "Revisão: incidentes e permissões", unidades: ["u36", "u37"] },
+      { titulo: "Revisão: conselhos e notícias", unidades: ["u38", "u39"] },
+      { titulo: "Revisão: histórias e negociação", unidades: ["u40", "u41"] },
+      { titulo: "Revisão: trabalho e vida no Japão", unidades: ["u42", "u43"] },
+    ],
+  },
 ];
 
 const TITULO: Record<TipoLicao, string> = {
@@ -936,6 +955,7 @@ function imediata(ctx: Categoria | "todos"): Exercicio {
 const PROVAS = {
   n5: { faseMinima: 2, vocabulario: VOCABULARIO_N5, gramatica: GRAMATICA_N5, leitura: LEITURA_N5 },
   n4: { faseMinima: 3, vocabulario: VOCABULARIO_N4, gramatica: GRAMATICA_N4, leitura: LEITURA_N4 },
+  n3: { faseMinima: 3, vocabulario: VOCABULARIO_N3, gramatica: GRAMATICA_N3, leitura: LEITURA_N3 },
 };
 
 export const faseMinimaDaProva = (nivel: NivelProva) => PROVAS[nivel].faseMinima;
@@ -972,7 +992,7 @@ function parteLeitura(n: number, banco: TextoLeitura[]): ProvaKana[] {
 }
 
 /**
- * Partes do simulado, na ordem do JLPT N5/N4: vocabulário, gramática, leitura e as três de escuta. O simulado de
+ * Partes do simulado, na ordem do JLPT: vocabulário, gramática, leitura e as três de escuta. O simulado de
  * cada unidade usa só as de escuta (adaptadas à fase só de som); as em kana entram no simulado completo.
  */
 export const PARTES_SIMULADO: { tipo: Exercicio["tipo"]; nome: string; descricao: string }[] = [

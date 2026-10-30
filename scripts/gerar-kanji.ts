@@ -163,6 +163,8 @@ const SIG_EXTRA: Record<string, string[]> = {
   保: ["proteger", "manter"],
   険: ["íngreme", "perigo"],
   診: ["examinar (paciente)", "diagnosticar"],
+  活: ["vida", "atividade"],
+  多: ["muitos", "muito"],
 };
 
 const NOMES_PROPRIOS = /^(Japão|China|Coreia|Tóquio|Buda|Inglaterra)/;

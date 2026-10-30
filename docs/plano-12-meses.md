@@ -5,12 +5,12 @@ independente na fala). Guia a produção de unidades: cada unidade nova sai daqu
 
 ## Metas finais (mês 12)
 
-| Medida | Meta B1 | Hoje (unidades 1–43) |
+| Medida | Meta B1 | Hoje (unidades 1–44) |
 | --- | --- | --- |
 | Frases do baralho (faladas) | ~700 | 598 |
-| Palavras ativas (fala) | ~2.000 | ~1.270 |
+| Palavras ativas (fala) | ~2.000 | ~1.275 |
 | Palavras reconhecidas (escuta/leitura) | ~3.500 | — |
-| Kanji | ~650 (N5 + N4 + N3) | 520 com dados (N5, N4 e os do app) |
+| Kanji | ~650 (N5 + N4 + N3) | 521 com dados (N5, N4 e os do app) |
 | Formas verbais no Ping-Pong | ~20 | 26 (-masu, -mashita, -masen, -masen deshita, -tai, -mashou, -te kudasai, -te imasu, dicionário + koto, -nakereba, -ta e -nakatta casuais, -ta koto ga arimasu, volitiva + to omoimasu, potencial afirmativo e negativo, -tara ii desu yo, -te kuremashita, -tai n desu ga, -te shimaimashita, o-… shimasu, passiva, causativa + kudasai, -nakute mo ii, -ta sou desu, -te kara) |
 | Fala contínua | 5 min sobre si, narrar, opinar | frases soltas e missões de 6 turnos |
 
@@ -51,7 +51,7 @@ Fases = camadas de escrita do app (Perfil): 1 som · 2 + kana · 3 + kanji com f
 | --- | --- | --- | --- | --- |
 | 10 | 36 O que me aconteceu (passiva) *(pronta)* · 37 Pedir e permitir (causativa) *(pronta)* · 38 Conselhos *(pronta)* | passiva (inclusive a de incômodo) · causativa · ~sasete kudasai · ~you ni shite kudasai · ~nakute mo ii | 2.000 | contar um incidente em 2 min |
 | 11 | 39 Notícias e boatos *(pronta)* · 40 Contar uma história *(pronta)* · 41 Discutir e negociar *(pronta)* | ~sou desu (ouvi dizer) · ~ni yoru to · ~to iu · ~te kara · ~mae ni · ~aida ni · ~uchi ni · ~nagara · ~noni · ~ba ~hodo · ~kedo | 2.300 (passivo 3.000) | kanji N3 (+370) |
-| 12 | 42 Entrevista e apresentação profissional *(pronta)* · 43 Vida no Japão (moradia, médico, documentos) *(pronta)* · **44 Revisão final** (próxima) | consolidação; discurso longo (introdução → fatos → opinião → conclusão) | 2.000 ativas / 3.500 passivas | simulado N3 (escuta + leitura); avaliação oral B1: 5 min sobre si, narrar e opinar |
+| 12 | 42 Entrevista e apresentação profissional *(pronta)* · 43 Vida no Japão (moradia, médico, documentos) *(pronta)* · 44 Revisão final *(pronta)* | consolidação; discurso longo (introdução → fatos → opinião → conclusão) | 2.000 ativas / 3.500 passivas | simulado N3 (escuta + leitura); avaliação oral B1: 5 min sobre si, narrar e opinar |
 
 ## O que o app precisa ganhar no caminho
 
@@ -66,10 +66,11 @@ necessárias:
    frio"), com o pitch de cada adjetivo (queda fixa na mesma mora em todas as formas, como o OJAD prevê).
 3. **Leitura** (a partir da Fase 2): textos curtos por unidade, com o mapa de som e a camada de escrita da fase.
 4. **Simulado completo** (Fase 2+): N5 *(pronto, unidade 26: vocabulário, gramática e leitura em kana, além da escuta;
-   banco em `src/lib/simulado-n5.ts`)* e N4 *(pronto, unidade 35: com kanji; banco em `src/lib/simulado-n4.ts`)*. Falta o N3.
+   banco em `src/lib/simulado-n5.ts`)* e N4 *(pronto, unidade 35: com kanji; banco em `src/lib/simulado-n4.ts`)* e N3 *(pronto, unidade 44: vocabulário, gramática, leitura e escuta; banco em `src/lib/simulado-n3.ts`)*.
 5. **Kanji N3**: estender `scripts/gerar-kanji.ts` para o nível antigo 2 do KANJIDIC2 (que mistura N3 e N2;
    filtrar pela lista de kanji N3 mais usada).
 6. **Fala longa** (Fase 3+): missões da Arena com turnos abertos (falar 1–2 min) e avaliação por palavras-chave.
+   A Avaliação oral B1 (unidade 44) já cobre falar de si, narrar e opinar, mas em 12 turnos guiados, sem turno aberto.
 
 ## Como produzir cada unidade
 
