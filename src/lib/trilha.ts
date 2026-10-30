@@ -184,6 +184,21 @@ export const UNIDADES: Unidade[] = [
     missoes: ["rp_agora_ligacao", "rp_agora_colega", "rp_agora_vizinho"],
     formasNovas: ["te_imasu"],
   },
+  {
+    id: "u12",
+    numero: 12,
+    titulo: "Como é?",
+    descricao: "Descrever e opinar: gostoso, caro, tranquilo, foi bom",
+    cor: "#c96f8f",
+    contexto: "compras",
+    cards: [
+      "card_091", "card_092", "card_093",
+      "card_094", "card_095", "card_096",
+      "card_097", "card_098", "card_099",
+      "card_100", "card_101", "card_102",
+    ],
+    missoes: ["rp_adj_viagem", "rp_adj_ramen", "rp_adj_chefe"],
+  },
 ];
 
 const TITULO: Record<TipoLicao, string> = {

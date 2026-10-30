@@ -37,6 +37,8 @@ const SIG_EXTRA: Record<string, string[]> = {
   枚: ["folha", "contador de coisas finas (papéis, selos)"],
   張: ["esticar", "estender"],
   頑: ["teimoso", "persistente"],
+  難: ["difícil", "problema"],
+  優: ["gentil", "excelente"],
 };
 
 const NOMES_PROPRIOS = /^(Japão|China|Coreia|Tóquio|Buda)/;
