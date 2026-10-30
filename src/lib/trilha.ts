@@ -329,6 +329,21 @@ export const UNIDADES: Unidade[] = [
     ],
     missoes: ["rp_opi_reuniao", "rp_opi_tempo", "rp_opi_aula"],
   },
+  {
+    id: "u21",
+    numero: 21,
+    titulo: "Explicar motivos",
+    descricao: "É que…, porque, como… e por quê?",
+    cor: "#a47e5b",
+    contexto: "trabalho",
+    cards: [
+      "card_187", "card_188", "card_189",
+      "card_190", "card_191", "card_192",
+      "card_193", "card_194", "card_195",
+      "card_196", "card_197", "card_198",
+    ],
+    missoes: ["rp_mot_atraso", "rp_mot_convite", "rp_mot_japones"],
+  },
 ];
 
 const TITULO: Record<TipoLicao, string> = {
