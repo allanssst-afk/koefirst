@@ -318,6 +318,74 @@ export function ExQuiz({ ex, travado, aoPronto }: ExProps<Ex<"quiz">>) {
   );
 }
 
+// ───────────── Leitura: um texto curto, com as frases da unidade em sequência
+
+/** O texto: cada frase com som e a camada de escrita da fase; o mapa de som é opcional (sempre aberto na Fase 1). */
+function TextoLeitura({ frases }: { frases: Ex<"texto">["frases"] }) {
+  const { fase } = usePhase();
+  const [mapa, setMapa] = useState(false);
+  const comMapa = mapa || fase === 1;
+  return (
+    <div className="space-y-3 rounded-2xl bg-[var(--panel)] p-4">
+      <div className="flex flex-wrap gap-2">
+        <button
+          onClick={() => speakJa(frases.map((c) => c.kana).join("。"))}
+          className="flex items-center gap-1.5 rounded-xl border border-[var(--line)] px-3 py-1.5 text-sm"
+        >
+          <Volume2 size={16} /> Ouvir tudo
+        </button>
+        {fase > 1 && (
+          <button onClick={() => setMapa(!mapa)} className="rounded-xl border border-[var(--line)] px-3 py-1.5 text-sm text-[var(--muted)]">
+            {mapa ? "Esconder mapa de som" : "Mapa de som"}
+          </button>
+        )}
+      </div>
+      {frases.map((c) => (
+        <div key={c.id} className="flex items-start gap-2">
+          <button onClick={() => speakJa(c.kana)} aria-label="Ouvir esta frase" className="mt-1 shrink-0 rounded-lg p-1 text-[var(--azul)]">
+            <Volume2 size={18} />
+          </button>
+          <div className="min-w-0 flex-1 space-y-1">
+            {comMapa && <PitchAccentVisualizer moras={c.moras} size="sm" />}
+            <ScriptLayer kana={c.kana} kanji={c.kanji} className="text-xl" />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+export function ExTexto({ ex }: ExProps<Ex<"texto">>) {
+  return (
+    <div className="space-y-5">
+      <Enunciado rotulo="Leitura">Leia o texto</Enunciado>
+      <p className="text-sm text-[var(--muted)]">São frases que você já conhece. Ouça quantas vezes quiser; depois vêm as perguntas.</p>
+      <TextoLeitura frases={ex.frases} />
+    </div>
+  );
+}
+
+export function ExCompreensao({ ex, travado, aoPronto }: ExProps<Ex<"compreensao">>) {
+  const [escolha, setEscolha] = useState<number | null>(null);
+  const escolher = (i: number) => {
+    setEscolha(i);
+    aoPronto(() => ({ ok: i === ex.correta, correta: ex.opcoes[ex.correta] }));
+  };
+  return (
+    <div className="space-y-5">
+      <Enunciado>{ex.pergunta}</Enunciado>
+      <div className="space-y-3">
+        {ex.opcoes.map((o, i) => (
+          <Opcao key={o} numero={i + 1} ativo={escolha === i} travado={travado} onClick={() => escolher(i)}>
+            {o}
+          </Opcao>
+        ))}
+      </div>
+      <TextoLeitura frases={ex.frases} />
+    </div>
+  );
+}
+
 // ───────────── Melodia: treino de ouvido com pares mínimos de entonação
 
 export function ExMelodia({ ex, travado, aoPronto }: ExProps<Ex<"melodia">>) {

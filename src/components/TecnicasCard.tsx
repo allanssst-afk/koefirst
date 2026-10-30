@@ -41,6 +41,12 @@ const TECNICAS: { nome: string; porque: string; onde: string }[] = [
     onde: "Ping-Pong (praticar) e missões da Arena (conversar).",
   },
   {
+    nome: "Leitura com som",
+    porque:
+      "Ler o que você já sabe falar liga a escrita ao som e ensina a acompanhar um texto, em vez de decifrar palavra por palavra.",
+    onde: "Estação opcional «Leitura» no fim das linhas a partir da Fase 2: um texto curto com as frases da unidade, áudio, mapa de som e perguntas.",
+  },
+  {
     nome: "Fala longa",
     porque:
       "Falar por um ou dois minutos sem apoio obriga a ligar frases, manter o fio da história e planejar o que vem depois, habilidades que turnos curtos não treinam.",

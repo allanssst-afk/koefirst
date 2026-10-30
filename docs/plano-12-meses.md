@@ -64,7 +64,8 @@ necessárias:
 2. **Adjetivos no Ping-Pong** (meses 3–4): a unidade 12 ensina adjetivos -i/-na (presente, negativo, passado) só
    com frases e missões; falta um treino de transformação para eles (ex.: "Estava frio?" → "Não, não estava
    frio"), com o pitch de cada adjetivo (queda fixa na mesma mora em todas as formas, como o OJAD prevê).
-3. **Leitura** (a partir da Fase 2): textos curtos por unidade, com o mapa de som e a camada de escrita da fase.
+3. **Leitura** *(pronta: 28 textos em `src/lib/leituras.ts`, um por unidade de 15 a 43, com áudio, mapa de som, camada de escrita da
+   fase e 2 perguntas; estação opcional no fim da unidade)*.
 4. **Simulado completo** (Fase 2+): N5 *(pronto, unidade 26: vocabulário, gramática e leitura em kana, além da escuta;
    banco em `src/lib/simulado-n5.ts`)* e N4 *(pronto, unidade 35: com kanji; banco em `src/lib/simulado-n4.ts`)* e N3 *(pronto, unidade 44: vocabulário, gramática, leitura e escuta; banco em `src/lib/simulado-n3.ts`)*.
 5. **Kanji N3** *(pronto: 341 kanji em `scripts/kanji-n3.ts`, com a lista de Jonathan Waller e significados escritos à mão;

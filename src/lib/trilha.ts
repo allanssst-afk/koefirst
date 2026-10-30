@@ -4,6 +4,7 @@
  */
 import type { SeedCard } from "@/db/seed-data/helpers";
 import { seedCards } from "@/db/seed-data/cards";
+import { LEITURAS } from "./leituras";
 import { GRAMATICA_N3, LEITURA_N3, VOCABULARIO_N3 } from "./simulado-n3";
 import { GRAMATICA_N4, LEITURA_N4, VOCABULARIO_N4 } from "./simulado-n4";
 import { GRAMATICA_N5, LEITURA_N5, VOCABULARIO_N5, type PalavraProva, type QuestaoGramatica, type TextoLeitura } from "./simulado-n5";
@@ -38,7 +39,7 @@ export interface Unidade {
 
 export type NivelProva = "n5" | "n4" | "n3";
 
-export type TipoLicao = "tutorial" | "frases" | "pingpong" | "dialogo" | "revisao" | "simulado";
+export type TipoLicao = "tutorial" | "frases" | "pingpong" | "dialogo" | "revisao" | "simulado" | "leitura";
 
 export interface Licao {
   /** "u2:l3" — também é a chave do progresso salvo */
@@ -50,7 +51,7 @@ export interface Licao {
   missao?: string;
   /** simulado com as partes escritas (ver `simuladoCompleto`) */
   completo?: NivelProva;
-  /** não trava a trilha: abre quando o resto da unidade termina (simulado) */
+  /** não trava a trilha: abre quando o resto da unidade termina (simulado, leitura) */
   opcional?: boolean;
 }
 
@@ -751,6 +752,7 @@ const TITULO: Record<TipoLicao, string> = {
   dialogo: "Diálogo",
   revisao: "Revisão da unidade",
   simulado: "Simulado de escuta",
+  leitura: "Leitura",
 };
 
 export function licoesDa(u: Unidade): Licao[] {
@@ -779,6 +781,8 @@ export function licoesDa(u: Unidade): Licao[] {
   if (u.simuladoCompleto)
     l.push({ tipo: "simulado", titulo: `Simulado ${u.simuladoCompleto.toUpperCase()} completo`, cards: UNIDADES.filter((x) => u.simuladoDe?.includes(x.id)).flatMap((x) => x.cards), completo: u.simuladoCompleto });
   else if (u.cards.length >= 3) l.push({ tipo: "simulado", titulo: TITULO.simulado, cards: u.cards, opcional: true });
+  const leitura = LEITURAS[u.id];
+  if (leitura) l.push({ tipo: "leitura", titulo: `${TITULO.leitura}: ${leitura.titulo}`, cards: leitura.frases, opcional: true });
   return l.map((x, i) => ({ ...x, id: `${u.id}:l${i + 1}`, unidade: u }));
 }
 
@@ -816,6 +820,8 @@ export type Exercicio =
   | { tipo: "situacao"; card: CardTrilha; opcoes: CardTrilha[]; correta: number }
   /** simulado, resposta rápida: ouve uma pergunta e escolhe, só pelo som, a resposta que combina */
   | { tipo: "imediata"; dialogo: DialogoDrill; opcoes: FalaDrill[]; correta: number }
+  | { tipo: "texto"; frases: CardTrilha[] }
+  | { tipo: "compreensao"; frases: CardTrilha[]; pergunta: string; opcoes: string[]; correta: number }
   | ProvaKana;
 
 /** Simulado completo: questões em kana, sem áudio. */
@@ -1076,6 +1082,13 @@ export function montarLicao(l: Licao, fase = 1): Exercicio[] {
       const prova = l.completo && PROVAS[l.completo];
       const escrita = prova && fase >= prova.faseMinima ? [...parteVocabulario(n, prova.vocabulario), ...parteGramatica(n, prova.gramatica), ...parteLeitura(n, prova.leitura)] : [];
       return [...escrita, ...parte1, ...parte2, ...parte3];
+    }
+    case "leitura": {
+      const perguntas = LEITURAS[l.unidade.id].perguntas.map((p): Exercicio => {
+        const opcoes = embaralhar([p.certa, ...p.erradas]);
+        return { tipo: "compreensao", frases: cards, pergunta: p.pergunta, opcoes, correta: opcoes.indexOf(p.certa) };
+      });
+      return [{ tipo: "texto", frases: cards }, ...perguntas];
     }
     case "dialogo":
       return [];

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
   BookOpen,
+  BookText,
   Check,
   ClipboardCheck,
   ChevronRight,
@@ -32,6 +33,7 @@ const ICONE: Record<TipoLicao, typeof Star> = {
   dialogo: MessagesSquare,
   revisao: Trophy,
   simulado: ClipboardCheck,
+  leitura: BookText,
 };
 
 export default function Trilha() {
@@ -69,7 +71,7 @@ export default function Trilha() {
     if (!desbloqueada(l))
       return avisar(
         l.opcional
-          ? "🔒 O simulado abre quando você terminar as outras estações desta linha."
+          ? "🔒 Esta estação abre quando você terminar as outras desta linha."
           : "🔒 Complete as lições anteriores para desbloquear esta.",
       );
     if (passaDaMeta(l))
@@ -202,7 +204,9 @@ export default function Trilha() {
                       <span className="min-w-0 flex-1">
                         <span className={`block leading-tight ${ehAtual ? "font-bold" : "font-medium"}`}>{l.titulo}</span>
                         {l.opcional && !ehAtual && (
-                          <span className="block text-xs text-[var(--muted)]">Opcional · formato da prova de escuta do JLPT</span>
+                          <span className="block text-xs text-[var(--muted)]">
+                            {l.tipo === "leitura" ? "Opcional · texto curto com as frases da unidade" : "Opcional · formato da prova de escuta do JLPT"}
+                          </span>
                         )}
                         {ehAtual && (
                           <span className="block text-xs font-semibold" style={{ color: u.cor }}>

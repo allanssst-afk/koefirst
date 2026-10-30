@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { CheckCircle2, Target, Volume2, X, XCircle, Zap } from "lucide-react";
 import { Mascote } from "../Mascote";
 import { usePhase } from "../PhaseProvider";
-import { ExDialogo, ExEscuta, ExFalar, ExImediata, ExMelodia, ExMontar, ExNova, ExProvaKana, ExQuiz, ExSituacao, ExSombra } from "./Exercicios";
+import { ExCompreensao, ExDialogo, ExEscuta, ExFalar, ExImediata, ExMelodia, ExMontar, ExNova, ExProvaKana, ExQuiz, ExSituacao, ExSombra, ExTexto } from "./Exercicios";
 import { ExExplica } from "./Tutorial";
 import type { ExProps, Resposta } from "./comuns";
 import { somAcerto, somConclusao, somErro } from "@/lib/audio/som";
@@ -15,7 +15,7 @@ import { concluirLicao, notaDaLicao } from "@/lib/queries";
 import { cardPorId, faseMinimaDaProva, montarLicao, PARTES_SIMULADO, traducaoPrincipal, type Exercicio, type Licao } from "@/lib/trilha";
 
 /** Exercícios só de leitura/apresentação: o botão é CONTINUAR direto, sem verificar. */
-const INFORMATIVO: Exercicio["tipo"][] = ["nova", "explica", "sombra"];
+const INFORMATIVO: Exercicio["tipo"][] = ["nova", "explica", "sombra", "texto"];
 
 /** Uma questão respondida no simulado (a correção só aparece no fim). */
 interface Questao {
@@ -217,6 +217,10 @@ export function LessonPlayer({ licao }: { licao: Licao }) {
               return <ExSituacao ex={ex} {...props} />;
             case "imediata":
               return <ExImediata ex={ex} {...props} />;
+            case "texto":
+              return <ExTexto ex={ex} {...props} />;
+            case "compreensao":
+              return <ExCompreensao ex={ex} {...props} />;
             case "vocabulario":
             case "gramatica":
             case "leitura":

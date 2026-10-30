@@ -63,6 +63,10 @@ Unidades novas seguem a ordem do plano; ao terminar uma, marcar no plano.
   transcrição segue oculta. As chaves devem ser específicas: "kara" sozinho casa com "de" (ブラジルから), e "tai" com 大変 em
   kana. A resposta-modelo vem de `emendar(...)` e precisa cobrir todos os pontos. Avaliação oral B1 (`rp_rev4_avaliacao`,
   u44): 4 turnos abertos que somam 5 minutos; antes dela vem o ensaio em turnos curtos (`rp_rev4_ensaio`).
+- **Leitura por unidade** (`tipo: "leitura"`, `opcional: true`, `src/lib/leituras.ts`): última estação das unidades 15–43 (exceto
+  as de revisão). O texto são frases do baralho em sequência (só da unidade ou de antes), com áudio e mapa de som; a escrita segue
+  a fase pelo `ScriptLayer`, e na Fase 1 só aparece o mapa. Duas perguntas com resposta no texto (exercícios `texto` e
+  `compreensao`). Fica fora do FSRS. XP normal de lição.
 - **Técnicas do método** (`src/components/TecnicasCard.tsx`, no Perfil): cada técnica, a base de pesquisa e onde
   está no app. Atualizar ao criar exercícios novos.
 - **Dicionário** (`/dicionario`, `src/lib/dicionario.ts`): cada bloco das frases do baralho vira um verbete
@@ -269,6 +273,7 @@ src/
   lib/
     types.ts · fsrs.ts · roles.ts · text.ts (normalização/similaridade/furigana) · idb.ts
     simulado-n5.ts · simulado-n4.ts · simulado-n3.ts   # bancos das partes escritas dos simulados
+    leituras.ts                  # textos e perguntas da leitura por unidade
     queries.ts                   # consultas e gravações (fila, revisão, dashboard, atividade, coach offline)
     drills.ts                    # verbos, cenas com complemento em japonês, montarDialogo
     roleplay.ts                  # categorias de contexto
