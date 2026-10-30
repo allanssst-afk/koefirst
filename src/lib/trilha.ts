@@ -517,6 +517,23 @@ export const UNIDADES: Unidade[] = [
     ],
     missoes: ["rp_ser_banco", "rp_ser_correio", "rp_ser_prefeitura"],
   },
+  {
+    id: "u32",
+    numero: 32,
+    titulo: "Problemas e reclamações",
+    descricao: "Sem querer, não funciona e como resolver",
+    cor: "#b5604f",
+    contexto: "compras",
+    formasNovas: ["te_shimau"],
+    cards: [
+      "card_359", "card_360", "card_361", "card_362",
+      "card_363", "card_364", "card_365", "card_366",
+      "card_367", "card_368", "card_369", "card_370",
+      "card_371", "card_372", "card_373", "card_374",
+      "card_375", "card_376", "card_377", "card_378",
+    ],
+    missoes: ["rp_pro_telefone", "rp_pro_loja", "rp_pro_restaurante"],
+  },
 ];
 
 const TITULO: Record<TipoLicao, string> = {

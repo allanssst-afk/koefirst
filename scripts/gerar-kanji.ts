@@ -86,6 +86,16 @@ const SIG_EXTRA: Record<string, string[]> = {
   変: ["mudar", "estranho"],
   記: ["anotar", "registro"],
   数: ["número", "contar"],
+  布: ["pano", "tecido"],
+  束: ["feixe", "promessa"],
+  割: ["partir", "quebrar", "proporção"],
+  坊: ["menino", "monge"],
+  困: ["ter problemas", "ficar em apuros"],
+  交: ["trocar", "misturar-se"],
+  壊: ["quebrar", "destruir"],
+  修: ["consertar", "estudar"],
+  申: ["dizer (humilde)"],
+  訳: ["motivo", "traduzir"],
 };
 
 const NOMES_PROPRIOS = /^(Japão|China|Coreia|Tóquio|Buda|Inglaterra)/;

@@ -75,7 +75,7 @@ export const VERBOS: Verbo[] = [
 
 const junta = (...partes: (string | undefined)[]) => partes.filter(Boolean).join(" ");
 
-export type Forma = "masu" | "mashita" | "masen" | "masen_deshita" | "tai" | "mashou" | "te_kudasai" | "te_imasu" | "koto" | "nakereba" | "ta" | "nakatta" | "ta_koto" | "ou_to" | "reru" | "remasen" | "tara" | "te_kureta" | "tai_ga";
+export type Forma = "masu" | "mashita" | "masen" | "masen_deshita" | "tai" | "mashou" | "te_kudasai" | "te_imasu" | "koto" | "nakereba" | "ta" | "nakatta" | "ta_koto" | "ou_to" | "reru" | "remasen" | "tara" | "te_kureta" | "tai_ga" | "te_shimau";
 
 interface FormaDef {
   label: string;
@@ -332,6 +332,18 @@ export const FORMAS: Record<Forma, FormaDef> = {
     kana: "たいんですが",
     funcao: "[mas…]",
   },
+  te_shimau: {
+    pergunta: () => "O que aconteceu?",
+    abertura: "",
+    quando: "Contar algo que aconteceu sem querer",
+    regra: "forma -te + shimaimashita",
+    frase: (v, obj) => junta("acabei", v.ptGerundio, obj),
+    label: "Sem querer",
+    comando: "Foi sem querer!",
+    sufixo: [],
+    kana: "しまいました",
+    funcao: "acabei",
+  },
 };
 
 /** Verbos cuja volitiva é base -nai + "you" (grupo de taberu e os irregulares); os outros trocam o último som por "-ou". */
@@ -400,6 +412,8 @@ export interface Conjugacao {
  * - -tara ii desu yo: melodia da forma -ta e "ra" baixo (tábetara, ittára); "ii" = HL. OJAD, 25 verbos.
  * - -te kuremashita: melodia da forma -te; depois de queda "kuremashita" = LHHLL; depois de verbo plano, HHHLL.
  *   OJAD, 15 verbos.
+ * - -te shimaimashita: melodia da forma -te; depois de verbo plano "shimaimashita" = HHHHLL; depois de queda fica baixo.
+ *   O OJAD varia depois de queda (kaette, hanashite sobem): ficou o mais frequente, e eles estão fora de `SEM_QUERER_OK`.
  */
 export function conjugar(verbo: Verbo, forma: Forma): Conjugacao {
   const raizBloco = verbo.raiz.join("");
@@ -433,6 +447,16 @@ export function conjugar(verbo: Verbo, forma: Forma): Conjugacao {
     const kana = ta(te.kana);
     const kanji = ta(te.kanji);
     return { verbo, forma, moras, kana, kanji, alvos: [kana, stripFurigana(kanji)] };
+  }
+
+  if (forma === "te_shimau") {
+    const te = verbo.te;
+    const moras = [
+      ...b(te.som, pitchTe(te.som.split(".").length, te.acento), `${raizFn} (forma -te)`, "verbo"),
+      ...b("shi.ma.i.ma._shi.ta", te.acento ? "LLLLLL" : "HHHHLL", FORMAS.te_shimau.funcao, "verbo"),
+    ];
+    const plain = stripFurigana(te.kanji);
+    return { verbo, forma, moras, kana: `${te.kana}しまいました`, kanji: `${te.kanji}しまいました`, alvos: [`${te.kana}しまいました`, `${plain}しまいました`, `${te.kana}しまった`, `${plain}しまった`] };
   }
 
   if (forma === "tai_ga") {
@@ -819,6 +843,14 @@ const BALCAO_OK = new Set([
 for (const cenas of Object.values(CENAS_DRILL))
   for (const c of cenas) if (!BALCAO_OK.has(`${c.verbo}|${c.obj}`)) c.sem = [...(c.sem ?? []), "tai_ga"];
 
+/** Sem querer (-te shimaimashita) responde a "O que aconteceu?": o que se faz e depois se lamenta. */
+const SEM_QUERER_OK = new Set([
+  "kau|roupas", "kau|sapatos", "kau|um livro", "kau|um presente", "taberu|ramen", "taberu|sushi", "taberu|um bentô", "nomu|cerveja", "nomu|café",
+  "nomu|um suco", "okiru|tarde", "neru|cedo", "iku|ao karaokê", "miru|televisão", "miru|um filme",
+]);
+for (const cenas of Object.values(CENAS_DRILL))
+  for (const c of cenas) if (!SEM_QUERER_OK.has(`${c.verbo}|${c.obj}`)) c.sem = [...(c.sem ?? []), "te_shimau"];
+
 /** A transformação combina com a situação (nem o verbo nem a cena a excluem). */
 export const combina = (cena: CenaDrill, forma: Forma) => !verboPorDict(cena.verbo).sem?.includes(forma) && !cena.sem?.includes(forma);
 
@@ -865,6 +897,13 @@ const SHUMI_NAN_DESU_KA = [
   ...b("shu.mi", "HL", "hobby", "topico"),
   ...b("wa", "L", "[Tópico]", "particula"),
   ...b("na.n", "HL", "o quê", "pergunta"),
+  ...b("de._su", "LL", "é", "copula"),
+  ...b("ka", "L", "[?]", "particula"),
+];
+const DOU_SHITA_N = [
+  ...b("do.o", "HL", "como, o quê", "pergunta"),
+  ...b("_shi.ta", "LL", "aconteceu", "verbo"),
+  ...b("n", "L", "[é que: explicação]", "particula"),
   ...b("de._su", "LL", "é", "copula"),
   ...b("ka", "L", "[?]", "particula"),
 ];
@@ -917,6 +956,7 @@ const ponto = (t: string) => (/[.!?]$/.test(t) ? t : `${t}.`);
  * - Conselho:          どうしたらいいですか → [complemento][verbo -tara]いいですよ
  * - Favor:             田中さんは[complemento][forma -te]くれましたか → はい、…くれました
  * - Pedir com jeito:   何かご用ですか → [complemento][verbo -tai]んですが
+ * - Sem querer:        どうしたんですか → [complemento][forma -te]しまいました
  */
 export function montarDialogo(cena: CenaDrill, forma: Forma): DialogoDrill {
   const v = verboPorDict(cena.verbo);
@@ -929,6 +969,8 @@ export function montarDialogo(cena: CenaDrill, forma: Forma): DialogoDrill {
   if (forma === "ta" || forma === "nakatta") {
     const q = conjugar(v, "ta");
     pergunta = fala(KINOU.kana + c.kana + q.kana + "？", KINOU.kanji + c.kanji + q.kanji + "？", f.pergunta(v, cena.obj), KINOU.moras, c.moras, q.moras);
+  } else if (forma === "te_shimau") {
+    pergunta = fala(fim("どうしたんですか"), fim("どうしたんですか"), f.pergunta(v, cena.obj), DOU_SHITA_N);
   } else if (forma === "tai_ga") {
     pergunta = fala(fim("なにかごようですか"), fim("何[なに]かご用[よう]ですか"), f.pergunta(v, cena.obj), NANIKA_GOYOU);
   } else if (forma === "te_kureta") {
