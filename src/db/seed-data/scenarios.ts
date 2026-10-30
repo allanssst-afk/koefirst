@@ -29,6 +29,7 @@ import { cenariosDarReceber } from "./scenarios-dar-receber";
 import { cenariosDescrever } from "./scenarios-descrever";
 import { cenariosServicos } from "./scenarios-servicos";
 import { cenariosProblemas } from "./scenarios-problemas";
+import { cenariosKeigo } from "./scenarios-keigo";
 
 /** Um turno do roteiro offline (usado quando não há chave de IA). */
 export interface RoteiroPasso {
@@ -280,4 +281,4 @@ const cenariosBase: SeedScenario[] = [
   },
 ];
 
-export const seedScenarios: SeedScenario[] = [...cenariosBase, ...cenariosCotidiano, ...cenariosExtra, ...cenariosTrabalho, ...cenariosLugares, ...cenariosNumeros, ...cenariosPedidos, ...cenariosAgora, ...cenariosAdjetivos, ...cenariosFimDeSemana, ...cenariosRevisao, ...cenariosFamilia, ...cenariosSaude, ...cenariosHobbies, ...cenariosRegras, ...cenariosCasual, ...cenariosOpiniao, ...cenariosMotivos, ...cenariosExperiencias, ...cenariosComparar, ...cenariosPlanos, ...cenariosViagem, ...cenariosRevisaoFase2, ...cenariosConsegue, ...cenariosCondicional, ...cenariosDarReceber, ...cenariosDescrever, ...cenariosServicos, ...cenariosProblemas];
+export const seedScenarios: SeedScenario[] = [...cenariosBase, ...cenariosCotidiano, ...cenariosExtra, ...cenariosTrabalho, ...cenariosLugares, ...cenariosNumeros, ...cenariosPedidos, ...cenariosAgora, ...cenariosAdjetivos, ...cenariosFimDeSemana, ...cenariosRevisao, ...cenariosFamilia, ...cenariosSaude, ...cenariosHobbies, ...cenariosRegras, ...cenariosCasual, ...cenariosOpiniao, ...cenariosMotivos, ...cenariosExperiencias, ...cenariosComparar, ...cenariosPlanos, ...cenariosViagem, ...cenariosRevisaoFase2, ...cenariosConsegue, ...cenariosCondicional, ...cenariosDarReceber, ...cenariosDescrever, ...cenariosServicos, ...cenariosProblemas, ...cenariosKeigo];

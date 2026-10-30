@@ -534,6 +534,23 @@ export const UNIDADES: Unidade[] = [
     ],
     missoes: ["rp_pro_telefone", "rp_pro_loja", "rp_pro_restaurante"],
   },
+  {
+    id: "u33",
+    numero: 33,
+    titulo: "Keigo no trabalho",
+    descricao: "Elevar o outro e abaixar a si mesmo",
+    cor: "#5a6b8c",
+    contexto: "trabalho",
+    formasNovas: ["o_shimasu"],
+    cards: [
+      "card_379", "card_380", "card_381", "card_382",
+      "card_383", "card_384", "card_385", "card_386",
+      "card_387", "card_388", "card_389", "card_390",
+      "card_391", "card_392", "card_393", "card_394",
+      "card_395", "card_396", "card_397", "card_398",
+    ],
+    missoes: ["rp_kei_recepcao", "rp_kei_apresentacao", "rp_kei_folga"],
+  },
 ];
 
 const TITULO: Record<TipoLicao, string> = {
