@@ -467,6 +467,23 @@ export const UNIDADES: Unidade[] = [
     ],
     missoes: ["rp_con_passeio", "rp_con_caminho", "rp_con_computador"],
   },
+  {
+    id: "u29",
+    numero: 29,
+    titulo: "Dar e receber",
+    descricao: "Dei, ganhei, me deram e favores",
+    cor: "#c98a4b",
+    contexto: "trabalho",
+    formasNovas: ["te_kureta"],
+    cards: [
+      "card_299", "card_300", "card_301", "card_302",
+      "card_303", "card_304", "card_305", "card_306",
+      "card_307", "card_308", "card_309", "card_310",
+      "card_311", "card_312", "card_313", "card_314",
+      "card_315", "card_316", "card_317", "card_318",
+    ],
+    missoes: ["rp_dar_presente", "rp_dar_ajuda", "rp_dar_foto"],
+  },
 ];
 
 const TITULO: Record<TipoLicao, string> = {

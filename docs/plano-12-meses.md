@@ -5,13 +5,13 @@ independente na fala). Guia a produção de unidades: cada unidade nova sai daqu
 
 ## Metas finais (mês 12)
 
-| Medida | Meta B1 | Hoje (unidades 1–28) |
+| Medida | Meta B1 | Hoje (unidades 1–29) |
 | --- | --- | --- |
-| Frases do baralho (faladas) | ~700 | 298 |
-| Palavras ativas (fala) | ~2.000 | ~700 |
+| Frases do baralho (faladas) | ~700 | 318 |
+| Palavras ativas (fala) | ~2.000 | ~730 |
 | Palavras reconhecidas (escuta/leitura) | ~3.500 | — |
 | Kanji | ~650 (N5 + N4 + N3) | 418 com dados (N5, N4 e os do app) |
-| Formas verbais no Ping-Pong | ~20 | 17 (-masu, -mashita, -masen, -masen deshita, -tai, -mashou, -te kudasai, -te imasu, dicionário + koto, -nakereba, -ta e -nakatta casuais, -ta koto ga arimasu, volitiva + to omoimasu, potencial afirmativo e negativo, -tara ii desu yo) |
+| Formas verbais no Ping-Pong | ~20 | 18 (-masu, -mashita, -masen, -masen deshita, -tai, -mashou, -te kudasai, -te imasu, dicionário + koto, -nakereba, -ta e -nakatta casuais, -ta koto ga arimasu, volitiva + to omoimasu, potencial afirmativo e negativo, -tara ii desu yo, -te kuremashita) |
 | Fala contínua | 5 min sobre si, narrar, opinar | frases soltas e missões de 6 turnos |
 
 Ritmo de referência: 5 frases novas por dia (meta do Perfil) ≈ 150 por mês, mais revisões FSRS. As unidades
@@ -41,8 +41,8 @@ Fases = camadas de escrita do app (Perfil): 1 som · 2 + kana · 3 + kanji com f
 
 | Mês | Unidades | Gramática nova | Vocabulário | Marco |
 | --- | --- | --- | --- | --- |
-| 7 | 27 Consegue? *(pronta)* · 28 Se… *(pronta)* · **29 Dar e receber** (próxima) | potencial · condicional ~tara / ~to / ~ba · agemasu / kuremasu / moraimasu e ~te ageru / kureru / morau | 1.400 | kanji N5 (103) dominados |
-| 8 | 30 Descrever coisas e pessoas · 31 Banco, correio e prefeitura · 32 Problemas e reclamações | orações relativas · ~te kudasaimasen ka · ~tai n desu ga · ~te shimaimashita · ~nakute | 1.600 | resolver um problema por telefone (Arena) |
+| 7 | 27 Consegue? *(pronta)* · 28 Se… *(pronta)* · 29 Dar e receber *(pronta)* | potencial · condicional ~tara / ~to / ~ba · agemasu / kuremasu / moraimasu e ~te ageru / kureru / morau | 1.400 | kanji N5 (103) dominados |
+| 8 | **30 Descrever coisas e pessoas** (próxima) · 31 Banco, correio e prefeitura · 32 Problemas e reclamações | orações relativas · ~te kudasaimasen ka · ~tai n desu ga · ~te shimaimashita · ~nakute | 1.600 | resolver um problema por telefone (Arena) |
 | 9 | 33 Keigo no trabalho · 34 Telefone e e-mail · 35 Aparências e impressões | sonkeigo / kenjougo básicos (irasshaimasu, itashimasu, ~sasete itadakimasu) · ~sou desu (parece) · ~you desu · ~rashii | 1.800 | kanji N4 (181); simulado N4 |
 
 ### Fase 4 — imersão B1, kanji sem furigana (meses 10–12)
