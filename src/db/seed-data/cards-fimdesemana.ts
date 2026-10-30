@@ -143,10 +143,10 @@ export const cardsFimDeSemana = [
     blocos: [
       b("e.i.ga", "LHH", "filme", "objeto"),
       b("o", "H", "[Objeto]", "particula"),
-      b("mi.ta.ri", "LHL", "ver (entre outras coisas)", "verbo"),
+      b("mi.ta.ri", "LHL", "ver (-tari)", "verbo"),
       b("ho.n", "HL", "livro", "objeto"),
       b("o", "L", "[Objeto]", "particula"),
-      b("yo.n.da.ri", "HLLL", "ler (entre outras coisas)", "verbo"),
+      b("yo.n.da.ri", "HLLL", "ler (-tari)", "verbo"),
       b("shi.ma._shi.ta", "LLLL", "fiz", "verbo"),
     ],
     notas:

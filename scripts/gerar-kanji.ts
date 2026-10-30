@@ -66,6 +66,13 @@ const SIG_EXTRA: Record<string, string[]> = {
   予: ["de antemão", "prévio"],
   決: ["decidir", "fixar"],
   受: ["receber", "aceitar"],
+  除: ["remover", "excluir"],
+  約: ["promessa", "aproximadamente"],
+  荷: ["bagagem", "carga"],
+  預: ["depositar", "deixar guardado"],
+  換: ["trocar", "mudar"],
+  迷: ["perder-se", "em dúvida"],
+  階: ["andar (de prédio)", "degrau"],
 };
 
 const NOMES_PROPRIOS = /^(Japão|China|Coreia|Tóquio|Buda|Inglaterra)/;

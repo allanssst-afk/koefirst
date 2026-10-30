@@ -394,6 +394,22 @@ export const UNIDADES: Unidade[] = [
     ],
     missoes: ["rp_pla_ferias", "rp_pla_futuro", "rp_pla_reuniao"],
   },
+  {
+    id: "u25",
+    numero: 25,
+    titulo: "Viagem",
+    descricao: "Hotel, estação, imprevistos e como foi",
+    cor: "#4f9fb8",
+    contexto: "cidade",
+    cards: [
+      "card_244", "card_245", "card_246",
+      "card_247", "card_248", "card_249",
+      "card_250", "card_251", "card_252",
+      "card_253", "card_254", "card_255",
+      "card_256", "card_257", "card_258",
+    ],
+    missoes: ["rp_via_hotel", "rp_via_estacao", "rp_via_passaporte", "rp_via_volta"],
+  },
 ];
 
 const TITULO: Record<TipoLicao, string> = {
