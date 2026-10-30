@@ -49,9 +49,13 @@ const SIG_EXTRA: Record<string, string[]> = {
   喉: ["garganta"],
   休: ["descansar", "folga"],
   回: ["vezes", "girar"],
+  趣: ["interesse", "gosto", "encanto"],
+  弾: ["tocar (instrumento)", "bala (de arma)"],
+  英: ["inglês", "Inglaterra"],
+  転: ["rodar", "virar"],
 };
 
-const NOMES_PROPRIOS = /^(Japão|China|Coreia|Tóquio|Buda)/;
+const NOMES_PROPRIOS = /^(Japão|China|Coreia|Tóquio|Buda|Inglaterra)/;
 
 /** kanji usados pelo app (frases, missões e Ping-Pong) */
 function kanjiDoApp(): string[] {

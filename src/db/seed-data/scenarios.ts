@@ -13,6 +13,7 @@ import { cenariosFimDeSemana } from "./scenarios-fimdesemana";
 import { cenariosRevisao } from "./scenarios-revisao";
 import { cenariosFamilia } from "./scenarios-familia";
 import { cenariosSaude } from "./scenarios-saude";
+import { cenariosHobbies } from "./scenarios-hobbies";
 
 /** Um turno do roteiro offline (usado quando não há chave de IA). */
 export interface RoteiroPasso {
@@ -264,4 +265,4 @@ const cenariosBase: SeedScenario[] = [
   },
 ];
 
-export const seedScenarios: SeedScenario[] = [...cenariosBase, ...cenariosCotidiano, ...cenariosExtra, ...cenariosTrabalho, ...cenariosLugares, ...cenariosNumeros, ...cenariosPedidos, ...cenariosAgora, ...cenariosAdjetivos, ...cenariosFimDeSemana, ...cenariosRevisao, ...cenariosFamilia, ...cenariosSaude];
+export const seedScenarios: SeedScenario[] = [...cenariosBase, ...cenariosCotidiano, ...cenariosExtra, ...cenariosTrabalho, ...cenariosLugares, ...cenariosNumeros, ...cenariosPedidos, ...cenariosAgora, ...cenariosAdjetivos, ...cenariosFimDeSemana, ...cenariosRevisao, ...cenariosFamilia, ...cenariosSaude, ...cenariosHobbies];

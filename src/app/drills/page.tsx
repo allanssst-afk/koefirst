@@ -28,7 +28,7 @@ import { CATEGORIAS } from "@/lib/roleplay";
 import { bestSimilarity, containsAny } from "@/lib/text";
 
 const JANELAS = [3000, 5000, 8000, 15000];
-const TREINAVEIS: Forma[] = ["mashita", "masen", "masen_deshita", "tai", "mashou", "te_kudasai", "te_imasu"];
+const TREINAVEIS: Forma[] = ["mashita", "masen", "masen_deshita", "tai", "mashou", "te_kudasai", "te_imasu", "koto"];
 
 type Stage = "setup" | "cue" | "ready" | "listening" | "result";
 /** completo = frase inteira · parcial = só o verbo transformado · erro = nem o verbo */
@@ -291,7 +291,11 @@ export default function DrillsPage() {
           {stage !== "result" && (
             <p className="text-xs text-[var(--muted)]">
               Transformação: <span className="font-mono text-[var(--fg)]">{f.regra}</span>
-              {dialogo.resposta.pt.includes("(eu)") ? " · o «(eu)» fica implícito em japonês" : " · quem vai fazer é a outra pessoa"}
+              {round.forma === "te_kudasai"
+                ? " · quem vai fazer é a outra pessoa"
+                : dialogo.resposta.pt.includes("(eu)")
+                  ? " · o «(eu)» fica implícito em japonês"
+                  : ""}
             </p>
           )}
         </div>

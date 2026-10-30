@@ -266,6 +266,22 @@ export const UNIDADES: Unidade[] = [
     ],
     missoes: ["rp_sau_medico", "rp_sau_farmacia", "rp_sau_colega"],
   },
+  {
+    id: "u17",
+    numero: 17,
+    titulo: "Hobbies",
+    descricao: "Forma de dicionário: do que gosta, o que sabe fazer",
+    cor: "#9c6ade",
+    contexto: "social",
+    cards: [
+      "card_139", "card_140", "card_141",
+      "card_142", "card_143", "card_144",
+      "card_145", "card_146", "card_147",
+      "card_148", "card_149", "card_150",
+    ],
+    missoes: ["rp_hob_conversa", "rp_hob_entrevista", "rp_hob_convite"],
+    formasNovas: ["koto"],
+  },
 ];
 
 const TITULO: Record<TipoLicao, string> = {
