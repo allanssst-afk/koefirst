@@ -15,11 +15,17 @@ export interface Unidade {
   descricao: string;
   /** cor do banner e dos nós da unidade */
   cor: string;
-  contexto: Categoria | null;
+  /** contexto do Ping-Pong; "todos" mistura as situações de todos os contextos (revisão geral) */
+  contexto: Categoria | "todos" | null;
   cards: string[];
   missoes: string[];
   /** transformações do Ping-Pong que esta unidade ensina; dela em diante entram no sorteio */
   formasNovas?: Forma[];
+  /**
+   * Unidade de revisão geral (fim de fase): sem frases novas; uma lição de revisão por tema, com as frases das
+   * unidades listadas, e no fim um simulado obrigatório com todas elas.
+   */
+  revisaoGeral?: { titulo: string; unidades: string[] }[];
 }
 
 export type TipoLicao = "tutorial" | "frases" | "pingpong" | "dialogo" | "revisao" | "simulado";
@@ -214,6 +220,22 @@ export const UNIDADES: Unidade[] = [
     ],
     missoes: ["rp_fds_segunda", "rp_fds_convite", "rp_fds_manha"],
   },
+  {
+    id: "u14",
+    numero: 14,
+    titulo: "Revisão da Fase 1",
+    descricao: "Tudo junto: conversa de 2 minutos e simulado N5",
+    cor: "#8a8f9e",
+    contexto: "todos",
+    cards: [],
+    missoes: ["rp_rev_conversa", "rp_rev_cidade"],
+    revisaoGeral: [
+      { titulo: "Revisão: quem é você", unidades: ["u1", "u6", "u11", "u13"] },
+      { titulo: "Revisão: cidade e compras", unidades: ["u3", "u4", "u8", "u9", "u10"] },
+      { titulo: "Revisão: trabalho", unidades: ["u5", "u7"] },
+      { titulo: "Revisão: comida e opiniões", unidades: ["u2", "u12"] },
+    ],
+  },
 ];
 
 const TITULO: Record<TipoLicao, string> = {
@@ -227,6 +249,16 @@ const TITULO: Record<TipoLicao, string> = {
 
 export function licoesDa(u: Unidade): Licao[] {
   const l: Omit<Licao, "id" | "unidade">[] = [];
+  if (u.revisaoGeral) {
+    const cardsDe = (ids: string[]) => UNIDADES.filter((x) => ids.includes(x.id)).flatMap((x) => x.cards);
+    for (const r of u.revisaoGeral) l.push({ tipo: "revisao", titulo: r.titulo, cards: cardsDe(r.unidades) });
+    if (u.contexto) l.push({ tipo: "pingpong", titulo: TITULO.pingpong, cards: [] });
+    for (const m of u.missoes) l.push({ tipo: "dialogo", titulo: TITULO.dialogo, cards: [], missao: m });
+    // o simulado é o marco da fase: obrigatório e com todas as frases revisadas
+    const todas = cardsDe(u.revisaoGeral.flatMap((r) => r.unidades));
+    l.push({ tipo: "simulado", titulo: "Simulado N5 de escuta", cards: todas });
+    return l.map((x, i) => ({ ...x, id: `${u.id}:l${i + 1}`, unidade: u }));
+  }
   if (u.numero === 0) l.push({ tipo: "tutorial", titulo: TITULO.tutorial, cards: [] });
   for (let i = 0; i < u.cards.length; i += 3) {
     const grupo = u.cards.slice(i, i + 3);
@@ -335,7 +367,7 @@ const TREINO: Forma[] = ["mashita", "masen", "masen_deshita", "tai", "mashou"];
 const formasAte = (u: Unidade): Forma[] => [...TREINO, ...UNIDADES.filter((x) => x.numero <= u.numero).flatMap((x) => x.formasNovas ?? [])];
 
 /** `sorteio`: de onde sai a transformação da pergunta; `todas`: de onde sai a alternativa errada. */
-function dialogo(ctx: Categoria, sorteio: Forma[] = TREINO, todas: Forma[] = TREINO): Exercicio {
+function dialogo(ctx: Categoria | "todos", sorteio: Forma[] = TREINO, todas: Forma[] = TREINO): Exercicio {
   const cenas = cenasDoContexto(ctx);
   for (;;) {
     const cena = cenas[Math.floor(Math.random() * cenas.length)];
@@ -378,7 +410,7 @@ function situacao(card: CardTrilha, daUnidade: CardTrilha[]): Exercicio {
  * Simulado: resposta rápida. Só formas cuja pergunta traz a situação (ontem / todo dia + complemento),
  * para haver uma única resposta certa; as erradas respondem com outra situação.
  */
-function imediata(ctx: Categoria): Exercicio {
+function imediata(ctx: Categoria | "todos"): Exercicio {
   const cenas = cenasDoContexto(ctx);
   const formas: Forma[] = ["mashita", "masen", "masen_deshita"];
   const pode = (c: (typeof cenas)[number], f: Forma) => !verboPorDict(c.verbo).sem?.includes(f) && !c.sem?.includes(f);
@@ -464,10 +496,12 @@ export function montarLicao(l: Licao): Exercicio[] {
       return ex;
     }
     case "simulado": {
-      const parte1 = embaralhar(cards).slice(0, 4).map(escuta);
-      const parte2 = embaralhar(cards).slice(0, 4).map((c) => situacao(c, cards));
+      // simulado de fim de fase (muitas frases) tem 6 questões por parte; o de unidade, 4
+      const n = cards.length > 30 ? 6 : 4;
+      const parte1 = embaralhar(cards).slice(0, n).map(escuta);
+      const parte2 = embaralhar(cards).slice(0, n).map((c) => situacao(c, cards));
       const ctx = l.unidade.contexto;
-      const parte3 = ctx ? Array.from({ length: 4 }, () => imediata(ctx)) : [];
+      const parte3 = ctx ? Array.from({ length: n }, () => imediata(ctx)) : [];
       return [...parte1, ...parte2, ...parte3];
     }
     case "dialogo":

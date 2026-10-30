@@ -42,6 +42,10 @@ Unidades novas seguem a ordem do plano; ao terminar uma, marcar no plano.
   repetir erros; no fim, nota por parte e aprovação no critério do JLPT (60% no total + 1/3 em cada parte) e a
   correção. Erros viram Again no FSRS; XP 20. Lição opcional não trava a trilha: abre quando o resto da unidade
   termina. Novas lições entram sempre no FIM de `licoesDa` (os ids `uN:lM` são a chave do progresso salvo).
+- **Revisão de fim de fase** (`revisaoGeral` na unidade, ex.: u14 "Revisão da Fase 1"): sem frases novas
+  (`cards: []`); `licoesDa` gera uma revisão por tema com as frases das unidades listadas, o Ping-Pong (contexto
+  `"todos"`, todas as formas já ensinadas), as missões longas (a "Conversa de 2 minutos", marco do mês 3) e, no
+  fim, um simulado OBRIGATÓRIO com todas as frases (6 questões por parte quando há mais de 30 frases).
 - **Técnicas do método** (`src/components/TecnicasCard.tsx`, no Perfil): cada técnica, a base de pesquisa e onde
   está no app. Atualizar ao criar exercícios novos.
 - **Dicionário** (`/dicionario`, `src/lib/dicionario.ts`): cada bloco das frases do baralho vira um verbete
@@ -183,7 +187,8 @@ src/
     seed-data/cards.ts (+ cards-trabalho.ts, cards-lugares.ts, cards-numeros.ts, cards-pedidos.ts,
       cards-agora.ts, cards-adjetivos.ts, cards-fimdesemana.ts) · seed-data/scenarios.ts (+ scenarios-cotidiano.ts,
       scenarios-extra.ts, scenarios-trabalho.ts, scenarios-lugares.ts, scenarios-numeros.ts, scenarios-pedidos.ts,
-      scenarios-agora.ts, scenarios-adjetivos.ts, scenarios-fimdesemana.ts) · seed-data/helpers.ts
+      scenarios-agora.ts, scenarios-adjetivos.ts, scenarios-fimdesemana.ts, scenarios-revisao.ts) ·
+      seed-data/helpers.ts
   lib/
     types.ts · fsrs.ts · roles.ts · text.ts (normalização/similaridade/furigana) · idb.ts
     queries.ts                   # consultas e gravações (fila, revisão, dashboard, atividade, coach offline)

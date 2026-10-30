@@ -5,7 +5,7 @@ independente na fala). Guia a produção de unidades: cada unidade nova sai daqu
 
 ## Metas finais (mês 12)
 
-| Medida | Meta B1 | Hoje (unidades 1–13) |
+| Medida | Meta B1 | Hoje (Fase 1 completa: unidades 1–14) |
 | --- | --- | --- |
 | Frases do baralho (faladas) | ~700 | 114 |
 | Palavras ativas (fala) | ~2.000 | ~315 |
@@ -27,13 +27,13 @@ Fases = camadas de escrita do app (Perfil): 1 som · 2 + kana · 3 + kanji com f
 | --- | --- | --- | --- | --- |
 | 1 | 1 Cumprimente e se apresente · 2 Comida e bebida · 3 Compras e perguntas · 4 Pela cidade *(prontas)* | X wa Y desu · ~ka · ~o kudasai · -masu / -masen / -tai | 120 | apresentar-se em 30 s |
 | 2 | 5 No trabalho · 6 Sua rotina · 7 Dia a dia no escritório *(prontas)* · 8 Onde fica, o que tem *(pronta)* · 9 Números, horas e preços *(pronta)* | aru / iru · ~ni ~ga arimasu · posição (mae, ue, chikaku) · ~kara ~made · contadores (~ji, ~fun, ~en, ~tsu, ~nin, ~mai) · datas | 300 | pedir e entender direções |
-| 3 | 10 Peça e oriente *(pronta)* · 11 Agora e sempre *(pronta)* · 12 Como é? *(pronta)* · 13 Fim de semana *(pronta)* · **14 Revisão geral** (próxima) | -te kudasai · -te mo ii desu ka · -te wa ikemasen · -te imasu (ação e estado) · adjetivos -i / -na (presente, negativo, passado) · totemo / amari · sequência com -te | 500 | conversa de 2 min sobre rotina; simulado de escuta N5 |
+| 3 | 10 Peça e oriente *(pronta)* · 11 Agora e sempre *(pronta)* · 12 Como é? *(pronta)* · 13 Fim de semana *(pronta)* · 14 Revisão geral *(pronta)* | -te kudasai · -te mo ii desu ka · -te wa ikemasen · -te imasu (ação e estado) · adjetivos -i / -na (presente, negativo, passado) · totemo / amari · sequência com -te | 500 | conversa de 2 min sobre rotina; simulado de escuta N5 |
 
 ### Fase 2 — som + kana (meses 4–6)
 
 | Mês | Unidades | Gramática nova | Vocabulário | Marco |
 | --- | --- | --- | --- | --- |
-| 4 | 15 Família e pessoas · 16 Saúde e farmácia · 17 Hobbies (forma de dicionário) · 18 Regras e obrigações | forma de dicionário · ~koto ga dekimasu · shumi wa ~koto desu · forma -nai · ~nai de kudasai · ~nakereba narimasen · ~ga itai desu · ~ta hou ga ii | 750 | ler e falar frases em kana |
+| 4 | **15 Família e pessoas** (próxima) · 16 Saúde e farmácia · 17 Hobbies (forma de dicionário) · 18 Regras e obrigações | forma de dicionário · ~koto ga dekimasu · shumi wa ~koto desu · forma -nai · ~nai de kudasai · ~nakereba narimasen · ~ga itai desu · ~ta hou ga ii | 750 | ler e falar frases em kana |
 | 5 | 19 Conversa com amigos · 20 Dar opinião · 21 Explicar motivos · 22 Experiências | forma plana (presente, passado, negativo) · fala casual · ~to omoimasu · ~to iimasu · ~deshou · ~n desu · ~kara / ~node · ~ta koto ga arimasu | 1.000 | conversa casual de 3 min |
 | 6 | 23 Comparar e escolher · 24 Planos · 25 Viagem · 26 Revisão | ~yori ~no hou ga · ichiban · volitiva (~ou to omoimasu) · ~tsumori · ~tari ~tari | 1.200 | simulado N5 completo (escuta + vocabulário + gramática + leitura em kana) |
 
