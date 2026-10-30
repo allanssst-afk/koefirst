@@ -4,7 +4,9 @@
  */
 import type { SeedCard } from "@/db/seed-data/helpers";
 import { seedCards } from "@/db/seed-data/cards";
-import { GRAMATICA_N5, LEITURA_N5, VOCABULARIO_N5 } from "./simulado-n5";
+import { GRAMATICA_N4, LEITURA_N4, VOCABULARIO_N4 } from "./simulado-n4";
+import { GRAMATICA_N5, LEITURA_N5, VOCABULARIO_N5, type PalavraProva, type QuestaoGramatica, type TextoLeitura } from "./simulado-n5";
+import { stripFurigana } from "./text";
 import { cenasDoContexto, FORMAS, montarDialogo, verboPorDict, type DialogoDrill, type FalaDrill, type Forma } from "./drills";
 import type { Categoria } from "./roleplay";
 import type { Mora } from "./types";
@@ -27,9 +29,13 @@ export interface Unidade {
    * unidades listadas, e no fim um simulado obrigatório com todas elas.
    */
   revisaoGeral?: { titulo: string; unidades: string[] }[];
-  /** o simulado da revisão ganha as partes em kana (vocabulário, gramática e leitura) */
-  simuladoCompleto?: boolean;
+  /** o simulado do fim da fase ganha as partes escritas (vocabulário, gramática e leitura) */
+  simuladoCompleto?: NivelProva;
+  /** unidades cujas frases entram no simulado completo de uma unidade comum (a revisão usa as de `revisaoGeral`) */
+  simuladoDe?: string[];
 }
+
+export type NivelProva = "n5" | "n4";
 
 export type TipoLicao = "tutorial" | "frases" | "pingpong" | "dialogo" | "revisao" | "simulado";
 
@@ -41,8 +47,8 @@ export interface Licao {
   titulo: string;
   cards: string[];
   missao?: string;
-  /** simulado com as partes em kana (ver `simuladoCompleto`) */
-  completo?: boolean;
+  /** simulado com as partes escritas (ver `simuladoCompleto`) */
+  completo?: NivelProva;
   /** não trava a trilha: abre quando o resto da unidade termina (simulado) */
   opcional?: boolean;
 }
@@ -424,7 +430,7 @@ export const UNIDADES: Unidade[] = [
     contexto: "todos",
     cards: [],
     missoes: ["rp_rev2_amigos", "rp_rev2_professora"],
-    simuladoCompleto: true,
+    simuladoCompleto: "n5",
     revisaoGeral: [
       { titulo: "Revisão: pessoas e saúde", unidades: ["u15", "u16"] },
       { titulo: "Revisão: hobbies e regras", unidades: ["u17", "u18"] },
@@ -567,6 +573,24 @@ export const UNIDADES: Unidade[] = [
     ],
     missoes: ["rp_tel_ligar", "rp_tel_atender", "rp_tel_email"],
   },
+  {
+    id: "u35",
+    numero: 35,
+    titulo: "Aparências e impressões",
+    descricao: "Parece, ouvi dizer e simulado N4",
+    cor: "#a0659e",
+    contexto: "social",
+    simuladoCompleto: "n4",
+    simuladoDe: ["u27", "u28", "u29", "u30", "u31", "u32", "u33", "u34", "u35"],
+    cards: [
+      "card_419", "card_420", "card_421", "card_422",
+      "card_423", "card_424", "card_425", "card_426",
+      "card_427", "card_428", "card_429", "card_430",
+      "card_431", "card_432", "card_433", "card_434",
+      "card_435", "card_436", "card_437", "card_438",
+    ],
+    missoes: ["rp_apa_tempo", "rp_apa_boato", "rp_apa_doce"],
+  },
 ];
 
 const TITULO: Record<TipoLicao, string> = {
@@ -587,7 +611,7 @@ export function licoesDa(u: Unidade): Licao[] {
     for (const m of u.missoes) l.push({ tipo: "dialogo", titulo: TITULO.dialogo, cards: [], missao: m });
     // o simulado é o marco da fase: obrigatório e com todas as frases revisadas
     const todas = cardsDe(u.revisaoGeral.flatMap((r) => r.unidades));
-    l.push({ tipo: "simulado", titulo: u.simuladoCompleto ? "Simulado N5 completo" : "Simulado N5 de escuta", cards: todas, completo: u.simuladoCompleto });
+    l.push({ tipo: "simulado", titulo: u.simuladoCompleto ? `Simulado ${u.simuladoCompleto.toUpperCase()} completo` : "Simulado N5 de escuta", cards: todas, completo: u.simuladoCompleto });
     return l.map((x, i) => ({ ...x, id: `${u.id}:l${i + 1}`, unidade: u }));
   }
   if (u.numero === 0) l.push({ tipo: "tutorial", titulo: TITULO.tutorial, cards: [] });
@@ -601,7 +625,9 @@ export function licoesDa(u: Unidade): Licao[] {
   for (const m of u.missoes) l.push({ tipo: "dialogo", titulo: TITULO.dialogo, cards: [], missao: m });
   if (u.cards.length) l.push({ tipo: "revisao", titulo: TITULO.revisao, cards: u.cards });
   // sempre por último: ids das lições anteriores não mudam (são a chave do progresso salvo)
-  if (u.cards.length >= 3) l.push({ tipo: "simulado", titulo: TITULO.simulado, cards: u.cards, opcional: true });
+  if (u.simuladoCompleto)
+    l.push({ tipo: "simulado", titulo: `Simulado ${u.simuladoCompleto.toUpperCase()} completo`, cards: UNIDADES.filter((x) => u.simuladoDe?.includes(x.id)).flatMap((x) => x.cards), completo: u.simuladoCompleto });
+  else if (u.cards.length >= 3) l.push({ tipo: "simulado", titulo: TITULO.simulado, cards: u.cards, opcional: true });
   return l.map((x, i) => ({ ...x, id: `${u.id}:l${i + 1}`, unidade: u }));
 }
 
@@ -774,33 +800,41 @@ function imediata(ctx: Categoria | "todos"): Exercicio {
   }
 }
 
-function parteVocabulario(n: number): ProvaKana[] {
-  return embaralhar(VOCABULARIO_N5)
+/** Bancos das partes escritas de cada prova e a fase em que a escrita delas já foi ensinada. */
+const PROVAS = {
+  n5: { faseMinima: 2, vocabulario: VOCABULARIO_N5, gramatica: GRAMATICA_N5, leitura: LEITURA_N5 },
+  n4: { faseMinima: 3, vocabulario: VOCABULARIO_N4, gramatica: GRAMATICA_N4, leitura: LEITURA_N4 },
+};
+
+export const faseMinimaDaProva = (nivel: NivelProva) => PROVAS[nivel].faseMinima;
+
+function parteVocabulario(n: number, banco: PalavraProva[]): ProvaKana[] {
+  return embaralhar(banco)
     .slice(0, n)
     .map((p) => {
-      const opcoes = embaralhar([p.pt, ...embaralhar(VOCABULARIO_N5.filter((x) => x !== p)).slice(0, 3).map((x) => x.pt)]);
+      const opcoes = embaralhar([p.pt, ...embaralhar(banco.filter((x) => x !== p)).slice(0, 3).map((x) => x.pt)]);
       return { tipo: "vocabulario", enunciado: "O que significa esta palavra?", texto: p.kana, opcoes, correta: opcoes.indexOf(p.pt), gabarito: `${p.kana} = ${p.pt}`, ouvir: p.kana };
     });
 }
 
-function parteGramatica(n: number): ProvaKana[] {
-  return embaralhar(GRAMATICA_N5)
+function parteGramatica(n: number, banco: QuestaoGramatica[]): ProvaKana[] {
+  return embaralhar(banco)
     .slice(0, n)
     .map((q) => {
       const opcoes = embaralhar([q.certa, ...q.erradas]);
-      const inteira = q.frase.replace("（　）", q.certa);
+      const inteira = stripFurigana(q.frase.replace("（　）", q.certa));
       return { tipo: "gramatica", enunciado: "O que completa a frase?", texto: q.frase, opcoes, correta: opcoes.indexOf(q.certa), opcoesKana: true, gabarito: `${inteira} (${q.pt})`, explicacao: q.por, ouvir: inteira };
     });
 }
 
 /** Cada texto rende duas perguntas, em sequência, como na prova. */
-function parteLeitura(n: number): ProvaKana[] {
-  return embaralhar(LEITURA_N5)
+function parteLeitura(n: number, banco: TextoLeitura[]): ProvaKana[] {
+  return embaralhar(banco)
     .slice(0, Math.ceil(n / 2))
     .flatMap((t) =>
       t.perguntas.map((p): ProvaKana => {
         const opcoes = embaralhar([p.certa, ...p.erradas]);
-        return { tipo: "leitura", enunciado: p.pergunta, texto: t.texto, opcoes, correta: opcoes.indexOf(p.certa), gabarito: `${p.pergunta} ${p.certa}`, ouvir: t.texto };
+        return { tipo: "leitura", enunciado: p.pergunta, texto: t.texto, opcoes, correta: opcoes.indexOf(p.certa), gabarito: `${p.pergunta} ${p.certa}`, ouvir: stripFurigana(t.texto) };
       }),
     );
 }
@@ -844,7 +878,7 @@ const TUTORIAL: Exercicio[] = [
   { tipo: "explica", slide: "blocos" },
 ];
 
-/** Gera a sequência de exercícios de uma lição (sorteada a cada vez). As partes em kana só entram da Fase 2 em diante. */
+/** Gera a sequência de exercícios de uma lição (sorteada a cada vez). As partes escritas só entram na fase em que a escrita delas já foi ensinada. */
 export function montarLicao(l: Licao, fase = 1): Exercicio[] {
   const cards = l.cards.map(cardPorId);
   switch (l.tipo) {
@@ -887,8 +921,9 @@ export function montarLicao(l: Licao, fase = 1): Exercicio[] {
       const parte2 = embaralhar(cards).slice(0, n).map((c) => situacao(c, cards));
       const ctx = l.unidade.contexto;
       const parte3 = ctx ? Array.from({ length: n }, () => imediata(ctx)) : [];
-      const kana = l.completo && fase >= 2 ? [...parteVocabulario(n), ...parteGramatica(n), ...parteLeitura(n)] : [];
-      return [...kana, ...parte1, ...parte2, ...parte3];
+      const prova = l.completo && PROVAS[l.completo];
+      const escrita = prova && fase >= prova.faseMinima ? [...parteVocabulario(n, prova.vocabulario), ...parteGramatica(n, prova.gramatica), ...parteLeitura(n, prova.leitura)] : [];
+      return [...escrita, ...parte1, ...parte2, ...parte3];
     }
     case "dialogo":
       return [];

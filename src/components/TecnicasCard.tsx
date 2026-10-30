@@ -50,7 +50,7 @@ const TECNICAS: { nome: string; porque: string; onde: string }[] = [
     nome: "Simulado de escuta (formato JLPT)",
     porque:
       "A prova de escuta do JLPT N5/N4 tem compreensão, expressão na situação e resposta rápida, e exige nota total mais um mínimo em cada seção.",
-    onde: "Estação opcional «Simulado de escuta» no fim de cada linha da trilha. Na revisão da Fase 2, o Simulado N5 completo soma vocabulário, gramática e leitura em kana.",
+    onde: "Estação opcional «Simulado de escuta» no fim de cada linha da trilha. Nos fins de fase, o Simulado N5 completo (Fase 2) e o N4 completo (Fase 3) somam vocabulário, gramática e leitura.",
   },
 ];
 

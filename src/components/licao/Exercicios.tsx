@@ -13,7 +13,7 @@ import { speakJa, stopAll, wait } from "@/lib/audio/tts";
 import { FORMAS } from "@/lib/drills";
 import { registrarAtividade } from "@/lib/queries";
 import { roleOf } from "@/lib/roles";
-import { bestSimilarity, morasToKana, stripFurigana } from "@/lib/text";
+import { bestSimilarity, morasToKana, parseFurigana, stripFurigana } from "@/lib/text";
 import { chaveBloco, traducaoPrincipal, type Exercicio, type ProvaKana } from "@/lib/trilha";
 import type { Mora } from "@/lib/types";
 
@@ -485,6 +485,26 @@ export function ExSituacao({ ex, travado, aoPronto }: ExProps<Ex<"situacao">>) {
 
 // ───────────── Simulado completo: vocabulário, gramática e leitura (só texto em kana, sem áudio)
 
+/** Texto da prova na notação 漢字[よみ]: furigana na Fase 3, sem ele na Fase 4; sem colchetes, sai como está. */
+function TextoProva({ texto }: { texto: string }) {
+  const { fase } = usePhase();
+  if (fase >= 4) return <>{stripFurigana(texto)}</>;
+  return (
+    <>
+      {parseFurigana(texto).map((s, i) =>
+        s.ruby ? (
+          <ruby key={i}>
+            {s.text}
+            <rt className="text-[10px] text-[var(--muted)]">{s.ruby}</rt>
+          </ruby>
+        ) : (
+          <span key={i}>{s.text}</span>
+        ),
+      )}
+    </>
+  );
+}
+
 export function ExProvaKana({ ex, travado, aoPronto }: ExProps<ProvaKana>) {
   const [escolha, setEscolha] = useState<number | null>(null);
   const escolher = (i: number) => {
@@ -495,16 +515,22 @@ export function ExProvaKana({ ex, travado, aoPronto }: ExProps<ProvaKana>) {
     <div className="space-y-5">
       <Enunciado>{ex.enunciado}</Enunciado>
       <p
-        className={`font-jp rounded-2xl bg-[var(--panel)] p-4 leading-relaxed ${
+        className={`font-jp rounded-2xl bg-[var(--panel)] p-4 leading-[2.2] ${
           ex.tipo === "vocabulario" ? "text-center text-3xl" : ex.tipo === "gramatica" ? "text-xl" : "text-lg"
         }`}
       >
-        {ex.texto}
+        <TextoProva texto={ex.texto} />
       </p>
       <div className="space-y-3">
         {ex.opcoes.map((o, i) => (
           <Opcao key={o} numero={i + 1} ativo={escolha === i} travado={travado} onClick={() => escolher(i)}>
-            <span className={ex.opcoesKana ? "font-jp text-lg" : undefined}>{o}</span>
+            {ex.opcoesKana ? (
+              <span className="font-jp text-lg">
+                <TextoProva texto={o} />
+              </span>
+            ) : (
+              o
+            )}
           </Opcao>
         ))}
       </div>

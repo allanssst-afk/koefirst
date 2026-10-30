@@ -50,6 +50,10 @@ Unidades novas seguem a ordem do plano; ao terminar uma, marcar no plano.
   Vocabulário, Gramática e Leitura em kana (`ExProvaKana`; banco em `src/lib/simulado-n5.ts`, com 2 perguntas por
   texto). Sem áudio e fora do FSRS (não há frase do baralho). Na gramática, as opções erradas nunca formam outra frase
   válida. Só entra da Fase 2 em diante (`montarLicao(l, fase)`); na Fase 1 a prova fica só com a escuta e avisa disso.
+- **Simulado N4 completo** (u35, `simuladoCompleto: "n4"` + `simuladoDe`): mesma prova, com as frases das unidades 27–35 e o
+  banco de `src/lib/simulado-n4.ts`. No lugar do simulado opcional da unidade, e obrigatório. Vocabulário cobra a leitura
+  do kanji, sem furigana; gramática e leitura usam `漢字[よみ]` (furigana na Fase 3, sem na Fase 4). Parte escrita só da
+  Fase 3 em diante (`faseMinimaDaProva`).
 - **Técnicas do método** (`src/components/TecnicasCard.tsx`, no Perfil): cada técnica, a base de pesquisa e onde
   está no app. Atualizar ao criar exercícios novos.
 - **Dicionário** (`/dicionario`, `src/lib/dicionario.ts`): cada bloco das frases do baralho vira um verbete
@@ -226,7 +230,7 @@ src/
     schema.ts · index.ts (sql.js + IndexedDB) · seed-run.ts · migrations.generated.ts (gerado)
     seed-data/cards.ts (+ cards-trabalho.ts, cards-lugares.ts, cards-numeros.ts, cards-pedidos.ts,
       cards-agora.ts, cards-adjetivos.ts, cards-fimdesemana.ts, cards-familia.ts, cards-saude.ts, cards-hobbies.ts,
-      cards-regras.ts, cards-casual.ts, cards-opiniao.ts, cards-motivos.ts, cards-experiencias.ts, cards-comparar.ts, cards-planos.ts, cards-viagem.ts, cards-consegue.ts, cards-condicional.ts, cards-dar-receber.ts, cards-descrever.ts, cards-servicos.ts, cards-problemas.ts, cards-keigo.ts, cards-telefone.ts) ·
+      cards-regras.ts, cards-casual.ts, cards-opiniao.ts, cards-motivos.ts, cards-experiencias.ts, cards-comparar.ts, cards-planos.ts, cards-viagem.ts, cards-consegue.ts, cards-condicional.ts, cards-dar-receber.ts, cards-descrever.ts, cards-servicos.ts, cards-problemas.ts, cards-keigo.ts, cards-telefone.ts, cards-aparencias.ts) ·
       seed-data/scenarios.ts
       (+ scenarios-cotidiano.ts,
       scenarios-extra.ts, scenarios-trabalho.ts, scenarios-lugares.ts, scenarios-numeros.ts, scenarios-pedidos.ts,
@@ -235,7 +239,7 @@ src/
       scenarios-opiniao.ts, scenarios-motivos.ts, scenarios-experiencias.ts, scenarios-comparar.ts, scenarios-planos.ts, scenarios-viagem.ts,
       scenarios-revisao-fase2.ts, scenarios-consegue.ts, scenarios-condicional.ts,
       scenarios-dar-receber.ts, scenarios-descrever.ts, scenarios-servicos.ts, scenarios-problemas.ts, scenarios-keigo.ts,
-      scenarios-telefone.ts) ·
+      scenarios-telefone.ts, scenarios-aparencias.ts) ·
       seed-data/helpers.ts
   lib/
     types.ts · fsrs.ts · roles.ts · text.ts (normalização/similaridade/furigana) · idb.ts

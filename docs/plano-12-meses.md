@@ -5,12 +5,12 @@ independente na fala). Guia a produção de unidades: cada unidade nova sai daqu
 
 ## Metas finais (mês 12)
 
-| Medida | Meta B1 | Hoje (unidades 1–34) |
+| Medida | Meta B1 | Hoje (unidades 1–35) |
 | --- | --- | --- |
-| Frases do baralho (faladas) | ~700 | 418 |
-| Palavras ativas (fala) | ~2.000 | ~920 |
+| Frases do baralho (faladas) | ~700 | 438 |
+| Palavras ativas (fala) | ~2.000 | ~960 |
 | Palavras reconhecidas (escuta/leitura) | ~3.500 | — |
-| Kanji | ~650 (N5 + N4 + N3) | 457 com dados (N5, N4 e os do app) |
+| Kanji | ~650 (N5 + N4 + N3) | 460 com dados (N5, N4 e os do app) |
 | Formas verbais no Ping-Pong | ~20 | 21 (-masu, -mashita, -masen, -masen deshita, -tai, -mashou, -te kudasai, -te imasu, dicionário + koto, -nakereba, -ta e -nakatta casuais, -ta koto ga arimasu, volitiva + to omoimasu, potencial afirmativo e negativo, -tara ii desu yo, -te kuremashita, -tai n desu ga, -te shimaimashita, o-… shimasu) |
 | Fala contínua | 5 min sobre si, narrar, opinar | frases soltas e missões de 6 turnos |
 
@@ -43,13 +43,13 @@ Fases = camadas de escrita do app (Perfil): 1 som · 2 + kana · 3 + kanji com f
 | --- | --- | --- | --- | --- |
 | 7 | 27 Consegue? *(pronta)* · 28 Se… *(pronta)* · 29 Dar e receber *(pronta)* | potencial · condicional ~tara / ~to / ~ba · agemasu / kuremasu / moraimasu e ~te ageru / kureru / morau | 1.400 | kanji N5 (103) dominados |
 | 8 | 30 Descrever coisas e pessoas *(pronta)* · 31 Banco, correio e prefeitura *(pronta)* · 32 Problemas e reclamações *(pronta)* | orações relativas · ~te kudasaimasen ka · ~tai n desu ga · ~te shimaimashita · ~nakute | 1.600 | resolver um problema por telefone (Arena) |
-| 9 | 33 Keigo no trabalho *(pronta)* · 34 Telefone e e-mail *(pronta)* · **35 Aparências e impressões** (próxima) | sonkeigo / kenjougo básicos (irasshaimasu, itashimasu, ~sasete itadakimasu) · ~sou desu (parece) · ~you desu · ~rashii | 1.800 | kanji N4 (181); simulado N4 |
+| 9 | 33 Keigo no trabalho *(pronta)* · 34 Telefone e e-mail *(pronta)* · 35 Aparências e impressões *(pronta)* | sonkeigo / kenjougo básicos (irasshaimasu, itashimasu, ~sasete itadakimasu) · ~sou desu (parece) · ~you desu · ~rashii | 1.800 | kanji N4 (181); simulado N4 |
 
 ### Fase 4 — imersão B1, kanji sem furigana (meses 10–12)
 
 | Mês | Unidades | Gramática nova | Vocabulário | Marco |
 | --- | --- | --- | --- | --- |
-| 10 | 36 O que me aconteceu (passiva) · 37 Pedir e permitir (causativa) · 38 Conselhos | passiva (inclusive a de incômodo) · causativa · ~sasete kudasai · ~you ni shite kudasai · ~nakute mo ii | 2.000 | contar um incidente em 2 min |
+| 10 | **36 O que me aconteceu (passiva)** (próxima) · 37 Pedir e permitir (causativa) · 38 Conselhos | passiva (inclusive a de incômodo) · causativa · ~sasete kudasai · ~you ni shite kudasai · ~nakute mo ii | 2.000 | contar um incidente em 2 min |
 | 11 | 39 Notícias e boatos · 40 Contar uma história · 41 Discutir e negociar | ~sou desu (ouvi dizer) · ~ni yoru to · ~to iu · ~te kara · ~mae ni · ~aida ni · ~uchi ni · ~nagara · ~noni · ~ba ~hodo · ~kedo | 2.300 (passivo 3.000) | kanji N3 (+370) |
 | 12 | 42 Entrevista e apresentação profissional · 43 Vida no Japão (moradia, médico, documentos) · 44 Revisão final | consolidação; discurso longo (introdução → fatos → opinião → conclusão) | 2.000 ativas / 3.500 passivas | simulado N3 (escuta + leitura); avaliação oral B1: 5 min sobre si, narrar e opinar |
 
@@ -66,7 +66,7 @@ necessárias:
    frio"), com o pitch de cada adjetivo (queda fixa na mesma mora em todas as formas, como o OJAD prevê).
 3. **Leitura** (a partir da Fase 2): textos curtos por unidade, com o mapa de som e a camada de escrita da fase.
 4. **Simulado completo** (Fase 2+): N5 *(pronto, unidade 26: vocabulário, gramática e leitura em kana, além da escuta;
-   banco em `src/lib/simulado-n5.ts`)*. Falta o N4 e o N3, com kanji.
+   banco em `src/lib/simulado-n5.ts`)* e N4 *(pronto, unidade 35: com kanji; banco em `src/lib/simulado-n4.ts`)*. Falta o N3.
 5. **Kanji N3**: estender `scripts/gerar-kanji.ts` para o nível antigo 2 do KANJIDIC2 (que mistura N3 e N2;
    filtrar pela lista de kanji N3 mais usada).
 6. **Fala longa** (Fase 3+): missões da Arena com turnos abertos (falar 1–2 min) e avaliação por palavras-chave.

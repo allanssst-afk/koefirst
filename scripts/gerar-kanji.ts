@@ -106,6 +106,8 @@ const SIG_EXTRA: Record<string, string[]> = {
   添: ["anexar", "acompanhar"],
   信: ["acreditar", "confiança", "mensagem"],
   商: ["comércio", "vender"],
+  混: ["misturar", "lotar"],
+  若: ["jovem"],
 };
 
 const NOMES_PROPRIOS = /^(Japão|China|Coreia|Tóquio|Buda|Inglaterra)/;

@@ -23,6 +23,7 @@ import { cardsServicos } from "./cards-servicos";
 import { cardsProblemas } from "./cards-problemas";
 import { cardsKeigo } from "./cards-keigo";
 import { cardsTelefone } from "./cards-telefone";
+import { cardsAparencias } from "./cards-aparencias";
 import { cardsTrabalho } from "./cards-trabalho";
 import { b, card } from "./helpers";
 
@@ -531,4 +532,4 @@ const cardsBase = [
   }),
 ];
 
-export const seedCards = [...cardsBase, ...cardsTrabalho, ...cardsLugares, ...cardsNumeros, ...cardsPedidos, ...cardsAgora, ...cardsAdjetivos, ...cardsFimDeSemana, ...cardsFamilia, ...cardsSaude, ...cardsHobbies, ...cardsRegras, ...cardsCasual, ...cardsOpiniao, ...cardsMotivos, ...cardsExperiencias, ...cardsComparar, ...cardsPlanos, ...cardsViagem, ...cardsConsegue, ...cardsCondicional, ...cardsDarReceber, ...cardsDescrever, ...cardsServicos, ...cardsProblemas, ...cardsKeigo, ...cardsTelefone];
+export const seedCards = [...cardsBase, ...cardsTrabalho, ...cardsLugares, ...cardsNumeros, ...cardsPedidos, ...cardsAgora, ...cardsAdjetivos, ...cardsFimDeSemana, ...cardsFamilia, ...cardsSaude, ...cardsHobbies, ...cardsRegras, ...cardsCasual, ...cardsOpiniao, ...cardsMotivos, ...cardsExperiencias, ...cardsComparar, ...cardsPlanos, ...cardsViagem, ...cardsConsegue, ...cardsCondicional, ...cardsDarReceber, ...cardsDescrever, ...cardsServicos, ...cardsProblemas, ...cardsKeigo, ...cardsTelefone, ...cardsAparencias];

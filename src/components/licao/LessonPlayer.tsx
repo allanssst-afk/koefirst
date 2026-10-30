@@ -12,7 +12,7 @@ import type { ExProps, Resposta } from "./comuns";
 import { somAcerto, somConclusao, somErro } from "@/lib/audio/som";
 import { speakJa, stopAll } from "@/lib/audio/tts";
 import { concluirLicao, notaDaLicao } from "@/lib/queries";
-import { cardPorId, montarLicao, PARTES_SIMULADO, traducaoPrincipal, type Exercicio, type Licao } from "@/lib/trilha";
+import { cardPorId, faseMinimaDaProva, montarLicao, PARTES_SIMULADO, traducaoPrincipal, type Exercicio, type Licao } from "@/lib/trilha";
 
 /** Exercícios só de leitura/apresentação: o botão é CONTINUAR direto, sem verificar. */
 const INFORMATIVO: Exercicio["tipo"][] = ["nova", "explica", "sombra"];
@@ -183,9 +183,10 @@ export function LessonPlayer({ licao }: { licao: Licao }) {
       {/* exercício */}
       <div key={idx} className="flex-1 py-6 pb-44 animate-rise">
         {prova && <CabecalhoParte tipo={item.ex.tipo} fila={fila} />}
-        {prova && licao.completo && fase < 2 && (
+        {prova && licao.completo && fase < faseMinimaDaProva(licao.completo) && (
           <p className="mb-3 text-xs text-[var(--warn)]">
-            Na Fase 1 o simulado fica só com a escuta. Para incluir vocabulário, gramática e leitura em kana, mude para a Fase 2 no Perfil.
+            Nesta fase o simulado fica só com a escuta. Para incluir vocabulário, gramática e leitura, mude para a Fase{" "}
+            {faseMinimaDaProva(licao.completo)} no Perfil.
           </p>
         )}
         {item.repetido && (
