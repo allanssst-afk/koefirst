@@ -73,6 +73,7 @@ const SIG_EXTRA: Record<string, string[]> = {
   換: ["trocar", "mudar"],
   迷: ["perder-se", "em dúvida"],
   階: ["andar (de prédio)", "degrau"],
+  辛: ["apimentado", "ardido"],
 };
 
 const NOMES_PROPRIOS = /^(Japão|China|Coreia|Tóquio|Buda|Inglaterra)/;

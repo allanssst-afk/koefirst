@@ -433,6 +433,23 @@ export const UNIDADES: Unidade[] = [
       { titulo: "Revisão: planos e viagem", unidades: ["u24", "u25"] },
     ],
   },
+  {
+    id: "u27",
+    numero: 27,
+    titulo: "Consegue?",
+    descricao: "O que você consegue e não consegue fazer",
+    cor: "#b5763f",
+    contexto: "social",
+    formasNovas: ["reru", "remasen"],
+    cards: [
+      "card_259", "card_260", "card_261", "card_262",
+      "card_263", "card_264", "card_265", "card_266",
+      "card_267", "card_268", "card_269", "card_270",
+      "card_271", "card_272", "card_273", "card_274",
+      "card_275", "card_276", "card_277", "card_278",
+    ],
+    missoes: ["rp_pot_japones", "rp_pot_restaurante", "rp_pot_ajuda"],
+  },
 ];
 
 const TITULO: Record<TipoLicao, string> = {

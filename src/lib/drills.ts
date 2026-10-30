@@ -75,7 +75,7 @@ export const VERBOS: Verbo[] = [
 
 const junta = (...partes: (string | undefined)[]) => partes.filter(Boolean).join(" ");
 
-export type Forma = "masu" | "mashita" | "masen" | "masen_deshita" | "tai" | "mashou" | "te_kudasai" | "te_imasu" | "koto" | "nakereba" | "ta" | "nakatta" | "ta_koto" | "ou_to";
+export type Forma = "masu" | "mashita" | "masen" | "masen_deshita" | "tai" | "mashou" | "te_kudasai" | "te_imasu" | "koto" | "nakereba" | "ta" | "nakatta" | "ta_koto" | "ou_to" | "reru" | "remasen";
 
 interface FormaDef {
   label: string;
@@ -272,11 +272,49 @@ export const FORMAS: Record<Forma, FormaDef> = {
     kana: "とおもいます",
     funcao: "penso",
   },
+  reru: {
+    pergunta: (v, obj) => `${junta("Você consegue", v.pt, obj)}?`,
+    abertura: "Sim,",
+    quando: "Dizer o que você consegue fazer",
+    regra: "potencial: som em 'e' + masu; grupo de taberu: -raremasu; suru: dekimasu; 'o' vira 'ga'",
+    frase: (v, obj) => junta("eu consigo", v.pt, obj),
+    label: "Consigo",
+    comando: "Consigo!",
+    sufixo: [],
+    kana: "ます",
+    funcao: "consigo",
+  },
+  remasen: {
+    pergunta: (v, obj) => `${junta("Você consegue", v.pt, obj)}?`,
+    abertura: "Não,",
+    quando: "Dizer o que você não consegue fazer",
+    regra: "potencial + -masen; 'o' vira 'ga'",
+    frase: (v, obj) => junta("eu não consigo", v.pt, obj),
+    label: "Não consigo",
+    comando: "Não consigo!",
+    sufixo: [],
+    kana: "ません",
+    funcao: "não consigo",
+  },
 };
 
 /** Verbos cuja volitiva é base -nai + "you" (grupo de taberu e os irregulares); os outros trocam o último som por "-ou". */
 const VOLITIVA_YOU = new Set(["taberu", "kuru", "suru", "miru", "okiru", "neru", "hajimeru", "benkyou suru"]);
 const OU_KANA: Record<string, string> = { か: "こ", が: "ご", さ: "そ", た: "と", な: "の", ば: "ぼ", ま: "も", ら: "ろ", わ: "お" };
+
+const POT_KANA: Record<string, string> = { か: "け", が: "げ", さ: "せ", た: "て", な: "ね", ば: "べ", ま: "め", ら: "れ", わ: "え" };
+
+/** Raiz do potencial a partir da base -nai: kaka → kake, tabe → taberare, ko → korare, shi → deki. */
+function potencial(v: Verbo) {
+  const n = v.nai;
+  if (v.dict.endsWith("suru")) {
+    const fim = (x: string) => `${x.slice(0, -1)}でき`;
+    return { som: n.som.replace(/_?shi$/, "de.ki"), kana: fim(n.kana), kanji: fim(n.kanji) };
+  }
+  if (VOLITIVA_YOU.has(v.dict)) return { som: `${n.som}.ra.re`, kana: `${n.kana}られ`, kanji: `${n.kanji}られ` };
+  const troca = (x: string) => x.slice(0, -1) + POT_KANA[x.slice(-1)];
+  return { som: n.som.replace(/w?a$/, "e"), kana: troca(n.kana), kanji: troca(n.kanji) };
+}
 
 /** Forma volitiva a partir da base -nai: kaka → kakou, tabe → tabeyou, ko → koyou. */
 function volitiva(v: Verbo) {
@@ -322,6 +360,7 @@ export interface Conjugacao {
  * - -ta koto ga arimasu: -ta com a melodia do verbo; depois de verbo plano "koto" fica alto e cai no "ga"
  *   (itta kotó ga); depois de verbo com queda sobe de novo (tábeta kotó ga). "arimasu" sobe de novo. OJAD, 12 verbos.
  * - -ou to omoimasu: a volitiva cai antes do último "o" em qualquer verbo (ikóo, tabeyóo); "to" baixo. OJAD, 17 verbos.
+ * - potencial: família -masu: sobe na 2ª mora e cai em "su" / "n" (ikemásu, taberaremasén). OJAD, 22 verbos.
  */
 export function conjugar(verbo: Verbo, forma: Forma): Conjugacao {
   const raizBloco = verbo.raiz.join("");
@@ -355,6 +394,17 @@ export function conjugar(verbo: Verbo, forma: Forma): Conjugacao {
     const kana = ta(te.kana);
     const kanji = ta(te.kanji);
     return { verbo, forma, moras, kana, kanji, alvos: [kana, stripFurigana(kanji)] };
+  }
+
+  if (forma === "reru" || forma === "remasen") {
+    const pot = potencial(verbo);
+    const nega = forma === "remasen";
+    const som = `${pot.som}.ma.${nega ? "se.n" : "_su"}`;
+    const n = som.split(".").length;
+    const moras = b(som, `L${"H".repeat(n - 2)}L`, `${raizFn} (potencial)`, "verbo");
+    const fim = nega ? "ません" : "ます";
+    const plain = stripFurigana(pot.kanji);
+    return { verbo, forma, moras, kana: pot.kana + fim, kanji: pot.kanji + fim, alvos: [pot.kana + fim, plain + fim, pot.kana + (nega ? "ない" : "る"), plain + (nega ? "ない" : "る")] };
   }
 
   if (forma === "ou_to") {
@@ -668,6 +718,24 @@ for (const cenas of Object.values(CENAS_DRILL))
     if (!HOBBIES_OK.has(chave)) c.sem = [...(c.sem ?? []), "koto"];
   }
 
+/** Potencial responde a "Você consegue…?": capacidade ou disponibilidade, não a rotina. */
+const POTENCIAL_OK = new Set([
+  "taberu|sushi", "taberu|ramen", "nomu|cerveja", "nomu|café", "iku|à festa", "iku|ao karaokê", "iku|à reunião", "iku|à empresa",
+  "iku|ao templo", "kuru|ao Japão", "benkyou suru|japonês", "benkyou suru|inglês", "miru|um filme", "yomu|os documentos",
+  "yomu|um livro", "kaku|o relatório", "kaku|o e-mail", "okiru|cedo", "neru|cedo", "aruku|até a estação", "kaeru|cedo",
+  "hanasu|com o gerente", "hanasu|com os amigos", "tsukau|o computador", "harau|com cartão", "tsukuru|os documentos",
+]);
+for (const cenas of Object.values(CENAS_DRILL))
+  for (const c of cenas)
+    if (!POTENCIAL_OK.has(`${c.verbo}|${c.obj}`)) c.sem = [...(c.sem ?? []), "reru", "remasen"];
+
+/** Com potencial, o objeto troca "o" por "ga". */
+function comGa(c: Complemento): Complemento {
+  if (!c.kana.endsWith("を")) return c;
+  const fim = (x: string) => x.replace(/を$/, "が");
+  return { ...c, kana: fim(c.kana), kanji: fim(c.kanji), moras: [...c.moras.slice(0, -1), ...b("ga", c.moras[c.moras.length - 1].pitch, "[Foco / sujeito]", "particula")] };
+}
+
 /** A transformação combina com a situação (nem o verbo nem a cena a excluem). */
 export const combina = (cena: CenaDrill, forma: Forma) => !verboPorDict(cena.verbo).sem?.includes(forma) && !cena.sem?.includes(forma);
 
@@ -744,11 +812,12 @@ const ponto = (t: string) => (/[.!?]$/.test(t) ? t : `${t}.`);
  * - Casual:            昨日、[complemento][verbo -ta]？ → うん、…た / ううん、…なかった
  * - Experiência:       [complemento][verbo -ta]ことがありますか → はい、…ことがあります
  * - Plano:             明日、何をしようと思いますか → [complemento][volitiva]と思います
+ * - Potencial:         [complemento + が][potencial]か → はい、…ます / いいえ、…ません
  */
 export function montarDialogo(cena: CenaDrill, forma: Forma): DialogoDrill {
   const v = verboPorDict(cena.verbo);
   const f = FORMAS[forma];
-  const c = cena.ja;
+  const c = forma === "reru" || forma === "remasen" ? comGa(cena.ja) : cena.ja;
   const suru = verboPorDict("suru");
   const fim = (t: string) => `${t}。`;
 
@@ -756,6 +825,9 @@ export function montarDialogo(cena: CenaDrill, forma: Forma): DialogoDrill {
   if (forma === "ta" || forma === "nakatta") {
     const q = conjugar(v, "ta");
     pergunta = fala(KINOU.kana + c.kana + q.kana + "？", KINOU.kanji + c.kanji + q.kanji + "？", f.pergunta(v, cena.obj), KINOU.moras, c.moras, q.moras);
+  } else if (forma === "reru" || forma === "remasen") {
+    const q = conjugar(v, "reru");
+    pergunta = fala(fim(c.kana + q.kana + "か"), fim(c.kanji + q.kanji + "か"), f.pergunta(v, cena.obj), c.moras, q.moras, KA);
   } else if (forma === "ou_to") {
     const q = conjugar(suru, "ou_to");
     pergunta = fala(fim(ASHITA.kana + NANI_O.kana + q.kana + "か"), fim(ASHITA.kanji + NANI_O.kanji + q.kanji + "か"), f.pergunta(v, cena.obj), ASHITA.moras, NANI_O.moras, q.moras, KA);
@@ -791,7 +863,7 @@ export function montarDialogo(cena: CenaDrill, forma: Forma): DialogoDrill {
   }
 
   const alvo = conjugar(v, forma);
-  const inicio = forma === "ta" ? UN : forma === "nakatta" ? UUN : forma === "mashita" || forma === "te_kudasai" || forma === "ta_koto" ? HAI : forma === "masen" || forma === "masen_deshita" ? IIE : null;
+  const inicio = forma === "ta" ? UN : forma === "nakatta" ? UUN : forma === "mashita" || forma === "te_kudasai" || forma === "ta_koto" || forma === "reru" ? HAI : forma === "masen" || forma === "masen_deshita" || forma === "remasen" ? IIE : null;
   const ptResposta = ponto(maiuscula(comEuImplicito([f.abertura, f.frase(v, cena.obj)].filter(Boolean).join(" "))));
   const resposta = fala(
     fim((inicio?.kana ?? "") + c.kana + alvo.kana),
