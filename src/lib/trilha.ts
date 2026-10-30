@@ -314,6 +314,21 @@ export const UNIDADES: Unidade[] = [
     missoes: ["rp_cas_kenji", "rp_cas_yuki", "rp_cas_novidade"],
     formasNovas: ["ta", "nakatta"],
   },
+  {
+    id: "u20",
+    numero: 20,
+    titulo: "Dar opinião",
+    descricao: "Acho que, ele disse que, deve ser e por quê",
+    cor: "#6d8fb3",
+    contexto: "trabalho",
+    cards: [
+      "card_175", "card_176", "card_177",
+      "card_178", "card_179", "card_180",
+      "card_181", "card_182", "card_183",
+      "card_184", "card_185", "card_186",
+    ],
+    missoes: ["rp_opi_reuniao", "rp_opi_tempo", "rp_opi_aula"],
+  },
 ];
 
 const TITULO: Record<TipoLicao, string> = {

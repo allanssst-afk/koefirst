@@ -197,12 +197,13 @@ src/
     schema.ts · index.ts (sql.js + IndexedDB) · seed-run.ts · migrations.generated.ts (gerado)
     seed-data/cards.ts (+ cards-trabalho.ts, cards-lugares.ts, cards-numeros.ts, cards-pedidos.ts,
       cards-agora.ts, cards-adjetivos.ts, cards-fimdesemana.ts, cards-familia.ts, cards-saude.ts, cards-hobbies.ts,
-      cards-regras.ts, cards-casual.ts) ·
+      cards-regras.ts, cards-casual.ts, cards-opiniao.ts) ·
       seed-data/scenarios.ts
       (+ scenarios-cotidiano.ts,
       scenarios-extra.ts, scenarios-trabalho.ts, scenarios-lugares.ts, scenarios-numeros.ts, scenarios-pedidos.ts,
       scenarios-agora.ts, scenarios-adjetivos.ts, scenarios-fimdesemana.ts, scenarios-revisao.ts,
-      scenarios-familia.ts, scenarios-saude.ts, scenarios-hobbies.ts, scenarios-regras.ts, scenarios-casual.ts) ·
+      scenarios-familia.ts, scenarios-saude.ts, scenarios-hobbies.ts, scenarios-regras.ts, scenarios-casual.ts,
+      scenarios-opiniao.ts) ·
       seed-data/helpers.ts
   lib/
     types.ts · fsrs.ts · roles.ts · text.ts (normalização/similaridade/furigana) · idb.ts

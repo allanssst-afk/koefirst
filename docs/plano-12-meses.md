@@ -5,12 +5,12 @@ independente na fala). Guia a produção de unidades: cada unidade nova sai daqu
 
 ## Metas finais (mês 12)
 
-| Medida | Meta B1 | Hoje (unidades 1–19) |
+| Medida | Meta B1 | Hoje (unidades 1–20) |
 | --- | --- | --- |
-| Frases do baralho (faladas) | ~700 | 174 |
-| Palavras ativas (fala) | ~2.000 | ~485 |
+| Frases do baralho (faladas) | ~700 | 186 |
+| Palavras ativas (fala) | ~2.000 | ~515 |
 | Palavras reconhecidas (escuta/leitura) | ~3.500 | — |
-| Kanji | ~650 (N5 + N4 + N3) | 388 com dados (N5, N4 e os do app) |
+| Kanji | ~650 (N5 + N4 + N3) | 391 com dados (N5, N4 e os do app) |
 | Formas verbais no Ping-Pong | ~20 | 12 (-masu, -mashita, -masen, -masen deshita, -tai, -mashou, -te kudasai, -te imasu, dicionário + koto, -nakereba, -ta e -nakatta casuais) |
 | Fala contínua | 5 min sobre si, narrar, opinar | frases soltas e missões de 6 turnos |
 
@@ -34,7 +34,7 @@ Fases = camadas de escrita do app (Perfil): 1 som · 2 + kana · 3 + kanji com f
 | Mês | Unidades | Gramática nova | Vocabulário | Marco |
 | --- | --- | --- | --- | --- |
 | 4 | 15 Família e pessoas *(pronta)* · 16 Saúde e farmácia *(pronta)* · 17 Hobbies *(pronta)* (forma de dicionário) · 18 Regras e obrigações *(pronta)* | forma de dicionário · ~koto ga dekimasu · shumi wa ~koto desu · forma -nai · ~nai de kudasai · ~nakereba narimasen · ~ga itai desu · ~ta hou ga ii | 750 | ler e falar frases em kana |
-| 5 | 19 Conversa com amigos *(pronta)* · **20 Dar opinião** (próxima) · 21 Explicar motivos · 22 Experiências | forma plana (presente, passado, negativo) · fala casual · ~to omoimasu · ~to iimasu · ~deshou · ~n desu · ~kara / ~node · ~ta koto ga arimasu | 1.000 | conversa casual de 3 min |
+| 5 | 19 Conversa com amigos *(pronta)* · 20 Dar opinião *(pronta)* · **21 Explicar motivos** (próxima) · 22 Experiências | forma plana (presente, passado, negativo) · fala casual · ~to omoimasu · ~to iimasu · ~deshou · ~n desu · ~kara / ~node · ~ta koto ga arimasu | 1.000 | conversa casual de 3 min |
 | 6 | 23 Comparar e escolher · 24 Planos · 25 Viagem · 26 Revisão | ~yori ~no hou ga · ichiban · volitiva (~ou to omoimasu) · ~tsumori · ~tari ~tari | 1.200 | simulado N5 completo (escuta + vocabulário + gramática + leitura em kana) |
 
 ### Fase 3 — + kanji com furigana (meses 7–9)
