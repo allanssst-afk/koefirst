@@ -103,6 +103,9 @@ const SIG_EXTRA: Record<string, string[]> = {
   参: ["ir (humilde)", "visitar"],
   拝: ["reverenciar", "ver (humilde)"],
   伺: ["visitar (humilde)", "perguntar (humilde)"],
+  添: ["anexar", "acompanhar"],
+  信: ["acreditar", "confiança", "mensagem"],
+  商: ["comércio", "vender"],
 };
 
 const NOMES_PROPRIOS = /^(Japão|China|Coreia|Tóquio|Buda|Inglaterra)/;

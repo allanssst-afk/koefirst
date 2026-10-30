@@ -551,6 +551,22 @@ export const UNIDADES: Unidade[] = [
     ],
     missoes: ["rp_kei_recepcao", "rp_kei_apresentacao", "rp_kei_folga"],
   },
+  {
+    id: "u34",
+    numero: 34,
+    titulo: "Telefone e e-mail",
+    descricao: "Ligar, atender, deixar recado e escrever",
+    cor: "#3f8fa6",
+    contexto: "trabalho",
+    cards: [
+      "card_399", "card_400", "card_401", "card_402",
+      "card_403", "card_404", "card_405", "card_406",
+      "card_407", "card_408", "card_409", "card_410",
+      "card_411", "card_412", "card_413", "card_414",
+      "card_415", "card_416", "card_417", "card_418",
+    ],
+    missoes: ["rp_tel_ligar", "rp_tel_atender", "rp_tel_email"],
+  },
 ];
 
 const TITULO: Record<TipoLicao, string> = {
