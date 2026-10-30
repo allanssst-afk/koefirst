@@ -75,7 +75,7 @@ export const VERBOS: Verbo[] = [
 
 const junta = (...partes: (string | undefined)[]) => partes.filter(Boolean).join(" ");
 
-export type Forma = "masu" | "mashita" | "masen" | "masen_deshita" | "tai" | "mashou" | "te_kudasai" | "te_imasu" | "koto" | "nakereba" | "ta" | "nakatta" | "ta_koto" | "ou_to" | "reru" | "remasen" | "tara" | "te_kureta";
+export type Forma = "masu" | "mashita" | "masen" | "masen_deshita" | "tai" | "mashou" | "te_kudasai" | "te_imasu" | "koto" | "nakereba" | "ta" | "nakatta" | "ta_koto" | "ou_to" | "reru" | "remasen" | "tara" | "te_kureta" | "tai_ga";
 
 interface FormaDef {
   label: string;
@@ -320,6 +320,18 @@ export const FORMAS: Record<Forma, FormaDef> = {
     kana: "くれました",
     funcao: "me deu",
   },
+  tai_ga: {
+    pergunta: () => "Posso ajudar?",
+    abertura: "",
+    quando: "Abrir um pedido com jeito, em um balcão",
+    regra: "-tai + n desu ga (a frase fica no ar)",
+    frase: (v, obj) => junta("queria", v.pt, obj),
+    label: "Pedir com jeito",
+    comando: "Peça com jeito!",
+    sufixo: [],
+    kana: "たいんですが",
+    funcao: "[mas…]",
+  },
 };
 
 /** Verbos cuja volitiva é base -nai + "you" (grupo de taberu e os irregulares); os outros trocam o último som por "-ou". */
@@ -369,7 +381,7 @@ export interface Conjugacao {
 /**
  * Gera a conjugação com pitch de Tóquio:
  * - famílias -masu: 1ª mora baixa, sobe até o núcleo (ma / se / sho) e cai.
- * - -tai: verbos planos caem depois de "ta" (ikitái); verbos acentuados caem na última mora da raiz (tabé-tai).
+ * - -tai: cai depois de "ta" em qualquer verbo (ikitái, tabetái). OJAD, 22 verbos. "-tai n desu ga": depois fica baixo.
  * - -te kudasai: a forma -te tem o acento do próprio verbo; depois de verbo com queda, "kudasai" fica todo baixo
  *   (káite kudasai); depois de verbo plano, sobe até "sa" (magatte kudasái). Conferido no OJAD.
  * - -te imasu: igual — depois de verbo com queda, "imasu" fica todo baixo (tábete imasu); depois de verbo plano,
@@ -421,6 +433,19 @@ export function conjugar(verbo: Verbo, forma: Forma): Conjugacao {
     const kana = ta(te.kana);
     const kanji = ta(te.kanji);
     return { verbo, forma, moras, kana, kanji, alvos: [kana, stripFurigana(kanji)] };
+  }
+
+  if (forma === "tai_ga") {
+    const tai = conjugar(verbo, "tai");
+    const moras = [
+      ...tai.moras.slice(0, -2),
+      ...b("n", "L", "[é que: explicação]", "particula"),
+      ...b("de.su", "LL", "é", "copula"),
+      ...b("ga", "L", FORMAS.tai_ga.funcao, "particula"),
+    ];
+    const kana = verbo.raizKana + FORMAS.tai_ga.kana;
+    const plain = stripFurigana(verbo.raizKanji);
+    return { verbo, forma, moras, kana, kanji: verbo.raizKanji + FORMAS.tai_ga.kana, alvos: [kana, plain + FORMAS.tai_ga.kana, `${verbo.raizKana}たいです`, `${plain}たいです`, `${verbo.raizKana}たい`, `${plain}たい`] };
   }
 
   if (forma === "te_kureta") {
@@ -518,22 +543,9 @@ export function conjugar(verbo: Verbo, forma: Forma): Conjugacao {
 
   let moras: Mora[];
   if (forma === "tai") {
-    const n = verbo.raiz.length;
-    let raizPitch: ("H" | "L")[];
-    let taPitch: "H" | "L";
-    if (verbo.heiban) {
-      raizPitch = verbo.raiz.map((_, i) => (i === 0 ? "L" : "H"));
-      taPitch = "H";
-    } else if (n === 1) {
-      raizPitch = ["H"];
-      taPitch = "L";
-    } else {
-      raizPitch = verbo.raiz.map((_, i) => (i === 0 ? "L" : "H"));
-      taPitch = "L";
-    }
     moras = [
-      ...verbo.raiz.map((s, i) => mora(s, raizPitch[i], raizBloco, raizFn, "verbo")),
-      mora("ta", taPitch, "tai", "quero", "verbo"),
+      ...verbo.raiz.map((s, i) => mora(s, i === 0 ? "L" : "H", raizBloco, raizFn, "verbo")),
+      mora("ta", "H", "tai", "quero", "verbo"),
       mora("i", "L", "tai", "quero", "verbo"),
       mora("de", "L", "desu", "[polidez]", "copula"),
       mora("su", "L", "desu", "[polidez]", "copula", true),
@@ -798,6 +810,15 @@ const FAVORES_OK = new Set([
 for (const cenas of Object.values(CENAS_DRILL))
   for (const c of cenas) if (!FAVORES_OK.has(`${c.verbo}|${c.obj}`)) c.sem = [...(c.sem ?? []), "te_kureta"];
 
+/** Pedir com jeito (-tai n desu ga) responde a "Posso ajudar?": o que se pede em um balcão, loja ou recepção. */
+const BALCAO_OK = new Set([
+  "kau|a passagem", "kau|um presente", "kau|uma lembrancinha", "kau|roupas", "kau|sapatos", "kau|um livro", "harau|a conta", "harau|com cartão",
+  "iku|à estação", "iku|ao templo", "hanasu|com o gerente", "au|o gerente", "au|o cliente", "okuru|os documentos ao cliente", "miru|o preço",
+  "miru|o mapa", "miru|o cardápio", "noru|o táxi", "kaeru|para o hotel", "nomu|água",
+]);
+for (const cenas of Object.values(CENAS_DRILL))
+  for (const c of cenas) if (!BALCAO_OK.has(`${c.verbo}|${c.obj}`)) c.sem = [...(c.sem ?? []), "tai_ga"];
+
 /** A transformação combina com a situação (nem o verbo nem a cena a excluem). */
 export const combina = (cena: CenaDrill, forma: Forma) => !verboPorDict(cena.verbo).sem?.includes(forma) && !cena.sem?.includes(forma);
 
@@ -847,6 +868,12 @@ const SHUMI_NAN_DESU_KA = [
   ...b("de._su", "LL", "é", "copula"),
   ...b("ka", "L", "[?]", "particula"),
 ];
+const NANIKA_GOYOU = [
+  ...b("na.ni.ka", "HLL", "algo", "pergunta"),
+  ...b("go.yo.o", "LHL", "assunto", "substantivo"),
+  ...b("de._su", "LL", "é", "copula"),
+  ...b("ka", "L", "[?]", "particula"),
+];
 const TANAKA_WA = {
   kana: "たなかさんは",
   kanji: "田中[たなか]さんは",
@@ -889,6 +916,7 @@ const ponto = (t: string) => (/[.!?]$/.test(t) ? t : `${t}.`);
  * - Potencial:         [complemento + が][potencial]か → はい、…ます / いいえ、…ません
  * - Conselho:          どうしたらいいですか → [complemento][verbo -tara]いいですよ
  * - Favor:             田中さんは[complemento][forma -te]くれましたか → はい、…くれました
+ * - Pedir com jeito:   何かご用ですか → [complemento][verbo -tai]んですが
  */
 export function montarDialogo(cena: CenaDrill, forma: Forma): DialogoDrill {
   const v = verboPorDict(cena.verbo);
@@ -901,6 +929,8 @@ export function montarDialogo(cena: CenaDrill, forma: Forma): DialogoDrill {
   if (forma === "ta" || forma === "nakatta") {
     const q = conjugar(v, "ta");
     pergunta = fala(KINOU.kana + c.kana + q.kana + "？", KINOU.kanji + c.kanji + q.kanji + "？", f.pergunta(v, cena.obj), KINOU.moras, c.moras, q.moras);
+  } else if (forma === "tai_ga") {
+    pergunta = fala(fim("なにかごようですか"), fim("何[なに]かご用[よう]ですか"), f.pergunta(v, cena.obj), NANIKA_GOYOU);
   } else if (forma === "te_kureta") {
     const q = conjugar(v, "te_kureta");
     pergunta = fala(fim(TANAKA_WA.kana + c.kana + q.kana + "か"), fim(TANAKA_WA.kanji + c.kanji + q.kanji + "か"), f.pergunta(v, cena.obj), TANAKA_WA.moras, c.moras, q.moras, KA);

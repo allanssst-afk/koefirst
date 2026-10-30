@@ -500,6 +500,23 @@ export const UNIDADES: Unidade[] = [
     ],
     missoes: ["rp_des_achados", "rp_des_festa", "rp_des_cidade"],
   },
+  {
+    id: "u31",
+    numero: 31,
+    titulo: "Banco, correio e prefeitura",
+    descricao: "Pedir com jeito em qualquer balcão",
+    cor: "#4e8f8a",
+    contexto: "cidade",
+    formasNovas: ["tai_ga"],
+    cards: [
+      "card_339", "card_340", "card_341", "card_342",
+      "card_343", "card_344", "card_345", "card_346",
+      "card_347", "card_348", "card_349", "card_350",
+      "card_351", "card_352", "card_353", "card_354",
+      "card_355", "card_356", "card_357", "card_358",
+    ],
+    missoes: ["rp_ser_banco", "rp_ser_correio", "rp_ser_prefeitura"],
+  },
 ];
 
 const TITULO: Record<TipoLicao, string> = {
