@@ -692,6 +692,22 @@ export const UNIDADES: Unidade[] = [
     ],
     missoes: ["rp_neg_preco", "rp_neg_reuniao", "rp_neg_amigo"],
   },
+  {
+    id: "u42",
+    numero: 42,
+    titulo: "Entrevista e apresentação",
+    descricao: "Falar de si e apresentar em ordem",
+    cor: "#4f7f9e",
+    contexto: "trabalho",
+    cards: [
+      "card_559", "card_560", "card_561", "card_562",
+      "card_563", "card_564", "card_565", "card_566",
+      "card_567", "card_568", "card_569", "card_570", "card_571",
+      "card_572", "card_573", "card_574",
+      "card_575", "card_576", "card_577", "card_578",
+    ],
+    missoes: ["rp_ent_entrevista", "rp_ent_apresentacao", "rp_ent_sobre_mim"],
+  },
 ];
 
 const TITULO: Record<TipoLicao, string> = {
