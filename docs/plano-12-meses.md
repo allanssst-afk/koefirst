@@ -5,13 +5,13 @@ independente na fala). Guia a produção de unidades: cada unidade nova sai daqu
 
 ## Metas finais (mês 12)
 
-| Medida | Meta B1 | Hoje (unidades 1–36) |
+| Medida | Meta B1 | Hoje (unidades 1–37) |
 | --- | --- | --- |
-| Frases do baralho (faladas) | ~700 | 458 |
-| Palavras ativas (fala) | ~2.000 | ~1.000 |
+| Frases do baralho (faladas) | ~700 | 478 |
+| Palavras ativas (fala) | ~2.000 | ~1.040 |
 | Palavras reconhecidas (escuta/leitura) | ~3.500 | — |
-| Kanji | ~650 (N5 + N4 + N3) | 471 com dados (N5, N4 e os do app) |
-| Formas verbais no Ping-Pong | ~20 | 22 (-masu, -mashita, -masen, -masen deshita, -tai, -mashou, -te kudasai, -te imasu, dicionário + koto, -nakereba, -ta e -nakatta casuais, -ta koto ga arimasu, volitiva + to omoimasu, potencial afirmativo e negativo, -tara ii desu yo, -te kuremashita, -tai n desu ga, -te shimaimashita, o-… shimasu, passiva) |
+| Kanji | ~650 (N5 + N4 + N3) | 473 com dados (N5, N4 e os do app) |
+| Formas verbais no Ping-Pong | ~20 | 23 (-masu, -mashita, -masen, -masen deshita, -tai, -mashou, -te kudasai, -te imasu, dicionário + koto, -nakereba, -ta e -nakatta casuais, -ta koto ga arimasu, volitiva + to omoimasu, potencial afirmativo e negativo, -tara ii desu yo, -te kuremashita, -tai n desu ga, -te shimaimashita, o-… shimasu, passiva, causativa + kudasai) |
 | Fala contínua | 5 min sobre si, narrar, opinar | frases soltas e missões de 6 turnos |
 
 Ritmo de referência: 5 frases novas por dia (meta do Perfil) ≈ 150 por mês, mais revisões FSRS. As unidades
@@ -49,7 +49,7 @@ Fases = camadas de escrita do app (Perfil): 1 som · 2 + kana · 3 + kanji com f
 
 | Mês | Unidades | Gramática nova | Vocabulário | Marco |
 | --- | --- | --- | --- | --- |
-| 10 | 36 O que me aconteceu (passiva) *(pronta)* · **37 Pedir e permitir (causativa)** (próxima) · 38 Conselhos | passiva (inclusive a de incômodo) · causativa · ~sasete kudasai · ~you ni shite kudasai · ~nakute mo ii | 2.000 | contar um incidente em 2 min |
+| 10 | 36 O que me aconteceu (passiva) *(pronta)* · 37 Pedir e permitir (causativa) *(pronta)* · **38 Conselhos** (próxima) | passiva (inclusive a de incômodo) · causativa · ~sasete kudasai · ~you ni shite kudasai · ~nakute mo ii | 2.000 | contar um incidente em 2 min |
 | 11 | 39 Notícias e boatos · 40 Contar uma história · 41 Discutir e negociar | ~sou desu (ouvi dizer) · ~ni yoru to · ~to iu · ~te kara · ~mae ni · ~aida ni · ~uchi ni · ~nagara · ~noni · ~ba ~hodo · ~kedo | 2.300 (passivo 3.000) | kanji N3 (+370) |
 | 12 | 42 Entrevista e apresentação profissional · 43 Vida no Japão (moradia, médico, documentos) · 44 Revisão final | consolidação; discurso longo (introdução → fatos → opinião → conclusão) | 2.000 ativas / 3.500 passivas | simulado N3 (escuta + leitura); avaliação oral B1: 5 min sobre si, narrar e opinar |
 
@@ -60,7 +60,7 @@ necessárias:
 
 1. **Ping-Pong com novas formas** (`FORMAS` e `conjugar` em `src/lib/drills.ts`): -te kudasai *(pronta, unidade
    10: cada verbo tem `te` com o acento próprio)* e -te imasu *(pronta, unidade 11)*; forma de dicionário *(pronta, unidade 17: hobby com ~koto desu)*, -nai *(pronta, unidade 18: obrigação com -nakereba)* e forma plana *(pronta, unidade 19: -ta e -nakatta casuais)* experiência *(pronta, unidade 22: -ta koto ga arimasu)* e volitiva *(pronta, unidade 24: plano com ~ou to omoimasu)*; potencial *(pronta, unidade 27)* e condicional *(pronta, unidade 28: conselho com ~tara ii desu yo)*; passiva *(pronta, unidade 36: incômodo com -reru)* e
-   causativa (mês 10). Cada forma nova = regra de conjugação + pergunta do parceiro + legenda + pitch.
+   causativa *(pronta, unidade 37: ~sasete kudasai)*. Cada forma nova = regra de conjugação + pergunta do parceiro + legenda + pitch.
 2. **Adjetivos no Ping-Pong** (meses 3–4): a unidade 12 ensina adjetivos -i/-na (presente, negativo, passado) só
    com frases e missões; falta um treino de transformação para eles (ex.: "Estava frio?" → "Não, não estava
    frio"), com o pitch de cada adjetivo (queda fixa na mesma mora em todas as formas, como o OJAD prevê).

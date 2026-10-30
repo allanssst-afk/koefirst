@@ -608,6 +608,23 @@ export const UNIDADES: Unidade[] = [
     ],
     missoes: ["rp_pas_incidente", "rp_pas_bronca", "rp_pas_noticia"],
   },
+  {
+    id: "u37",
+    numero: 37,
+    titulo: "Pedir e permitir",
+    descricao: "Fazer alguém fazer, deixe-me e procure",
+    cor: "#6e8c5a",
+    contexto: "trabalho",
+    formasNovas: ["sasete"],
+    cards: [
+      "card_459", "card_460", "card_461", "card_462",
+      "card_463", "card_464", "card_465", "card_466",
+      "card_467", "card_468", "card_469", "card_470",
+      "card_471", "card_472", "card_473", "card_474",
+      "card_475", "card_476", "card_477", "card_478",
+    ],
+    missoes: ["rp_cau_cedo", "rp_cau_conta", "rp_cau_medica"],
+  },
 ];
 
 const TITULO: Record<TipoLicao, string> = {
