@@ -3,7 +3,9 @@
 // Fontes: KANJIDIC2 (EDRDG, CC BY-SA 4.0 — https://www.edrdg.org/edrdg/licence.html) e KanjiVG (© Ulrich Apel,
 // CC BY-SA 3.0 — https://kanjivg.tagaini.net).
 //
-//   npx tsx scripts/gerar-kanji.ts --lista                      → códigos (hex) dos kanji, para baixar o KanjiVG
+//   npx tsx scripts/gerar-kanji.ts --lista <kanjidic2.xml.gz>   → códigos (hex) dos kanji SEM traços ainda,
+//                                                                 para baixar só esses do KanjiVG
+// Os traços dos kanji que já estão no arquivo gerado são reaproveitados: só os novos precisam do .svg.
 //   npx tsx scripts/gerar-kanji.ts <kanjidic2.xml.gz> <pasta-kanjivg>
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
@@ -11,6 +13,7 @@ import { gunzipSync } from "node:zlib";
 import { seedCards } from "../src/db/seed-data/cards";
 import { seedScenarios } from "../src/db/seed-data/scenarios";
 import { cenasDoContexto } from "../src/lib/drills";
+import { KANJI as ANTERIOR } from "../src/lib/kanji-dados.generated";
 
 const KANJI_RE = /[一-龯]/g;
 
@@ -91,7 +94,7 @@ const args = process.argv.slice(2);
 if (args[0] === "--lista") {
   // sem o KANJIDIC2 ainda: lista os do app; os do JLPT vêm do arquivo
   const dic = args[1] ? lerKanjidic(args[1]) : new Map<string, Bruto>();
-  const lista = args[1] ? selecao(dic) : kanjiDoApp();
+  const lista = (args[1] ? selecao(dic) : kanjiDoApp()).filter((k) => !ANTERIOR[k]);
   console.log(lista.map((k) => k.codePointAt(0)!.toString(16).padStart(5, "0")).join("\n"));
   process.exit(0);
 }
@@ -103,15 +106,20 @@ const saida: Record<string, unknown> = {};
 for (const k of selecao(dic)) {
   const d = dic.get(k)!;
   const hex = k.codePointAt(0)!.toString(16).padStart(5, "0");
-  const local = join(pasta, `${hex}.svg`);
-  if (!existsSync(local)) throw new Error(`falta o KanjiVG de ${k} (${hex}.svg)`);
-  const svg = readFileSync(local, "utf8");
-  const tracos = [...svg.matchAll(/<path id="kvg:[0-9a-f]+-s(\d+)"[^>]*\sd="([^"]+)"/g)]
-    .sort((a, b) => Number(a[1]) - Number(b[1]))
-    .map((x) => x[2]);
-  const numeros = [...svg.matchAll(/<text transform="matrix\(1 0 0 1 ([\d.]+) ([\d.]+)\)">(\d+)<\/text>/g)]
-    .sort((a, b) => Number(a[3]) - Number(b[3]))
-    .map((x) => [Number(x[1]), Number(x[2])]);
+  const local = join(pasta ?? ".", `${hex}.svg`);
+  let tracos: string[];
+  let numeros: number[][];
+  if (pasta && existsSync(local)) {
+    const svg = readFileSync(local, "utf8");
+    tracos = [...svg.matchAll(/<path id="kvg:[0-9a-f]+-s(\d+)"[^>]*\sd="([^"]+)"/g)]
+      .sort((a, b) => Number(a[1]) - Number(b[1]))
+      .map((x) => x[2]);
+    numeros = [...svg.matchAll(/<text transform="matrix\(1 0 0 1 ([\d.]+) ([\d.]+)\)">(\d+)<\/text>/g)]
+      .sort((a, b) => Number(a[3]) - Number(b[3]))
+      .map((x) => [Number(x[1]), Number(x[2])]);
+  } else if (ANTERIOR[k]) {
+    ({ tracos, numeros } = ANTERIOR[k]);
+  } else throw new Error(`falta o KanjiVG de ${k} (${hex}.svg)`);
   if (!tracos.length || tracos.length !== numeros.length) throw new Error(`${k}: ${tracos.length} traços, ${numeros.length} números`);
   saida[k] = {
     sig: (SIG_EXTRA[k] ?? d.pt)

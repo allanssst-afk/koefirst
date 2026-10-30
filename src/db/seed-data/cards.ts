@@ -1,6 +1,7 @@
 import { cardsLugares } from "./cards-lugares";
 import { cardsNumeros } from "./cards-numeros";
 import { cardsPedidos } from "./cards-pedidos";
+import { cardsAgora } from "./cards-agora";
 import { cardsTrabalho } from "./cards-trabalho";
 import { b, card } from "./helpers";
 
@@ -509,4 +510,4 @@ const cardsBase = [
   }),
 ];
 
-export const seedCards = [...cardsBase, ...cardsTrabalho, ...cardsLugares, ...cardsNumeros, ...cardsPedidos];
+export const seedCards = [...cardsBase, ...cardsTrabalho, ...cardsLugares, ...cardsNumeros, ...cardsPedidos, ...cardsAgora];

@@ -63,7 +63,8 @@ Unidades novas seguem a ordem do plano; ao terminar uma, marcar no plano.
   (`Caligrafia` com `dados`), quiz kanji→sentido, sentido→kanji e palavra→leitura (o quiz genérico fica em
   `escrita/Quiz.tsx`). Progresso no mesmo `kana_log`. Dados em `src/lib/kanji-dados.generated.ts`, gerado por
   `scripts/gerar-kanji.ts` a partir do KANJIDIC2 (EDRDG, CC BY-SA 4.0) e do KanjiVG; `SIG_EXTRA` corrige à mão os
-  significados que faltam ou enganam. Só as páginas de kanji importam esses dados (o dicionário não). Na Fase < 3
+  significados que faltam ou enganam. Os traços já gerados são reaproveitados: `--lista <kanjidic2.xml.gz>` mostra
+  só os kanji novos, e basta baixar o .svg deles do KanjiVG. Só as páginas de kanji importam esses dados (o dicionário não). Na Fase < 3
   mostra o aviso de que os kanji entram na Fase 3; no Dicionário, os atalhos para os kanji da frase só aparecem
   na Fase 3+.
 - **Limite diário de frases novas:** `meta_novos_dia` (Perfil → "Frases novas por dia") vale para trilha e aba
@@ -103,6 +104,10 @@ Unidades novas seguem a ordem do plano; ao terminar uma, marcar no plano.
   de verbo plano sobe até "sa". Só cenas da lista `PEDIDOS_OK` aceitam pedido (tarefas que alguém faz por você);
   `combina(cena, forma)` diz se a dupla vale e a tela sorteia só entre duplas válidas. Nas lições, cada unidade
   declara `formasNovas`: a forma entra no Ping-Pong dela (metade dos diálogos) e no sorteio das seguintes.
+- **Agora (-te imasu)** no Ping-Pong: 今、何をしていますか → [complemento][forma -te]います ("(Eu) estou …", com
+  `ptGerundio` do verbo). Mesmo padrão de pitch do pedido: depois de verbo com queda "imasu" fica todo baixo; depois
+  de verbo plano fica alto até "ma". Verbos de movimento/estado pontual (ir, vir, voltar, acordar, começar,
+  pegar condução, dormir) têm `sem: ["te_imasu"]`. O STT aceita também a forma falada "-temasu".
 - Isso vale também para o que *o usuário* fala: na Fase 1 a transcrição do STT **não é exibida**
   (mostra-se só a % de correspondência). Na Fase 2+ ela aparece.
 - Camadas ortográficas (`user_settings.fase_atual`), aplicadas pelo componente `ScriptLayer`:
@@ -175,9 +180,9 @@ src/
     roleplay/ RoleplayArena.tsx · JaBubble.tsx · CoachWhisper.tsx
   db/
     schema.ts · index.ts (sql.js + IndexedDB) · seed-run.ts · migrations.generated.ts (gerado)
-    seed-data/cards.ts (+ cards-trabalho.ts, cards-lugares.ts, cards-numeros.ts, cards-pedidos.ts) ·
-      seed-data/scenarios.ts (+ scenarios-cotidiano.ts, scenarios-extra.ts, scenarios-trabalho.ts,
-      scenarios-lugares.ts, scenarios-numeros.ts, scenarios-pedidos.ts) · seed-data/helpers.ts
+    seed-data/cards.ts (+ cards-trabalho.ts, cards-lugares.ts, cards-numeros.ts, cards-pedidos.ts,
+      cards-agora.ts) · seed-data/scenarios.ts (+ scenarios-cotidiano.ts, scenarios-extra.ts, scenarios-trabalho.ts,
+      scenarios-lugares.ts, scenarios-numeros.ts, scenarios-pedidos.ts, scenarios-agora.ts) · seed-data/helpers.ts
   lib/
     types.ts · fsrs.ts · roles.ts · text.ts (normalização/similaridade/furigana) · idb.ts
     queries.ts                   # consultas e gravações (fila, revisão, dashboard, atividade, coach offline)

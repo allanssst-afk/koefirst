@@ -28,7 +28,7 @@ import { CATEGORIAS } from "@/lib/roleplay";
 import { bestSimilarity, containsAny } from "@/lib/text";
 
 const JANELAS = [3000, 5000, 8000, 15000];
-const TREINAVEIS: Forma[] = ["mashita", "masen", "masen_deshita", "tai", "mashou", "te_kudasai"];
+const TREINAVEIS: Forma[] = ["mashita", "masen", "masen_deshita", "tai", "mashou", "te_kudasai", "te_imasu"];
 
 type Stage = "setup" | "cue" | "ready" | "listening" | "result";
 /** completo = frase inteira · parcial = só o verbo transformado · erro = nem o verbo */

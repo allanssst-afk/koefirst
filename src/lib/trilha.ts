@@ -168,6 +168,22 @@ export const UNIDADES: Unidade[] = [
     missoes: ["rp_ped_templo", "rp_ped_cadastro", "rp_ped_escritorio"],
     formasNovas: ["te_kudasai"],
   },
+  {
+    id: "u11",
+    numero: 11,
+    titulo: "Agora e sempre",
+    descricao: "O que está fazendo, onde mora, o que sabe",
+    cor: "#7a9e7e",
+    contexto: "social",
+    cards: [
+      "card_079", "card_080", "card_081",
+      "card_082", "card_083", "card_084",
+      "card_085", "card_086", "card_087",
+      "card_088", "card_089", "card_090",
+    ],
+    missoes: ["rp_agora_ligacao", "rp_agora_colega", "rp_agora_vizinho"],
+    formasNovas: ["te_imasu"],
+  },
 ];
 
 const TITULO: Record<TipoLicao, string> = {
