@@ -708,6 +708,21 @@ export const UNIDADES: Unidade[] = [
     ],
     missoes: ["rp_ent_entrevista", "rp_ent_apresentacao", "rp_ent_sobre_mim"],
   },
+  {
+    id: "u43",
+    numero: 43,
+    titulo: "Vida no Japão",
+    descricao: "Moradia, prefeitura e clínica",
+    cor: "#b5635f",
+    contexto: "cidade",
+    cards: [
+      "card_579", "card_580", "card_581", "card_582",
+      "card_583", "card_584", "card_585", "card_586", "card_587",
+      "card_588", "card_589", "card_590", "card_591", "card_592",
+      "card_593", "card_594", "card_595", "card_596", "card_597", "card_598",
+    ],
+    missoes: ["rp_vid_apartamento", "rp_vid_prefeitura", "rp_vid_clinica"],
+  },
 ];
 
 const TITULO: Record<TipoLicao, string> = {

@@ -39,6 +39,7 @@ import { cenariosNoticias } from "./scenarios-noticias";
 import { cenariosHistoria } from "./scenarios-historia";
 import { cenariosNegociar } from "./scenarios-negociar";
 import { cenariosEntrevista } from "./scenarios-entrevista";
+import { cenariosVidaJapao } from "./scenarios-vida-japao";
 
 /** Um turno do roteiro offline (usado quando não há chave de IA). */
 export interface RoteiroPasso {
@@ -290,4 +291,4 @@ const cenariosBase: SeedScenario[] = [
   },
 ];
 
-export const seedScenarios: SeedScenario[] = [...cenariosBase, ...cenariosCotidiano, ...cenariosExtra, ...cenariosTrabalho, ...cenariosLugares, ...cenariosNumeros, ...cenariosPedidos, ...cenariosAgora, ...cenariosAdjetivos, ...cenariosFimDeSemana, ...cenariosRevisao, ...cenariosFamilia, ...cenariosSaude, ...cenariosHobbies, ...cenariosRegras, ...cenariosCasual, ...cenariosOpiniao, ...cenariosMotivos, ...cenariosExperiencias, ...cenariosComparar, ...cenariosPlanos, ...cenariosViagem, ...cenariosRevisaoFase2, ...cenariosConsegue, ...cenariosCondicional, ...cenariosDarReceber, ...cenariosDescrever, ...cenariosServicos, ...cenariosProblemas, ...cenariosKeigo, ...cenariosTelefone, ...cenariosAparencias, ...cenariosPassiva, ...cenariosCausativa, ...cenariosConselhos, ...cenariosNoticias, ...cenariosHistoria, ...cenariosNegociar, ...cenariosEntrevista];
+export const seedScenarios: SeedScenario[] = [...cenariosBase, ...cenariosCotidiano, ...cenariosExtra, ...cenariosTrabalho, ...cenariosLugares, ...cenariosNumeros, ...cenariosPedidos, ...cenariosAgora, ...cenariosAdjetivos, ...cenariosFimDeSemana, ...cenariosRevisao, ...cenariosFamilia, ...cenariosSaude, ...cenariosHobbies, ...cenariosRegras, ...cenariosCasual, ...cenariosOpiniao, ...cenariosMotivos, ...cenariosExperiencias, ...cenariosComparar, ...cenariosPlanos, ...cenariosViagem, ...cenariosRevisaoFase2, ...cenariosConsegue, ...cenariosCondicional, ...cenariosDarReceber, ...cenariosDescrever, ...cenariosServicos, ...cenariosProblemas, ...cenariosKeigo, ...cenariosTelefone, ...cenariosAparencias, ...cenariosPassiva, ...cenariosCausativa, ...cenariosConselhos, ...cenariosNoticias, ...cenariosHistoria, ...cenariosNegociar, ...cenariosEntrevista, ...cenariosVidaJapao];

@@ -154,6 +154,15 @@ const SIG_EXTRA: Record<string, string[]> = {
   表: ["superfície", "mostrar", "tabela"],
   経: ["passar por", "longitude"],
   責: ["culpa", "responsabilizar"],
+  賃: ["aluguel", "taxa", "salário"],
+  敷: ["estender", "espalhar"],
+  飼: ["criar (animal)", "domesticar"],
+  録: ["registrar", "gravar"],
+  必: ["sem falta", "necessariamente"],
+  要: ["necessário", "ponto principal"],
+  保: ["proteger", "manter"],
+  険: ["íngreme", "perigo"],
+  診: ["examinar (paciente)", "diagnosticar"],
 };
 
 const NOMES_PROPRIOS = /^(Japão|China|Coreia|Tóquio|Buda|Inglaterra)/;
