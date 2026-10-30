@@ -12,6 +12,7 @@ import { cardsCasual } from "./cards-casual";
 import { cardsOpiniao } from "./cards-opiniao";
 import { cardsMotivos } from "./cards-motivos";
 import { cardsExperiencias } from "./cards-experiencias";
+import { cardsComparar } from "./cards-comparar";
 import { cardsTrabalho } from "./cards-trabalho";
 import { b, card } from "./helpers";
 
@@ -520,4 +521,4 @@ const cardsBase = [
   }),
 ];
 
-export const seedCards = [...cardsBase, ...cardsTrabalho, ...cardsLugares, ...cardsNumeros, ...cardsPedidos, ...cardsAgora, ...cardsAdjetivos, ...cardsFimDeSemana, ...cardsFamilia, ...cardsSaude, ...cardsHobbies, ...cardsRegras, ...cardsCasual, ...cardsOpiniao, ...cardsMotivos, ...cardsExperiencias];
+export const seedCards = [...cardsBase, ...cardsTrabalho, ...cardsLugares, ...cardsNumeros, ...cardsPedidos, ...cardsAgora, ...cardsAdjetivos, ...cardsFimDeSemana, ...cardsFamilia, ...cardsSaude, ...cardsHobbies, ...cardsRegras, ...cardsCasual, ...cardsOpiniao, ...cardsMotivos, ...cardsExperiencias, ...cardsComparar];

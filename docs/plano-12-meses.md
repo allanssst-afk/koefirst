@@ -5,12 +5,12 @@ independente na fala). Guia a produção de unidades: cada unidade nova sai daqu
 
 ## Metas finais (mês 12)
 
-| Medida | Meta B1 | Hoje (unidades 1–22) |
+| Medida | Meta B1 | Hoje (unidades 1–23) |
 | --- | --- | --- |
-| Frases do baralho (faladas) | ~700 | 213 |
-| Palavras ativas (fala) | ~2.000 | ~560 |
+| Frases do baralho (faladas) | ~700 | 228 |
+| Palavras ativas (fala) | ~2.000 | ~585 |
 | Palavras reconhecidas (escuta/leitura) | ~3.500 | — |
-| Kanji | ~650 (N5 + N4 + N3) | 397 com dados (N5, N4 e os do app) |
+| Kanji | ~650 (N5 + N4 + N3) | 399 com dados (N5, N4 e os do app) |
 | Formas verbais no Ping-Pong | ~20 | 13 (-masu, -mashita, -masen, -masen deshita, -tai, -mashou, -te kudasai, -te imasu, dicionário + koto, -nakereba, -ta e -nakatta casuais, -ta koto ga arimasu) |
 | Fala contínua | 5 min sobre si, narrar, opinar | frases soltas e missões de 6 turnos |
 
@@ -35,7 +35,7 @@ Fases = camadas de escrita do app (Perfil): 1 som · 2 + kana · 3 + kanji com f
 | --- | --- | --- | --- | --- |
 | 4 | 15 Família e pessoas *(pronta)* · 16 Saúde e farmácia *(pronta)* · 17 Hobbies *(pronta)* (forma de dicionário) · 18 Regras e obrigações *(pronta)* | forma de dicionário · ~koto ga dekimasu · shumi wa ~koto desu · forma -nai · ~nai de kudasai · ~nakereba narimasen · ~ga itai desu · ~ta hou ga ii | 750 | ler e falar frases em kana |
 | 5 | 19 Conversa com amigos *(pronta)* · 20 Dar opinião *(pronta)* · 21 Explicar motivos *(pronta)* · 22 Experiências *(pronta)* | forma plana (presente, passado, negativo) · fala casual · ~to omoimasu · ~to iimasu · ~deshou · ~n desu · ~kara / ~node · ~ta koto ga arimasu | 1.000 | conversa casual de 3 min |
-| 6 | **23 Comparar e escolher** (próxima) · 24 Planos · 25 Viagem · 26 Revisão | ~yori ~no hou ga · ichiban · volitiva (~ou to omoimasu) · ~tsumori · ~tari ~tari | 1.200 | simulado N5 completo (escuta + vocabulário + gramática + leitura em kana) |
+| 6 | 23 Comparar e escolher *(pronta)* · **24 Planos** (próxima) · 25 Viagem · 26 Revisão | ~yori ~no hou ga · ichiban · volitiva (~ou to omoimasu) · ~tsumori · ~tari ~tari | 1.200 | simulado N5 completo (escuta + vocabulário + gramática + leitura em kana) |
 
 ### Fase 3 — + kanji com furigana (meses 7–9)
 

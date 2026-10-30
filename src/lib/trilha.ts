@@ -361,6 +361,22 @@ export const UNIDADES: Unidade[] = [
     ],
     missoes: ["rp_exp_viagem", "rp_exp_natto", "rp_exp_entrevista"],
   },
+  {
+    id: "u23",
+    numero: 23,
+    titulo: "Comparar e escolher",
+    descricao: "Qual dos dois, mais que, o mais de todos",
+    cor: "#c0708a",
+    contexto: "compras",
+    cards: [
+      "card_214", "card_215", "card_216",
+      "card_217", "card_218", "card_219",
+      "card_220", "card_221", "card_222",
+      "card_223", "card_224", "card_225",
+      "card_226", "card_227", "card_228",
+    ],
+    missoes: ["rp_cmp_loja", "rp_cmp_almoco", "rp_cmp_paises"],
+  },
 ];
 
 const TITULO: Record<TipoLicao, string> = {
