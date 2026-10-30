@@ -116,6 +116,10 @@ Unidades novas seguem a ordem do plano; ao terminar uma, marcar no plano.
   ("Meu hobby é …"). Cada verbo tem `dicio` (sons, acento, kana, kanji). Pitch do "koto": plano depois de verbo
   plano (HH), baixo depois de queda na 1ª mora (LL), sobe de novo depois de queda mais adiante (LH). Só cenas de
   lazer da lista `HOBBIES_OK` aceitam hobby.
+- **Obrigação (-nakereba narimasen)** no Ping-Pong: 明日、何をしなければなりませんか → [complemento][base -nai]なければ
+  なりません. Cada verbo tem `nai` (base antes de "nai": kaka, tabe, shi, ko). Pitch: verbo com queda cai na última
+  mora da base; verbo plano cai depois do "na"; "narimasen" = LHHHL. Só tarefas da lista `OBRIGACOES_OK`. O STT
+  aceita também "-nakya" e "-nai to".
 - Isso vale também para o que *o usuário* fala: na Fase 1 a transcrição do STT **não é exibida**
   (mostra-se só a % de correspondência). Na Fase 2+ ela aparece.
 - Camadas ortográficas (`user_settings.fase_atual`), aplicadas pelo componente `ScriptLayer`:
@@ -189,12 +193,13 @@ src/
   db/
     schema.ts · index.ts (sql.js + IndexedDB) · seed-run.ts · migrations.generated.ts (gerado)
     seed-data/cards.ts (+ cards-trabalho.ts, cards-lugares.ts, cards-numeros.ts, cards-pedidos.ts,
-      cards-agora.ts, cards-adjetivos.ts, cards-fimdesemana.ts, cards-familia.ts, cards-saude.ts, cards-hobbies.ts) ·
+      cards-agora.ts, cards-adjetivos.ts, cards-fimdesemana.ts, cards-familia.ts, cards-saude.ts, cards-hobbies.ts,
+      cards-regras.ts) ·
       seed-data/scenarios.ts
       (+ scenarios-cotidiano.ts,
       scenarios-extra.ts, scenarios-trabalho.ts, scenarios-lugares.ts, scenarios-numeros.ts, scenarios-pedidos.ts,
       scenarios-agora.ts, scenarios-adjetivos.ts, scenarios-fimdesemana.ts, scenarios-revisao.ts,
-      scenarios-familia.ts, scenarios-saude.ts, scenarios-hobbies.ts) · seed-data/helpers.ts
+      scenarios-familia.ts, scenarios-saude.ts, scenarios-hobbies.ts, scenarios-regras.ts) · seed-data/helpers.ts
   lib/
     types.ts · fsrs.ts · roles.ts · text.ts (normalização/similaridade/furigana) · idb.ts
     queries.ts                   # consultas e gravações (fila, revisão, dashboard, atividade, coach offline)
