@@ -53,6 +53,8 @@ const SIG_EXTRA: Record<string, string[]> = {
   弾: ["tocar (instrumento)", "bala (de arma)"],
   英: ["inglês", "Inglaterra"],
   転: ["rodar", "virar"],
+  守: ["proteger", "cumprir (regra, horário)"],
+  出: ["sair", "pôr para fora"],
 };
 
 const NOMES_PROPRIOS = /^(Japão|China|Coreia|Tóquio|Buda|Inglaterra)/;

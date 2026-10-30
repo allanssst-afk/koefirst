@@ -282,6 +282,22 @@ export const UNIDADES: Unidade[] = [
     missoes: ["rp_hob_conversa", "rp_hob_entrevista", "rp_hob_convite"],
     formasNovas: ["koto"],
   },
+  {
+    id: "u18",
+    numero: 18,
+    titulo: "Regras e obrigações",
+    descricao: "Forma -nai: não faça, tenho que, não precisa",
+    cor: "#4a6fa5",
+    contexto: "trabalho",
+    cards: [
+      "card_151", "card_152", "card_153",
+      "card_154", "card_155", "card_156",
+      "card_157", "card_158", "card_159",
+      "card_160", "card_161", "card_162",
+    ],
+    missoes: ["rp_reg_apartamento", "rp_reg_primeirodia", "rp_reg_trem"],
+    formasNovas: ["nakereba"],
+  },
 ];
 
 const TITULO: Record<TipoLicao, string> = {
