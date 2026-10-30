@@ -298,6 +298,22 @@ export const UNIDADES: Unidade[] = [
     missoes: ["rp_reg_apartamento", "rp_reg_primeirodia", "rp_reg_trem"],
     formasNovas: ["nakereba"],
   },
+  {
+    id: "u19",
+    numero: 19,
+    titulo: "Conversa com amigos",
+    descricao: "Forma plana: falar casual com quem é próximo",
+    cor: "#e8a33d",
+    contexto: "social",
+    cards: [
+      "card_163", "card_164", "card_165",
+      "card_166", "card_167", "card_168",
+      "card_169", "card_170", "card_171",
+      "card_172", "card_173", "card_174",
+    ],
+    missoes: ["rp_cas_kenji", "rp_cas_yuki", "rp_cas_novidade"],
+    formasNovas: ["ta", "nakatta"],
+  },
 ];
 
 const TITULO: Record<TipoLicao, string> = {

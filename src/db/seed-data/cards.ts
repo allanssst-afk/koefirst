@@ -8,6 +8,7 @@ import { cardsFamilia } from "./cards-familia";
 import { cardsSaude } from "./cards-saude";
 import { cardsHobbies } from "./cards-hobbies";
 import { cardsRegras } from "./cards-regras";
+import { cardsCasual } from "./cards-casual";
 import { cardsTrabalho } from "./cards-trabalho";
 import { b, card } from "./helpers";
 
@@ -516,4 +517,4 @@ const cardsBase = [
   }),
 ];
 
-export const seedCards = [...cardsBase, ...cardsTrabalho, ...cardsLugares, ...cardsNumeros, ...cardsPedidos, ...cardsAgora, ...cardsAdjetivos, ...cardsFimDeSemana, ...cardsFamilia, ...cardsSaude, ...cardsHobbies, ...cardsRegras];
+export const seedCards = [...cardsBase, ...cardsTrabalho, ...cardsLugares, ...cardsNumeros, ...cardsPedidos, ...cardsAgora, ...cardsAdjetivos, ...cardsFimDeSemana, ...cardsFamilia, ...cardsSaude, ...cardsHobbies, ...cardsRegras, ...cardsCasual];
