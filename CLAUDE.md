@@ -182,6 +182,11 @@ Unidades novas seguem a ordem do plano; ao terminar uma, marcar no plano.
   `ta_sou`). "sou" = HL depois de verbo plano, LL depois de queda. Só fatos que alguém passaria adiante (`OUVI_DIZER_OK`).
 - **Depois de (-te kara)** no Ping-Pong: いつ帰りますか → [complemento][forma -te]から帰ります (forma `te_kara`). "kara" baixo e
   "kaerimasu" = LHHHL. Só tarefas que se terminam antes de ir embora (`OBRIGACOES_OK` + `ANTES_DE_VOLTAR`).
+- **Adjetivos** no Ping-Pong (formas `adj_nai`, `adj_katta`, `adj_nakatta`, da unidade 12): só em cenas com `adjetivo`
+  (`SITUACOES_ADJETIVO`, em todos os contextos; `combina` separa cena de verbo e de adjetivo). [tópico][adjetivo]ですか → いいえ、
+  …くないです / じゃないです · [tópico]どうでしたか → …かったです / でした · …かったですか → いいえ、…くなかったです / じゃなかったです.
+  Pitch: a queda fica na mesma mora em todas as formas (o de -i cai antes do "i": takái, takákunai, takákatta, e o resto fica
+  baixo); no de -na muda só o que vem depois ("ja" baixo, "nai" = HL, "nakatta" = HLLL). O OJAD oscila nas formas longas.
 - Isso vale também para o que *o usuário* fala: na Fase 1 a transcrição do STT **não é exibida**
   (mostra-se só a % de correspondência). Na Fase 2+ ela aparece.
 - Camadas ortográficas (`user_settings.fase_atual`), aplicadas pelo componente `ScriptLayer`:

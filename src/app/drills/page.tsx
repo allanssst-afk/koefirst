@@ -28,7 +28,7 @@ import { CATEGORIAS } from "@/lib/roleplay";
 import { bestSimilarity, containsAny } from "@/lib/text";
 
 const JANELAS = [3000, 5000, 8000, 15000];
-const TREINAVEIS: Forma[] = ["mashita", "masen", "masen_deshita", "tai", "mashou", "te_kudasai", "te_imasu", "koto", "nakereba", "ta", "nakatta", "ta_koto", "ou_to", "reru", "remasen", "tara", "te_kureta", "tai_ga", "te_shimau", "o_shimasu", "rareta", "sasete", "nakute", "ta_sou", "te_kara"];
+const TREINAVEIS: Forma[] = ["mashita", "masen", "masen_deshita", "tai", "mashou", "te_kudasai", "te_imasu", "koto", "nakereba", "ta", "nakatta", "ta_koto", "ou_to", "reru", "remasen", "tara", "te_kureta", "tai_ga", "te_shimau", "o_shimasu", "rareta", "sasete", "nakute", "ta_sou", "te_kara", "adj_nai", "adj_katta", "adj_nakatta"];
 
 type Stage = "setup" | "cue" | "ready" | "listening" | "result";
 /** completo = frase inteira · parcial = só o verbo transformado · erro = nem o verbo */
@@ -180,7 +180,7 @@ export default function DrillsPage() {
           <h1 className="text-2xl font-black">Ping-Pong de Ginástica Gramatical</h1>
           <p className="text-sm text-[var(--muted)]">
             Uma pessoa te faz uma pergunta em japonês. Você responde com a frase inteira, educada, transformando o verbo
-            (passado, negativo, desejo…). As palavras da frase aparecem como peças para você montar a resposta.
+            ou o adjetivo (passado, negativo, desejo…). As palavras da frase aparecem como peças para você montar a resposta.
           </p>
         </header>
 
@@ -373,7 +373,7 @@ export default function DrillsPage() {
                 {round.nota === "completo"
                   ? "✓ Frase completa!"
                   : round.nota === "parcial"
-                    ? `◐ Verbo certo — faltou «${round.cena.obj}»`
+                    ? `◐ ${round.cena.adjetivo ? "Adjetivo" : "Verbo"} certo — faltou «${round.cena.obj}»`
                     : round.result?.latencyMs == null
                       ? "✗ Tempo esgotado"
                       : "✗ Ainda não — ouça o modelo e repita"}
@@ -431,7 +431,7 @@ function FormasChips({ formas, onToggle, atual }: { formas: Forma[]; onToggle: (
                   : "border-[var(--line)] text-[var(--muted)]"
             }`}
           >
-            {FORMAS[f].label} <span className={agora ? "opacity-70" : "opacity-60"}>-{f.replace("_", " ")}</span>
+            {FORMAS[f].label} <span className={agora ? "opacity-70" : "opacity-60"}>-{f.replace("adj_", "").replace("_", " ")}</span>
           </button>
         );
       })}

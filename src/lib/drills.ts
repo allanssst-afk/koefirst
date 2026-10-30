@@ -75,7 +75,7 @@ export const VERBOS: Verbo[] = [
 
 const junta = (...partes: (string | undefined)[]) => partes.filter(Boolean).join(" ");
 
-export type Forma = "masu" | "mashita" | "masen" | "masen_deshita" | "tai" | "mashou" | "te_kudasai" | "te_imasu" | "koto" | "nakereba" | "ta" | "nakatta" | "ta_koto" | "ou_to" | "reru" | "remasen" | "tara" | "te_kureta" | "tai_ga" | "te_shimau" | "o_shimasu" | "rareta" | "sasete" | "nakute" | "ta_sou" | "te_kara";
+export type Forma = "masu" | "mashita" | "masen" | "masen_deshita" | "tai" | "mashou" | "te_kudasai" | "te_imasu" | "koto" | "nakereba" | "ta" | "nakatta" | "ta_koto" | "ou_to" | "reru" | "remasen" | "tara" | "te_kureta" | "tai_ga" | "te_shimau" | "o_shimasu" | "rareta" | "sasete" | "nakute" | "ta_sou" | "te_kara" | "adj_nai" | "adj_katta" | "adj_nakatta";
 
 interface FormaDef {
   label: string;
@@ -416,7 +416,46 @@ export const FORMAS: Record<Forma, FormaDef> = {
     kana: "からかえります",
     funcao: "depois de",
   },
+  // formas de adjetivo: a frase e a pergunta vêm da cena (`dialogoAdjetivo`), não do verbo
+  adj_nai: {
+    pergunta: () => "",
+    abertura: "Não,",
+    quando: "Dizer que não é assim",
+    regra: "-i → -kunai · -na → ja nai",
+    frase: () => "",
+    label: "Adjetivo negativo",
+    comando: "Negue!",
+    sufixo: [],
+    kana: "くない",
+    funcao: "não é",
+  },
+  adj_katta: {
+    pergunta: () => "",
+    abertura: "",
+    quando: "Dizer como foi",
+    regra: "-i → -katta · -na → deshita",
+    frase: () => "",
+    label: "Adjetivo passado",
+    comando: "Como foi?",
+    sufixo: [],
+    kana: "かった",
+    funcao: "foi",
+  },
+  adj_nakatta: {
+    pergunta: () => "",
+    abertura: "Não,",
+    quando: "Dizer que não foi assim",
+    regra: "-i → -kunakatta · -na → ja nakatta",
+    frase: () => "",
+    label: "Adjetivo passado negativo",
+    comando: "Não foi!",
+    sufixo: [],
+    kana: "くなかった",
+    funcao: "não foi",
+  },
 };
+
+export const FORMAS_ADJETIVO: Forma[] = ["adj_nai", "adj_katta", "adj_nakatta"];
 
 /** Verbos cuja volitiva é base -nai + "you" (grupo de taberu e os irregulares); os outros trocam o último som por "-ou". */
 const VOLITIVA_YOU = new Set(["taberu", "kuru", "suru", "miru", "okiru", "neru", "hajimeru", "benkyou suru"]);
@@ -775,6 +814,31 @@ export interface CenaDrill {
   ja: Complemento;
   /** transformações que soam estranhas nesta situação */
   sem?: Forma[];
+  /** situação de adjetivo: `ja` é o tópico, e só as `FORMAS_ADJETIVO` valem (`verbo` fica sem uso) */
+  adjetivo?: AdjetivoCena;
+}
+
+/**
+ * Adjetivo do Ping-Pong. A voz cai sempre na mesma mora, em todas as formas: o de -i cai antes do "i" (takái → takákunai,
+ * takákatta) e o de -na, aqui sempre com queda na 1ª mora, fica igual e muda só o que vem depois.
+ */
+export interface Adjetivo {
+  tipo: "i" | "na";
+  /** sem o "i" final no de -i; prefixo _ = devozeada */
+  som: string;
+  kana: string;
+  kanji: string;
+  pt: string;
+}
+
+export interface AdjetivoCena {
+  adj: Adjetivo;
+  /** verbo em português, no presente e no passado ("é", "era") */
+  ser: [string, string];
+  /** tópico em português ("o ramen") */
+  pt: string;
+  /** tópico das perguntas no passado, quando muda (hoje → ontem) */
+  passado?: { ja: Complemento; pt: string };
 }
 
 const comp = (kana: string, kanji: string, nucleo: string[], ...blocos: Mora[][]): Complemento => ({
@@ -810,6 +874,24 @@ const BASU = (part: Mora[]) => b("ba.su", "HL", "ônibus", "substantivo").concat
 const DENSHA = (part: Mora[]) => b("de.n.sha", "LHH", "trem", "substantivo").concat(part);
 const KAZOKU = (part: Mora[]) => b("ka.zo.ku", "HLL", "família", "substantivo").concat(part);
 const HAYAKU = comp("はやく", "早[はや]く", ["はやく", "早く"], b("ha.ya.ku", "HLL", "cedo", "adverbio"));
+
+const wa = (p: "H" | "L") => b("wa", p, "[Tópico]", "particula");
+const TAKAI: Adjetivo = { tipo: "i", som: "ta.ka", kana: "たか", kanji: "高[たか]", pt: "caro" };
+const YASUI: Adjetivo = { tipo: "i", som: "ya._su", kana: "やす", kanji: "安[やす]", pt: "barato" };
+const OISHII: Adjetivo = { tipo: "i", som: "o.i._shi", kana: "おいし", kanji: "おいし", pt: "gostoso" };
+const SAMUI: Adjetivo = { tipo: "i", som: "sa.mu", kana: "さむ", kanji: "寒[さむ]", pt: "frio" };
+const TANOSHII: Adjetivo = { tipo: "i", som: "ta.no._shi", kana: "たのし", kanji: "楽[たの]し", pt: "divertido" };
+const OMOSHIROI: Adjetivo = { tipo: "i", som: "o.mo._shi.ro", kana: "おもしろ", kanji: "面白[おもしろ]", pt: "interessante" };
+const CHIKAI: Adjetivo = { tipo: "i", som: "chi.ka", kana: "ちか", kanji: "近[ちか]", pt: "perto" };
+const ISOGASHII: Adjetivo = { tipo: "i", som: "i.so.ga._shi", kana: "いそがし", kanji: "忙[いそが]し", pt: "corrido" };
+const MUZUKASHII: Adjetivo = { tipo: "i", som: "mu.zu.ka._shi", kana: "むずかし", kanji: "難[むずか]し", pt: "difícil" };
+const SHIZUKA: Adjetivo = { tipo: "na", som: "_shi.zu.ka", kana: "しずか", kanji: "静[しず]か", pt: "tranquilo" };
+const KIREI: Adjetivo = { tipo: "na", som: "ki.re.i", kana: "きれい", kanji: "きれい", pt: "bonito" };
+const BENRI: Adjetivo = { tipo: "na", som: "be.n.ri", kana: "べんり", kanji: "便利[べんり]", pt: "prático" };
+const SHINSETSU: Adjetivo = { tipo: "na", som: "_shi.n.se.tsu", kana: "しんせつ", kanji: "親切[しんせつ]", pt: "gentil" };
+
+const cenaAdj = (adjetivo: AdjetivoCena, ja: Complemento): CenaDrill => ({ verbo: "suru", obj: adjetivo.pt, ja, adjetivo });
+const ESTE = (kana: string, kanji: string, nucleo: string[], ...blocos: Mora[][]) => comp(`この${kana}`, `この${kanji}`, nucleo, b("ko.no", "LH", "este", "topico"), ...blocos);
 
 export const CENAS_DRILL: Record<Categoria, CenaDrill[]> = {
   trabalho: [
@@ -1049,8 +1131,44 @@ const ANTES_DE_VOLTAR = new Set(["kaku", "yomu", "hanasu", "au", "matsu", "suru"
 for (const cenas of Object.values(CENAS_DRILL))
   for (const c of cenas) if (!OBRIGACOES_OK.has(`${c.verbo}|${c.obj}`) || !ANTES_DE_VOLTAR.has(c.verbo)) c.sem = [...(c.sem ?? []), "te_kara"];
 
-/** A transformação combina com a situação (nem o verbo nem a cena a excluem). */
-export const combina = (cena: CenaDrill, forma: Forma) => !verboPorDict(cena.verbo).sem?.includes(forma) && !cena.sem?.includes(forma);
+const SITUACOES_ADJETIVO: Record<Categoria, CenaDrill[]> = {
+  restaurante: [
+    cenaAdj({ adj: OISHII, ser: ["é", "estava"], pt: "o ramen" }, comp("ラーメンは", "ラーメンは", ["らーめん", "ラーメン"], b("ra.a.me.n", "HLLL", "ramen", "topico"), wa("L"))),
+    cenaAdj({ adj: SHIZUKA, ser: ["é", "estava"], pt: "este restaurante" }, ESTE("レストランは", "レストランは", ["れすとらん", "レストラン"], b("re._su.to.ra.n", "HLLLL", "restaurante", "topico"), wa("L"))),
+  ],
+  compras: [
+    cenaAdj({ adj: { ...TAKAI, pt: "cara" }, ser: ["é", "era"], pt: "esta bolsa" }, ESTE("かばんは", "かばんは", ["かばん"], b("ka.ba.n", "HHH", "bolsa", "topico"), wa("H"))),
+    cenaAdj({ adj: { ...YASUI, pt: "barata" }, ser: ["é", "era"], pt: "esta roupa" }, ESTE("ふくは", "服[ふく]は", ["ふく", "服"], b("_fu.ku", "HH", "roupa", "topico"), wa("L"))),
+  ],
+  social: [
+    cenaAdj(
+      {
+        adj: SAMUI,
+        ser: ["está", "estava"],
+        pt: "hoje",
+        passado: { ja: comp("きのうは", "昨日[きのう]は", ["きのう", "昨日"], b("ki.no.o", "LHL", "ontem", "tempo"), wa("L")), pt: "ontem" },
+      },
+      comp("きょうは", "今日[きょう]は", ["きょう", "今日"], b("kyo.o", "HL", "hoje", "tempo"), wa("L")),
+    ),
+    cenaAdj({ adj: { ...TANOSHII, pt: "divertida" }, ser: ["é", "foi"], pt: "a festa" }, comp("パーティーは", "パーティーは", ["ぱーてぃー", "パーティー"], b("pa.a.ti.i", "HLLL", "festa", "topico"), wa("L"))),
+    cenaAdj({ adj: OMOSHIROI, ser: ["é", "foi"], pt: "o filme" }, comp("えいがは", "映画[えいが]は", ["えいが", "映画"], b("e.i.ga", "LHH", "filme", "topico"), wa("H"))),
+  ],
+  cidade: [
+    cenaAdj({ adj: CHIKAI, ser: ["é", "era"], pt: "a estação" }, comp("えきは", "駅[えき]は", ["えき", "駅"], b("e.ki", "HL", "estação", "topico"), wa("L"))),
+    cenaAdj({ adj: { ...KIREI, pt: "bonita" }, ser: ["é", "era"], pt: "esta cidade" }, ESTE("まちは", "町[まち]は", ["まち", "町"], b("ma.chi", "HH", "cidade", "topico"), wa("L"))),
+    cenaAdj({ adj: BENRI, ser: ["é", "foi"], pt: "o trem" }, comp("でんしゃは", "電車[でんしゃ]は", ["でんしゃ", "電車"], b("de.n.sha", "LHH", "trem", "topico"), wa("H"))),
+  ],
+  trabalho: [
+    cenaAdj({ adj: ISOGASHII, ser: ["está", "estava"], pt: "o trabalho" }, comp("しごとは", "仕事[しごと]は", ["しごと", "仕事"], b("_shi.go.to", "LHH", "trabalho", "topico"), wa("H"))),
+    cenaAdj({ adj: MUZUKASHII, ser: ["é", "foi"], pt: "a prova" }, comp("しけんは", "試験[しけん]は", ["しけん", "試験"], b("_shi.ke.n", "LHL", "prova", "topico"), wa("L"))),
+    cenaAdj({ adj: SHINSETSU, ser: ["é", "era"], pt: "o gerente" }, comp("ぶちょうは", "部長[ぶちょう]は", ["ぶちょう", "部長"], b("bu.cho.o", "LHH", "gerente", "topico"), wa("H"))),
+  ],
+};
+for (const [ctx, cenas] of Object.entries(SITUACOES_ADJETIVO)) CENAS_DRILL[ctx as Categoria].push(...cenas);
+
+/** A transformação combina com a situação (nem o verbo nem a cena a excluem); adjetivo só com forma de adjetivo. */
+export const combina = (cena: CenaDrill, forma: Forma) =>
+  !!cena.adjetivo === FORMAS_ADJETIVO.includes(forma) && !verboPorDict(cena.verbo).sem?.includes(forma) && !cena.sem?.includes(forma);
 
 /** Situações do contexto; "todos" mistura as de todos os contextos. */
 export function cenasDoContexto(ctx: Categoria | "todos"): CenaDrill[] {
@@ -1144,6 +1262,82 @@ const comEuImplicito = (frase: string) => frase.replace(/^eu\b/, "(eu)").replace
 const maiuscula = (t: string) => t.replace(/^(\(?)(\p{L})/u, (_, par: string, l: string) => par + l.toUpperCase());
 const ponto = (t: string) => (/[.!?]$/.test(t) ? t : `${t}.`);
 
+/** Forma do adjetivo + です: a queda não muda, e o que vem depois dela fica baixo (o "na" de "ja nai" sobe de novo). */
+function conjugarAdjetivo(a: Adjetivo, forma: "base" | "adj_nai" | "adj_katta" | "adj_nakatta") {
+  const n = a.som.split(".").length;
+  const desu = b("de._su", "LL", "é", "copula");
+  const plano = stripFurigana(a.kanji);
+  if (a.tipo === "i") {
+    const fim = { base: ["i", "い"], adj_nai: ["ku.na.i", "くない"], adj_katta: ["ka.t.ta", "かった"], adj_nakatta: ["ku.na.ka.t.ta", "くなかった"] }[forma];
+    const funcao = { base: a.pt, adj_nai: `não ${a.pt}`, adj_katta: `${a.pt} (passado)`, adj_nakatta: `não ${a.pt} (passado)` }[forma];
+    const pitch = "L" + "H".repeat(n - 1) + "L".repeat(fim[0].split(".").length);
+    return {
+      kana: `${a.kana}${fim[1]}です`,
+      kanji: `${a.kanji}${fim[1]}です`,
+      moras: [...b(`${a.som}.${fim[0]}`, pitch, funcao, "adjetivo"), ...desu],
+      alvos: [a.kana + fim[1], plano + fim[1], ...(forma === "adj_nai" ? [`${a.kana}くありません`, `${plano}くありません`] : [])],
+    };
+  }
+  const raiz = b(a.som, "H" + "L".repeat(n - 1), a.pt, "adjetivo");
+  const ja = b("ja", "L", "[não]", "copula");
+  if (forma === "base") return { kana: `${a.kana}です`, kanji: `${a.kanji}です`, moras: [...raiz, ...desu], alvos: [a.kana, plano] };
+  if (forma === "adj_katta") {
+    return { kana: `${a.kana}でした`, kanji: `${a.kanji}でした`, moras: [...raiz, ...b("de._shi.ta", "LLL", "foi", "copula")], alvos: [`${a.kana}でした`, `${plano}でした`, `${a.kana}だった`, `${plano}だった`] };
+  }
+  const neg = forma === "adj_nai" ? b("na.i", "HL", "não é", "copula") : b("na.ka.t.ta", "HLLL", "não foi", "copula");
+  const fim = forma === "adj_nai" ? "じゃない" : "じゃなかった";
+  const formal = forma === "adj_nai" ? "じゃありません" : "じゃありませんでした";
+  return { kana: `${a.kana}${fim}です`, kanji: `${a.kanji}${fim}です`, moras: [...raiz, ...ja, ...neg, ...desu], alvos: [a.kana + fim, plano + fim, a.kana + formal, plano + formal] };
+}
+
+/**
+ * Situação de adjetivo:
+ * - Negativo:          [tópico][adjetivo]ですか → いいえ、[tópico][-kunai / ja nai]です
+ * - Passado:           [tópico]どうでしたか → [tópico][-katta]です / [adjetivo]でした
+ * - Passado negativo:  [tópico][-katta]ですか → いいえ、[tópico][-kunakatta / ja nakatta]です
+ */
+function dialogoAdjetivo(cena: CenaDrill, ac: AdjetivoCena, forma: Forma): DialogoDrill {
+  const f = forma as "adj_nai" | "adj_katta" | "adj_nakatta";
+  const passado = f !== "adj_nai";
+  const t = passado && ac.passado ? ac.passado.ja : cena.ja;
+  const topico = passado && ac.passado ? ac.passado.pt : ac.pt;
+  const ser = ac.ser[passado ? 1 : 0];
+  const base = conjugarAdjetivo(ac.adj, "base");
+  const alvo = conjugarAdjetivo(ac.adj, f);
+  const passo = conjugarAdjetivo(ac.adj, "adj_katta");
+  const Maiusc = maiuscula(topico);
+  const pergunta =
+    f === "adj_katta"
+      ? fala(`${t.kana}どうでしたか。`, `${t.kanji}どうでしたか。`, `Como ${ser} ${topico}?`, t.moras, b("do.o", "HL", "como", "pergunta"), b("de._shi.ta", "LLL", "foi", "copula"), KA)
+      : fala(
+          `${t.kana}${(passado ? passo : base).kana}か。`,
+          `${t.kanji}${(passado ? passo : base).kanji}か。`,
+          `${Maiusc} ${ser} ${ac.adj.pt}?`,
+          t.moras,
+          (passado ? passo : base).moras,
+          KA,
+        );
+  const inicio = f === "adj_katta" ? null : IIE;
+  const resposta = fala(
+    `${inicio?.kana ?? ""}${t.kana}${alvo.kana}。`,
+    `${inicio?.kanji ?? ""}${t.kanji}${alvo.kanji}。`,
+    f === "adj_katta" ? `${Maiusc} ${ser} ${ac.adj.pt}.` : `Não, ${topico} não ${ser} ${ac.adj.pt}.`,
+    inicio?.moras ?? [],
+    t.moras,
+    alvo.moras,
+  );
+  return {
+    pergunta,
+    resposta,
+    pecas: [fala(t.kana, t.kanji, topico, t.moras), fala(base.kana, base.kanji, `${ac.adj.pt} (forma base)`, base.moras)],
+    alvos: {
+      frase: [resposta.kana, stripFurigana(resposta.kanji), t.kana + alvo.kana, stripFurigana(t.kanji) + alvo.kana],
+      verbo: alvo.alvos,
+      complemento: t.nucleo,
+    },
+  };
+}
+
 /**
  * Monta pergunta e resposta completas para a cena:
  * - Negativo:          毎日、[complemento][verbo]ますか → いいえ、[complemento][verbo]ません
@@ -1169,8 +1363,10 @@ const ponto = (t: string) => (/[.!?]$/.test(t) ? t : `${t}.`);
  * - Não precisa:       [complemento][base -nai]なければなりませんか → いいえ、…なくてもいいです
  * - Ouvi dizer:        田中さんはどうしましたか → 田中さんは[complemento][verbo -ta]そうです
  * - Depois de:         いつ帰りますか → [complemento][forma -te]から帰ります
+ * - Adjetivos:          ver `dialogoAdjetivo`
  */
 export function montarDialogo(cena: CenaDrill, forma: Forma): DialogoDrill {
+  if (cena.adjetivo) return dialogoAdjetivo(cena, cena.adjetivo, forma);
   const v = verboPorDict(cena.verbo);
   const f = FORMAS[forma];
   const c = forma === "reru" || forma === "remasen" ? comGa(cena.ja) : cena.ja;

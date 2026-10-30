@@ -61,9 +61,8 @@ necessárias:
 1. **Ping-Pong com novas formas** (`FORMAS` e `conjugar` em `src/lib/drills.ts`): -te kudasai *(pronta, unidade
    10: cada verbo tem `te` com o acento próprio)* e -te imasu *(pronta, unidade 11)*; forma de dicionário *(pronta, unidade 17: hobby com ~koto desu)*, -nai *(pronta, unidade 18: obrigação com -nakereba)* e forma plana *(pronta, unidade 19: -ta e -nakatta casuais)* experiência *(pronta, unidade 22: -ta koto ga arimasu)* e volitiva *(pronta, unidade 24: plano com ~ou to omoimasu)*; potencial *(pronta, unidade 27)* e condicional *(pronta, unidade 28: conselho com ~tara ii desu yo)*; passiva *(pronta, unidade 36: incômodo com -reru)* e
    causativa *(pronta, unidade 37: ~sasete kudasai)*. Cada forma nova = regra de conjugação + pergunta do parceiro + legenda + pitch.
-2. **Adjetivos no Ping-Pong** (meses 3–4): a unidade 12 ensina adjetivos -i/-na (presente, negativo, passado) só
-   com frases e missões; falta um treino de transformação para eles (ex.: "Estava frio?" → "Não, não estava
-   frio"), com o pitch de cada adjetivo (queda fixa na mesma mora em todas as formas, como o OJAD prevê).
+2. **Adjetivos no Ping-Pong** *(pronto, unidade 12: negativo, passado e passado negativo, com adjetivos -i e -na em todos os
+   contextos; a queda fica na mesma mora em todas as formas)*.
 3. **Leitura** *(pronta: 28 textos em `src/lib/leituras.ts`, um por unidade de 15 a 43, com áudio, mapa de som, camada de escrita da
    fase e 2 perguntas; estação opcional no fim da unidade)*.
 4. **Simulado completo** (Fase 2+): N5 *(pronto, unidade 26: vocabulário, gramática e leitura em kana, além da escuta;

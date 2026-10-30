@@ -9,7 +9,7 @@ import { GRAMATICA_N3, LEITURA_N3, VOCABULARIO_N3 } from "./simulado-n3";
 import { GRAMATICA_N4, LEITURA_N4, VOCABULARIO_N4 } from "./simulado-n4";
 import { GRAMATICA_N5, LEITURA_N5, VOCABULARIO_N5, type PalavraProva, type QuestaoGramatica, type TextoLeitura } from "./simulado-n5";
 import { stripFurigana } from "./text";
-import { cenasDoContexto, FORMAS, montarDialogo, verboPorDict, type DialogoDrill, type FalaDrill, type Forma } from "./drills";
+import { cenasDoContexto, combina, FORMAS, FORMAS_ADJETIVO, montarDialogo, type DialogoDrill, type FalaDrill, type Forma } from "./drills";
 import type { Categoria } from "./roleplay";
 import type { Mora } from "./types";
 
@@ -210,6 +210,7 @@ export const UNIDADES: Unidade[] = [
     descricao: "Descrever e opinar: gostoso, caro, tranquilo, foi bom",
     cor: "#c96f8f",
     contexto: "compras",
+    formasNovas: ["adj_nai", "adj_katta", "adj_nakatta"],
     cards: [
       "card_091", "card_092", "card_093",
       "card_094", "card_095", "card_096",
@@ -903,11 +904,12 @@ function dialogo(ctx: Categoria | "todos", sorteio: Forma[] = TREINO, todas: For
   for (;;) {
     const cena = cenas[Math.floor(Math.random() * cenas.length)];
     const forma = sorteio[Math.floor(Math.random() * sorteio.length)];
-    if (verboPorDict(cena.verbo).sem?.includes(forma) || cena.sem?.includes(forma)) continue;
+    if (!combina(cena, forma)) continue;
     const d = montarDialogo(cena, forma);
     // alternativas erradas: mesma situação com outra transformação; mesma transformação em outra situação
-    const outraForma = todas.find((f) => f !== forma && FORMAS[f].abertura !== FORMAS[forma].abertura) ?? "masen";
-    const outraCena = cenas.find((c) => c.verbo !== cena.verbo) ?? cena;
+    const mesmoTipo = (f: Forma) => FORMAS_ADJETIVO.includes(f) === !!cena.adjetivo;
+    const outraForma = todas.find((f) => f !== forma && mesmoTipo(f) && FORMAS[f].abertura !== FORMAS[forma].abertura) ?? "masen";
+    const outraCena = cenas.find((c) => (cena.adjetivo ? c.adjetivo && c !== cena : !c.adjetivo && c.verbo !== cena.verbo)) ?? cena;
     const erradas = [montarDialogo(cena, outraForma).resposta, montarDialogo(outraCena, forma).resposta];
     const opcoes = embaralhar([d.resposta, ...erradas]);
     return { tipo: "dialogo", dialogo: d, forma, opcoes, correta: opcoes.indexOf(d.resposta) };
@@ -944,7 +946,7 @@ function situacao(card: CardTrilha, daUnidade: CardTrilha[]): Exercicio {
 function imediata(ctx: Categoria | "todos"): Exercicio {
   const cenas = cenasDoContexto(ctx);
   const formas: Forma[] = ["mashita", "masen", "masen_deshita"];
-  const pode = (c: (typeof cenas)[number], f: Forma) => !verboPorDict(c.verbo).sem?.includes(f) && !c.sem?.includes(f);
+  const pode = (c: (typeof cenas)[number], f: Forma) => combina(c, f);
   for (;;) {
     const cena = cenas[Math.floor(Math.random() * cenas.length)];
     const forma = formas[Math.floor(Math.random() * formas.length)];
