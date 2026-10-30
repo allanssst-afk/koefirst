@@ -251,6 +251,21 @@ export const UNIDADES: Unidade[] = [
     ],
     missoes: ["rp_fam_fotos", "rp_fam_vizinha", "rp_fam_festa"],
   },
+  {
+    id: "u16",
+    numero: 16,
+    titulo: "Saúde e farmácia",
+    descricao: "Dor, febre, remédio, conselhos e melhoras",
+    cor: "#d9534f",
+    contexto: "cidade",
+    cards: [
+      "card_127", "card_128", "card_129",
+      "card_130", "card_131", "card_132",
+      "card_133", "card_134", "card_135",
+      "card_136", "card_137", "card_138",
+    ],
+    missoes: ["rp_sau_medico", "rp_sau_farmacia", "rp_sau_colega"],
+  },
 ];
 
 const TITULO: Record<TipoLicao, string> = {

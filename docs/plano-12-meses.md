@@ -5,12 +5,12 @@ independente na fala). Guia a produção de unidades: cada unidade nova sai daqu
 
 ## Metas finais (mês 12)
 
-| Medida | Meta B1 | Hoje (unidades 1–15) |
+| Medida | Meta B1 | Hoje (unidades 1–16) |
 | --- | --- | --- |
-| Frases do baralho (faladas) | ~700 | 126 |
-| Palavras ativas (fala) | ~2.000 | ~350 |
+| Frases do baralho (faladas) | ~700 | 138 |
+| Palavras ativas (fala) | ~2.000 | ~385 |
 | Palavras reconhecidas (escuta/leitura) | ~3.500 | — |
-| Kanji | ~650 (N5 + N4 + N3) | 376 com dados (N5, N4 e os do app) |
+| Kanji | ~650 (N5 + N4 + N3) | 380 com dados (N5, N4 e os do app) |
 | Formas verbais no Ping-Pong | ~20 | 8 (-masu, -mashita, -masen, -masen deshita, -tai, -mashou, -te kudasai, -te imasu) |
 | Fala contínua | 5 min sobre si, narrar, opinar | frases soltas e missões de 6 turnos |
 
@@ -33,7 +33,7 @@ Fases = camadas de escrita do app (Perfil): 1 som · 2 + kana · 3 + kanji com f
 
 | Mês | Unidades | Gramática nova | Vocabulário | Marco |
 | --- | --- | --- | --- | --- |
-| 4 | 15 Família e pessoas *(pronta)* · **16 Saúde e farmácia** (próxima) · 17 Hobbies (forma de dicionário) · 18 Regras e obrigações | forma de dicionário · ~koto ga dekimasu · shumi wa ~koto desu · forma -nai · ~nai de kudasai · ~nakereba narimasen · ~ga itai desu · ~ta hou ga ii | 750 | ler e falar frases em kana |
+| 4 | 15 Família e pessoas *(pronta)* · 16 Saúde e farmácia *(pronta)* · **17 Hobbies** (próxima) (forma de dicionário) · 18 Regras e obrigações | forma de dicionário · ~koto ga dekimasu · shumi wa ~koto desu · forma -nai · ~nai de kudasai · ~nakereba narimasen · ~ga itai desu · ~ta hou ga ii | 750 | ler e falar frases em kana |
 | 5 | 19 Conversa com amigos · 20 Dar opinião · 21 Explicar motivos · 22 Experiências | forma plana (presente, passado, negativo) · fala casual · ~to omoimasu · ~to iimasu · ~deshou · ~n desu · ~kara / ~node · ~ta koto ga arimasu | 1.000 | conversa casual de 3 min |
 | 6 | 23 Comparar e escolher · 24 Planos · 25 Viagem · 26 Revisão | ~yori ~no hou ga · ichiban · volitiva (~ou to omoimasu) · ~tsumori · ~tari ~tari | 1.200 | simulado N5 completo (escuta + vocabulário + gramática + leitura em kana) |
 

@@ -5,6 +5,7 @@ import { cardsAgora } from "./cards-agora";
 import { cardsAdjetivos } from "./cards-adjetivos";
 import { cardsFimDeSemana } from "./cards-fimdesemana";
 import { cardsFamilia } from "./cards-familia";
+import { cardsSaude } from "./cards-saude";
 import { cardsTrabalho } from "./cards-trabalho";
 import { b, card } from "./helpers";
 
@@ -513,4 +514,4 @@ const cardsBase = [
   }),
 ];
 
-export const seedCards = [...cardsBase, ...cardsTrabalho, ...cardsLugares, ...cardsNumeros, ...cardsPedidos, ...cardsAgora, ...cardsAdjetivos, ...cardsFimDeSemana, ...cardsFamilia];
+export const seedCards = [...cardsBase, ...cardsTrabalho, ...cardsLugares, ...cardsNumeros, ...cardsPedidos, ...cardsAgora, ...cardsAdjetivos, ...cardsFimDeSemana, ...cardsFamilia, ...cardsSaude];
