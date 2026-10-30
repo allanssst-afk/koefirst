@@ -16,6 +16,7 @@ import { cardsComparar } from "./cards-comparar";
 import { cardsPlanos } from "./cards-planos";
 import { cardsViagem } from "./cards-viagem";
 import { cardsConsegue } from "./cards-consegue";
+import { cardsCondicional } from "./cards-condicional";
 import { cardsTrabalho } from "./cards-trabalho";
 import { b, card } from "./helpers";
 
@@ -524,4 +525,4 @@ const cardsBase = [
   }),
 ];
 
-export const seedCards = [...cardsBase, ...cardsTrabalho, ...cardsLugares, ...cardsNumeros, ...cardsPedidos, ...cardsAgora, ...cardsAdjetivos, ...cardsFimDeSemana, ...cardsFamilia, ...cardsSaude, ...cardsHobbies, ...cardsRegras, ...cardsCasual, ...cardsOpiniao, ...cardsMotivos, ...cardsExperiencias, ...cardsComparar, ...cardsPlanos, ...cardsViagem, ...cardsConsegue];
+export const seedCards = [...cardsBase, ...cardsTrabalho, ...cardsLugares, ...cardsNumeros, ...cardsPedidos, ...cardsAgora, ...cardsAdjetivos, ...cardsFimDeSemana, ...cardsFamilia, ...cardsSaude, ...cardsHobbies, ...cardsRegras, ...cardsCasual, ...cardsOpiniao, ...cardsMotivos, ...cardsExperiencias, ...cardsComparar, ...cardsPlanos, ...cardsViagem, ...cardsConsegue, ...cardsCondicional];

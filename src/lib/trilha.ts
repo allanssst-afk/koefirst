@@ -450,6 +450,23 @@ export const UNIDADES: Unidade[] = [
     ],
     missoes: ["rp_pot_japones", "rp_pot_restaurante", "rp_pot_ajuda"],
   },
+  {
+    id: "u28",
+    numero: 28,
+    titulo: "Se…",
+    descricao: "Se chover, quando chegar e o que fazer",
+    cor: "#5f7fc4",
+    contexto: "trabalho",
+    formasNovas: ["tara"],
+    cards: [
+      "card_279", "card_280", "card_281", "card_282",
+      "card_283", "card_284", "card_285", "card_286",
+      "card_287", "card_288", "card_289", "card_290",
+      "card_291", "card_292", "card_293", "card_294",
+      "card_295", "card_296", "card_297", "card_298",
+    ],
+    missoes: ["rp_con_passeio", "rp_con_caminho", "rp_con_computador"],
+  },
 ];
 
 const TITULO: Record<TipoLicao, string> = {

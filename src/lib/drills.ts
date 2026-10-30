@@ -75,7 +75,7 @@ export const VERBOS: Verbo[] = [
 
 const junta = (...partes: (string | undefined)[]) => partes.filter(Boolean).join(" ");
 
-export type Forma = "masu" | "mashita" | "masen" | "masen_deshita" | "tai" | "mashou" | "te_kudasai" | "te_imasu" | "koto" | "nakereba" | "ta" | "nakatta" | "ta_koto" | "ou_to" | "reru" | "remasen";
+export type Forma = "masu" | "mashita" | "masen" | "masen_deshita" | "tai" | "mashou" | "te_kudasai" | "te_imasu" | "koto" | "nakereba" | "ta" | "nakatta" | "ta_koto" | "ou_to" | "reru" | "remasen" | "tara";
 
 interface FormaDef {
   label: string;
@@ -296,6 +296,18 @@ export const FORMAS: Record<Forma, FormaDef> = {
     kana: "ません",
     funcao: "não consigo",
   },
+  tara: {
+    pergunta: () => "O que é melhor eu fazer?",
+    abertura: "",
+    quando: "Dar um conselho",
+    regra: "forma -ta + ra ii desu yo",
+    frase: (v, obj) => junta("é bom", v.pt, obj),
+    label: "Conselho",
+    comando: "Dê um conselho!",
+    sufixo: [],
+    kana: "らいいですよ",
+    funcao: "bom",
+  },
 };
 
 /** Verbos cuja volitiva é base -nai + "you" (grupo de taberu e os irregulares); os outros trocam o último som por "-ou". */
@@ -361,6 +373,7 @@ export interface Conjugacao {
  *   (itta kotó ga); depois de verbo com queda sobe de novo (tábeta kotó ga). "arimasu" sobe de novo. OJAD, 12 verbos.
  * - -ou to omoimasu: a volitiva cai antes do último "o" em qualquer verbo (ikóo, tabeyóo); "to" baixo. OJAD, 17 verbos.
  * - potencial: família -masu: sobe na 2ª mora e cai em "su" / "n" (ikemásu, taberaremasén). OJAD, 22 verbos.
+ * - -tara ii desu yo: melodia da forma -ta e "ra" baixo (tábetara, ittára); "ii" = HL. OJAD, 25 verbos.
  */
 export function conjugar(verbo: Verbo, forma: Forma): Conjugacao {
   const raizBloco = verbo.raiz.join("");
@@ -394,6 +407,20 @@ export function conjugar(verbo: Verbo, forma: Forma): Conjugacao {
     const kana = ta(te.kana);
     const kanji = ta(te.kanji);
     return { verbo, forma, moras, kana, kanji, alvos: [kana, stripFurigana(kanji)] };
+  }
+
+  if (forma === "tara") {
+    const ta = conjugar(verbo, "ta");
+    const som = `${ta.moras.map((m) => (m.devozeada ? "_" : "") + m.som).join(".")}.ra`;
+    const moras = [
+      ...b(som, `${ta.moras.map((m) => m.pitch).join("")}L`, `${raizFn} (se fizer)`, "verbo"),
+      ...b("i.i", "HL", FORMAS.tara.funcao, "adjetivo"),
+      ...b("de._su", "LL", "é", "copula"),
+      ...b("yo", "L", "[te conto]", "particula"),
+    ];
+    const suf = FORMAS.tara.kana;
+    const plain = stripFurigana(ta.kanji);
+    return { verbo, forma, moras, kana: ta.kana + suf, kanji: ta.kanji + suf, alvos: [ta.kana + suf, plain + suf, `${ta.kana}らいいです`, `${plain}らいいです`, `${ta.kana}ら`, `${plain}ら`] };
   }
 
   if (forma === "reru" || forma === "remasen") {
@@ -710,6 +737,8 @@ const EXPERIENCIAS_OK = new Set([
 for (const cenas of Object.values(CENAS_DRILL))
   for (const c of cenas) {
     const chave = `${c.verbo}|${c.obj}`;
+    // Conselho (-tara ii desu yo) responde a "O que é melhor eu fazer?": tarefas, como a obrigação
+    if (!OBRIGACOES_OK.has(chave)) c.sem = [...(c.sem ?? []), "tara"];
     // Plano (-ou to omoimasu) responde a "O que você pensa em fazer amanhã?": lazer e tarefas, como hobby e obrigação
     if (!HOBBIES_OK.has(chave) && !OBRIGACOES_OK.has(chave)) c.sem = [...(c.sem ?? []), "ou_to"];
     if (!EXPERIENCIAS_OK.has(chave)) c.sem = [...(c.sem ?? []), "ta_koto"];
@@ -785,6 +814,13 @@ const SHUMI_NAN_DESU_KA = [
   ...b("de._su", "LL", "é", "copula"),
   ...b("ka", "L", "[?]", "particula"),
 ];
+const DOU_SHITARA = [
+  ...b("do.o", "HL", "como", "pergunta"),
+  ...b("_shi.ta.ra", "LLL", "se fizer", "verbo"),
+  ...b("i.i", "HL", "bom", "adjetivo"),
+  ...b("de._su", "LL", "é", "copula"),
+  ...b("ka", "L", "[?]", "particula"),
+];
 const ASHITA = { kana: "あした、", kanji: "明日[あした]、", moras: b("a._shi.ta", "LHH", "amanhã", "tempo") };
 const IMA = { kana: "いま、", kanji: "今[いま]、", moras: b("i.ma", "HL", "agora", "tempo") };
 const UN = { kana: "うん、", kanji: "うん、", moras: b("u.n", "HL", "sim (casual)", "expressao") };
@@ -813,6 +849,7 @@ const ponto = (t: string) => (/[.!?]$/.test(t) ? t : `${t}.`);
  * - Experiência:       [complemento][verbo -ta]ことがありますか → はい、…ことがあります
  * - Plano:             明日、何をしようと思いますか → [complemento][volitiva]と思います
  * - Potencial:         [complemento + が][potencial]か → はい、…ます / いいえ、…ません
+ * - Conselho:          どうしたらいいですか → [complemento][verbo -tara]いいですよ
  */
 export function montarDialogo(cena: CenaDrill, forma: Forma): DialogoDrill {
   const v = verboPorDict(cena.verbo);
@@ -825,6 +862,8 @@ export function montarDialogo(cena: CenaDrill, forma: Forma): DialogoDrill {
   if (forma === "ta" || forma === "nakatta") {
     const q = conjugar(v, "ta");
     pergunta = fala(KINOU.kana + c.kana + q.kana + "？", KINOU.kanji + c.kanji + q.kanji + "？", f.pergunta(v, cena.obj), KINOU.moras, c.moras, q.moras);
+  } else if (forma === "tara") {
+    pergunta = fala(fim("どうしたらいいですか"), fim("どうしたらいいですか"), f.pergunta(v, cena.obj), DOU_SHITARA);
   } else if (forma === "reru" || forma === "remasen") {
     const q = conjugar(v, "reru");
     pergunta = fala(fim(c.kana + q.kana + "か"), fim(c.kanji + q.kanji + "か"), f.pergunta(v, cena.obj), c.moras, q.moras, KA);
