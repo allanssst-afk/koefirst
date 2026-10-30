@@ -46,6 +46,10 @@ Unidades novas seguem a ordem do plano; ao terminar uma, marcar no plano.
   (`cards: []`); `licoesDa` gera uma revisão por tema com as frases das unidades listadas, o Ping-Pong (contexto
   `"todos"`, todas as formas já ensinadas), as missões longas (a "Conversa de 2 minutos", marco do mês 3) e, no
   fim, um simulado OBRIGATÓRIO com todas as frases (6 questões por parte quando há mais de 30 frases).
+- **Simulado N5 completo** (u26, `simuladoCompleto`): o simulado da revisão soma, antes da escuta e na ordem do JLPT,
+  Vocabulário, Gramática e Leitura em kana (`ExProvaKana`; banco em `src/lib/simulado-n5.ts`, com 2 perguntas por
+  texto). Sem áudio e fora do FSRS (não há frase do baralho). Na gramática, as opções erradas nunca formam outra frase
+  válida. Só entra da Fase 2 em diante (`montarLicao(l, fase)`); na Fase 1 a prova fica só com a escuta e avisa disso.
 - **Técnicas do método** (`src/components/TecnicasCard.tsx`, no Perfil): cada técnica, a base de pesquisa e onde
   está no app. Atualizar ao criar exercícios novos.
 - **Dicionário** (`/dicionario`, `src/lib/dicionario.ts`): cada bloco das frases do baralho vira um verbete
@@ -211,7 +215,8 @@ src/
       scenarios-extra.ts, scenarios-trabalho.ts, scenarios-lugares.ts, scenarios-numeros.ts, scenarios-pedidos.ts,
       scenarios-agora.ts, scenarios-adjetivos.ts, scenarios-fimdesemana.ts, scenarios-revisao.ts,
       scenarios-familia.ts, scenarios-saude.ts, scenarios-hobbies.ts, scenarios-regras.ts, scenarios-casual.ts,
-      scenarios-opiniao.ts, scenarios-motivos.ts, scenarios-experiencias.ts, scenarios-comparar.ts, scenarios-planos.ts, scenarios-viagem.ts) ·
+      scenarios-opiniao.ts, scenarios-motivos.ts, scenarios-experiencias.ts, scenarios-comparar.ts, scenarios-planos.ts, scenarios-viagem.ts,
+      scenarios-revisao-fase2.ts) ·
       seed-data/helpers.ts
   lib/
     types.ts · fsrs.ts · roles.ts · text.ts (normalização/similaridade/furigana) · idb.ts

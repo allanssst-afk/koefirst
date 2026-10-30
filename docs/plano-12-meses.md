@@ -5,7 +5,7 @@ independente na fala). Guia a produção de unidades: cada unidade nova sai daqu
 
 ## Metas finais (mês 12)
 
-| Medida | Meta B1 | Hoje (unidades 1–25) |
+| Medida | Meta B1 | Hoje (unidades 1–26) |
 | --- | --- | --- |
 | Frases do baralho (faladas) | ~700 | 258 |
 | Palavras ativas (fala) | ~2.000 | ~640 |
@@ -35,13 +35,13 @@ Fases = camadas de escrita do app (Perfil): 1 som · 2 + kana · 3 + kanji com f
 | --- | --- | --- | --- | --- |
 | 4 | 15 Família e pessoas *(pronta)* · 16 Saúde e farmácia *(pronta)* · 17 Hobbies *(pronta)* (forma de dicionário) · 18 Regras e obrigações *(pronta)* | forma de dicionário · ~koto ga dekimasu · shumi wa ~koto desu · forma -nai · ~nai de kudasai · ~nakereba narimasen · ~ga itai desu · ~ta hou ga ii | 750 | ler e falar frases em kana |
 | 5 | 19 Conversa com amigos *(pronta)* · 20 Dar opinião *(pronta)* · 21 Explicar motivos *(pronta)* · 22 Experiências *(pronta)* | forma plana (presente, passado, negativo) · fala casual · ~to omoimasu · ~to iimasu · ~deshou · ~n desu · ~kara / ~node · ~ta koto ga arimasu | 1.000 | conversa casual de 3 min |
-| 6 | 23 Comparar e escolher *(pronta)* · 24 Planos *(pronta)* · 25 Viagem *(pronta)* · **26 Revisão** (próxima) | ~yori ~no hou ga · ichiban · volitiva (~ou to omoimasu) · ~tsumori · ~tari ~tari | 1.200 | simulado N5 completo (escuta + vocabulário + gramática + leitura em kana) |
+| 6 | 23 Comparar e escolher *(pronta)* · 24 Planos *(pronta)* · 25 Viagem *(pronta)* · 26 Revisão *(pronta)* | ~yori ~no hou ga · ichiban · volitiva (~ou to omoimasu) · ~tsumori · ~tari ~tari | 1.200 | simulado N5 completo (escuta + vocabulário + gramática + leitura em kana) |
 
 ### Fase 3 — + kanji com furigana (meses 7–9)
 
 | Mês | Unidades | Gramática nova | Vocabulário | Marco |
 | --- | --- | --- | --- | --- |
-| 7 | 27 Consegue? · 28 Se… · 29 Dar e receber | potencial · condicional ~tara / ~to / ~ba · agemasu / kuremasu / moraimasu e ~te ageru / kureru / morau | 1.400 | kanji N5 (103) dominados |
+| 7 | **27 Consegue?** (próxima) · 28 Se… · 29 Dar e receber | potencial · condicional ~tara / ~to / ~ba · agemasu / kuremasu / moraimasu e ~te ageru / kureru / morau | 1.400 | kanji N5 (103) dominados |
 | 8 | 30 Descrever coisas e pessoas · 31 Banco, correio e prefeitura · 32 Problemas e reclamações | orações relativas · ~te kudasaimasen ka · ~tai n desu ga · ~te shimaimashita · ~nakute | 1.600 | resolver um problema por telefone (Arena) |
 | 9 | 33 Keigo no trabalho · 34 Telefone e e-mail · 35 Aparências e impressões | sonkeigo / kenjougo básicos (irasshaimasu, itashimasu, ~sasete itadakimasu) · ~sou desu (parece) · ~you desu · ~rashii | 1.800 | kanji N4 (181); simulado N4 |
 
@@ -65,7 +65,8 @@ necessárias:
    com frases e missões; falta um treino de transformação para eles (ex.: "Estava frio?" → "Não, não estava
    frio"), com o pitch de cada adjetivo (queda fixa na mesma mora em todas as formas, como o OJAD prevê).
 3. **Leitura** (a partir da Fase 2): textos curtos por unidade, com o mapa de som e a camada de escrita da fase.
-4. **Simulado completo** (Fase 2+): as partes de vocabulário, gramática e leitura do JLPT, além da escuta.
+4. **Simulado completo** (Fase 2+): N5 *(pronto, unidade 26: vocabulário, gramática e leitura em kana, além da escuta;
+   banco em `src/lib/simulado-n5.ts`)*. Falta o N4 e o N3, com kanji.
 5. **Kanji N3**: estender `scripts/gerar-kanji.ts` para o nível antigo 2 do KANJIDIC2 (que mistura N3 e N2;
    filtrar pela lista de kanji N3 mais usada).
 6. **Fala longa** (Fase 3+): missões da Arena com turnos abertos (falar 1–2 min) e avaliação por palavras-chave.

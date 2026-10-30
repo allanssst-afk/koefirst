@@ -5,7 +5,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { CheckCircle2, Target, Volume2, X, XCircle, Zap } from "lucide-react";
 import { Mascote } from "../Mascote";
-import { ExDialogo, ExEscuta, ExFalar, ExImediata, ExMelodia, ExMontar, ExNova, ExQuiz, ExSituacao, ExSombra } from "./Exercicios";
+import { usePhase } from "../PhaseProvider";
+import { ExDialogo, ExEscuta, ExFalar, ExImediata, ExMelodia, ExMontar, ExNova, ExProvaKana, ExQuiz, ExSituacao, ExSombra } from "./Exercicios";
 import { ExExplica } from "./Tutorial";
 import type { ExProps, Resposta } from "./comuns";
 import { somAcerto, somConclusao, somErro } from "@/lib/audio/som";
@@ -35,7 +36,8 @@ interface Item {
  */
 export function LessonPlayer({ licao }: { licao: Licao }) {
   const router = useRouter();
-  const inicial = useMemo(() => montarLicao(licao).map((ex) => ({ ex, repetido: false })), [licao]);
+  const { fase } = usePhase();
+  const inicial = useMemo(() => montarLicao(licao, fase).map((ex) => ({ ex, repetido: false })), [licao, fase]);
   const [fila, setFila] = useState<Item[]>(inicial);
   const [idx, setIdx] = useState(0);
   const [verificador, setVerificador] = useState<(() => Resposta) | null>(null);
@@ -180,7 +182,12 @@ export function LessonPlayer({ licao }: { licao: Licao }) {
 
       {/* exercício */}
       <div key={idx} className="flex-1 py-6 pb-44 animate-rise">
-        {prova && <CabecalhoParte tipo={item.ex.tipo} />}
+        {prova && <CabecalhoParte tipo={item.ex.tipo} fila={fila} />}
+        {prova && licao.completo && fase < 2 && (
+          <p className="mb-3 text-xs text-[var(--warn)]">
+            Na Fase 1 o simulado fica só com a escuta. Para incluir vocabulário, gramática e leitura em kana, mude para a Fase 2 no Perfil.
+          </p>
+        )}
         {item.repetido && (
           <p className="mb-3 text-sm font-semibold text-[var(--warn)]">De novo: você errou esta antes</p>
         )}
@@ -209,6 +216,10 @@ export function LessonPlayer({ licao }: { licao: Licao }) {
               return <ExSituacao ex={ex} {...props} />;
             case "imediata":
               return <ExImediata ex={ex} {...props} />;
+            case "vocabulario":
+            case "gramatica":
+            case "leitura":
+              return <ExProvaKana ex={ex} {...props} />;
           }
         })()}
       </div>
@@ -301,10 +312,12 @@ function ResumoAgenda({ resultados }: { resultados: { card: string; erros: numbe
   );
 }
 
-function CabecalhoParte({ tipo }: { tipo: Exercicio["tipo"] }) {
-  const i = PARTES_SIMULADO.findIndex((p) => p.tipo === tipo);
+function CabecalhoParte({ tipo, fila }: { tipo: Exercicio["tipo"]; fila: Item[] }) {
+  // numera só as partes desta prova: o simulado de unidade começa na escuta
+  const partes = PARTES_SIMULADO.filter((p) => fila.some((x) => x.ex.tipo === p.tipo));
+  const i = partes.findIndex((p) => p.tipo === tipo);
   if (i < 0) return null;
-  const p = PARTES_SIMULADO[i];
+  const p = partes[i];
   return (
     <p className="mb-3 text-xs text-[var(--muted)]">
       <b className="text-[var(--fg)]">Parte {i + 1} · {p.nome}</b> — {p.descricao}. Sem correção agora: o resultado vem no fim.

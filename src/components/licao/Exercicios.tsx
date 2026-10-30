@@ -14,7 +14,7 @@ import { FORMAS } from "@/lib/drills";
 import { registrarAtividade } from "@/lib/queries";
 import { roleOf } from "@/lib/roles";
 import { bestSimilarity, morasToKana, stripFurigana } from "@/lib/text";
-import { chaveBloco, traducaoPrincipal, type Exercicio } from "@/lib/trilha";
+import { chaveBloco, traducaoPrincipal, type Exercicio, type ProvaKana } from "@/lib/trilha";
 import type { Mora } from "@/lib/types";
 
 type Ex<T extends Exercicio["tipo"]> = Extract<Exercicio, { tipo: T }>;
@@ -477,6 +477,35 @@ export function ExSituacao({ ex, travado, aoPronto }: ExProps<Ex<"situacao">>) {
             legenda={travado ? traducaoPrincipal(c) : undefined}
             onClick={() => escolher(i)}
           />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ───────────── Simulado completo: vocabulário, gramática e leitura (só texto em kana, sem áudio)
+
+export function ExProvaKana({ ex, travado, aoPronto }: ExProps<ProvaKana>) {
+  const [escolha, setEscolha] = useState<number | null>(null);
+  const escolher = (i: number) => {
+    setEscolha(i);
+    aoPronto(() => ({ ok: i === ex.correta, correta: ex.gabarito, literal: ex.explicacao, ouvir: ex.ouvir }));
+  };
+  return (
+    <div className="space-y-5">
+      <Enunciado>{ex.enunciado}</Enunciado>
+      <p
+        className={`font-jp rounded-2xl bg-[var(--panel)] p-4 leading-relaxed ${
+          ex.tipo === "vocabulario" ? "text-center text-3xl" : ex.tipo === "gramatica" ? "text-xl" : "text-lg"
+        }`}
+      >
+        {ex.texto}
+      </p>
+      <div className="space-y-3">
+        {ex.opcoes.map((o, i) => (
+          <Opcao key={o} numero={i + 1} ativo={escolha === i} travado={travado} onClick={() => escolher(i)}>
+            <span className={ex.opcoesKana ? "font-jp text-lg" : undefined}>{o}</span>
+          </Opcao>
         ))}
       </div>
     </div>

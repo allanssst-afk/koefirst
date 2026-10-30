@@ -4,6 +4,7 @@
  */
 import type { SeedCard } from "@/db/seed-data/helpers";
 import { seedCards } from "@/db/seed-data/cards";
+import { GRAMATICA_N5, LEITURA_N5, VOCABULARIO_N5 } from "./simulado-n5";
 import { cenasDoContexto, FORMAS, montarDialogo, verboPorDict, type DialogoDrill, type FalaDrill, type Forma } from "./drills";
 import type { Categoria } from "./roleplay";
 import type { Mora } from "./types";
@@ -26,6 +27,8 @@ export interface Unidade {
    * unidades listadas, e no fim um simulado obrigatório com todas elas.
    */
   revisaoGeral?: { titulo: string; unidades: string[] }[];
+  /** o simulado da revisão ganha as partes em kana (vocabulário, gramática e leitura) */
+  simuladoCompleto?: boolean;
 }
 
 export type TipoLicao = "tutorial" | "frases" | "pingpong" | "dialogo" | "revisao" | "simulado";
@@ -38,6 +41,8 @@ export interface Licao {
   titulo: string;
   cards: string[];
   missao?: string;
+  /** simulado com as partes em kana (ver `simuladoCompleto`) */
+  completo?: boolean;
   /** não trava a trilha: abre quando o resto da unidade termina (simulado) */
   opcional?: boolean;
 }
@@ -410,6 +415,24 @@ export const UNIDADES: Unidade[] = [
     ],
     missoes: ["rp_via_hotel", "rp_via_estacao", "rp_via_passaporte", "rp_via_volta"],
   },
+  {
+    id: "u26",
+    numero: 26,
+    titulo: "Revisão da Fase 2",
+    descricao: "Conversa de 3 minutos e simulado N5 completo",
+    cor: "#8a8f9e",
+    contexto: "todos",
+    cards: [],
+    missoes: ["rp_rev2_amigos", "rp_rev2_professora"],
+    simuladoCompleto: true,
+    revisaoGeral: [
+      { titulo: "Revisão: pessoas e saúde", unidades: ["u15", "u16"] },
+      { titulo: "Revisão: hobbies e regras", unidades: ["u17", "u18"] },
+      { titulo: "Revisão: amigos, opiniões e motivos", unidades: ["u19", "u20", "u21"] },
+      { titulo: "Revisão: experiências e escolhas", unidades: ["u22", "u23"] },
+      { titulo: "Revisão: planos e viagem", unidades: ["u24", "u25"] },
+    ],
+  },
 ];
 
 const TITULO: Record<TipoLicao, string> = {
@@ -430,7 +453,7 @@ export function licoesDa(u: Unidade): Licao[] {
     for (const m of u.missoes) l.push({ tipo: "dialogo", titulo: TITULO.dialogo, cards: [], missao: m });
     // o simulado é o marco da fase: obrigatório e com todas as frases revisadas
     const todas = cardsDe(u.revisaoGeral.flatMap((r) => r.unidades));
-    l.push({ tipo: "simulado", titulo: "Simulado N5 de escuta", cards: todas });
+    l.push({ tipo: "simulado", titulo: u.simuladoCompleto ? "Simulado N5 completo" : "Simulado N5 de escuta", cards: todas, completo: u.simuladoCompleto });
     return l.map((x, i) => ({ ...x, id: `${u.id}:l${i + 1}`, unidade: u }));
   }
   if (u.numero === 0) l.push({ tipo: "tutorial", titulo: TITULO.tutorial, cards: [] });
@@ -481,7 +504,24 @@ export type Exercicio =
   /** simulado, expressão na situação: lê a situação e escolhe, só pelo som, o que dizer */
   | { tipo: "situacao"; card: CardTrilha; opcoes: CardTrilha[]; correta: number }
   /** simulado, resposta rápida: ouve uma pergunta e escolhe, só pelo som, a resposta que combina */
-  | { tipo: "imediata"; dialogo: DialogoDrill; opcoes: FalaDrill[]; correta: number };
+  | { tipo: "imediata"; dialogo: DialogoDrill; opcoes: FalaDrill[]; correta: number }
+  | ProvaKana;
+
+/** Simulado completo: questões em kana, sem áudio. */
+export interface ProvaKana {
+  tipo: "vocabulario" | "gramatica" | "leitura";
+  enunciado: string;
+  /** palavra, frase com lacuna ou texto em kana */
+  texto: string;
+  opcoes: string[];
+  correta: number;
+  /** as opções são em kana (gramática) ou em português (vocabulário e leitura) */
+  opcoesKana?: boolean;
+  /** o que aparece na correção do fim da prova */
+  gabarito: string;
+  explicacao?: string;
+  ouvir?: string;
+}
 
 /** Frase do baralho pronta para os exercícios (com as moras já achatadas). */
 export type CardTrilha = SeedCard & { moras: Mora[] };
@@ -600,8 +640,45 @@ function imediata(ctx: Categoria | "todos"): Exercicio {
   }
 }
 
-/** Partes do simulado de escuta (formato da prova de escuta do JLPT N5/N4, adaptado à fase só de som). */
+function parteVocabulario(n: number): ProvaKana[] {
+  return embaralhar(VOCABULARIO_N5)
+    .slice(0, n)
+    .map((p) => {
+      const opcoes = embaralhar([p.pt, ...embaralhar(VOCABULARIO_N5.filter((x) => x !== p)).slice(0, 3).map((x) => x.pt)]);
+      return { tipo: "vocabulario", enunciado: "O que significa esta palavra?", texto: p.kana, opcoes, correta: opcoes.indexOf(p.pt), gabarito: `${p.kana} = ${p.pt}`, ouvir: p.kana };
+    });
+}
+
+function parteGramatica(n: number): ProvaKana[] {
+  return embaralhar(GRAMATICA_N5)
+    .slice(0, n)
+    .map((q) => {
+      const opcoes = embaralhar([q.certa, ...q.erradas]);
+      const inteira = q.frase.replace("（　）", q.certa);
+      return { tipo: "gramatica", enunciado: "O que completa a frase?", texto: q.frase, opcoes, correta: opcoes.indexOf(q.certa), opcoesKana: true, gabarito: `${inteira} (${q.pt})`, explicacao: q.por, ouvir: inteira };
+    });
+}
+
+/** Cada texto rende duas perguntas, em sequência, como na prova. */
+function parteLeitura(n: number): ProvaKana[] {
+  return embaralhar(LEITURA_N5)
+    .slice(0, Math.ceil(n / 2))
+    .flatMap((t) =>
+      t.perguntas.map((p): ProvaKana => {
+        const opcoes = embaralhar([p.certa, ...p.erradas]);
+        return { tipo: "leitura", enunciado: p.pergunta, texto: t.texto, opcoes, correta: opcoes.indexOf(p.certa), gabarito: `${p.pergunta} ${p.certa}`, ouvir: t.texto };
+      }),
+    );
+}
+
+/**
+ * Partes do simulado, na ordem do JLPT N5/N4: vocabulário, gramática, leitura e as três de escuta. O simulado de
+ * cada unidade usa só as de escuta (adaptadas à fase só de som); as em kana entram no simulado completo.
+ */
 export const PARTES_SIMULADO: { tipo: Exercicio["tipo"]; nome: string; descricao: string }[] = [
+  { tipo: "vocabulario", nome: "Vocabulário", descricao: "leia a palavra e escolha o sentido" },
+  { tipo: "gramatica", nome: "Gramática", descricao: "escolha o que completa a frase" },
+  { tipo: "leitura", nome: "Leitura", descricao: "leia o texto e responda" },
   { tipo: "escuta", nome: "Compreensão", descricao: "ouça a frase e escolha o sentido" },
   { tipo: "situacao", nome: "Expressão na situação", descricao: "leia a situação e escolha o que dizer" },
   { tipo: "imediata", nome: "Resposta rápida", descricao: "ouça a pergunta e escolha a resposta" },
@@ -633,8 +710,8 @@ const TUTORIAL: Exercicio[] = [
   { tipo: "explica", slide: "blocos" },
 ];
 
-/** Gera a sequência de exercícios de uma lição (sorteada a cada vez). */
-export function montarLicao(l: Licao): Exercicio[] {
+/** Gera a sequência de exercícios de uma lição (sorteada a cada vez). As partes em kana só entram da Fase 2 em diante. */
+export function montarLicao(l: Licao, fase = 1): Exercicio[] {
   const cards = l.cards.map(cardPorId);
   switch (l.tipo) {
     case "tutorial":
@@ -676,7 +753,8 @@ export function montarLicao(l: Licao): Exercicio[] {
       const parte2 = embaralhar(cards).slice(0, n).map((c) => situacao(c, cards));
       const ctx = l.unidade.contexto;
       const parte3 = ctx ? Array.from({ length: n }, () => imediata(ctx)) : [];
-      return [...parte1, ...parte2, ...parte3];
+      const kana = l.completo && fase >= 2 ? [...parteVocabulario(n), ...parteGramatica(n), ...parteLeitura(n)] : [];
+      return [...kana, ...parte1, ...parte2, ...parte3];
     }
     case "dialogo":
       return [];
