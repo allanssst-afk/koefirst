@@ -732,7 +732,7 @@ export const UNIDADES: Unidade[] = [
     cor: "#8a8f9e",
     contexto: "todos",
     cards: [],
-    missoes: ["rp_rev4_avaliacao", "rp_rev4_colega"],
+    missoes: ["rp_rev4_ensaio", "rp_rev4_colega", "rp_rev4_avaliacao"],
     simuladoCompleto: "n3",
     revisaoGeral: [
       { titulo: "Revisão: frases da Fase 3", unidades: ["u27", "u28", "u29", "u30", "u31", "u32", "u33", "u34", "u35"] },

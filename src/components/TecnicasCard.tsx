@@ -41,6 +41,12 @@ const TECNICAS: { nome: string; porque: string; onde: string }[] = [
     onde: "Ping-Pong (praticar) e missões da Arena (conversar).",
   },
   {
+    nome: "Fala longa",
+    porque:
+      "Falar por um ou dois minutos sem apoio obriga a ligar frases, manter o fio da história e planejar o que vem depois, habilidades que turnos curtos não treinam.",
+    onde: "Turnos «Fala longa» nas missões da Fase 4 e na Avaliação oral B1: cronômetro, pontos marcados conforme a fala e balanço no fim.",
+  },
+  {
     nome: "Escrita à mão, traço a traço",
     porque:
       "Escrever à mão, na ordem e no sentido certos, fixa o reconhecimento dos caracteres melhor do que só olhar ou digitar.",

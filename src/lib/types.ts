@@ -78,6 +78,14 @@ export interface Capabilities {
   stt: "whisper" | "gemini" | null;
 }
 
+/** Turno de fala longa: a pessoa fala por um tempo, e a avaliação olha a duração e os pontos cobertos. */
+export interface FalaLonga {
+  /** meta de duração da fala */
+  segundos: number;
+  /** o que a fala precisa cobrir: rótulo em português e fragmentos aceitos (kana/kanji) */
+  pontos: { rotulo: string; chaves: string[] }[];
+}
+
 /** Uma fala em japonês pronta para a UI (usada por IA, roteiros e Coach). */
 export interface JaLine {
   kana: string;

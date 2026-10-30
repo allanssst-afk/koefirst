@@ -40,8 +40,9 @@ function Arena() {
       ia: p.ia,
       quem: p.quem ?? null,
       dica_pt: p.dica_pt ?? null,
-      chaves: p.chaves ?? [],
+      chaves: p.aberto ? p.aberto.pontos.flatMap((x) => x.chaves) : p.chaves ?? [],
       exemplo: p.exemplo ?? (p.exemplo_card ? exemplos.get(p.exemplo_card) ?? null : null),
+      aberto: p.aberto ?? null,
     })),
   }));
 

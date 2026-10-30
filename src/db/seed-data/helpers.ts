@@ -27,6 +27,16 @@ export function b(moras: string, pitch: string, funcao: string, papel: Papel): B
   });
 }
 
+/** Várias falas em uma só: a resposta-modelo de um turno de fala longa. */
+export function emendar(...falas: JaLine[]): JaLine {
+  return {
+    kana: falas.map((f) => f.kana).join(""),
+    kanji: falas.map((f) => f.kanji).join(""),
+    pt: falas.map((f) => f.pt).join(" "),
+    moras: falas.flatMap((f) => f.moras),
+  };
+}
+
 export interface SeedCard {
   id: string;
   tipo: CardTipo;

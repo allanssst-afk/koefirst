@@ -1,5 +1,5 @@
 import { seedCards } from "./cards";
-import { b, line } from "./helpers";
+import { b, emendar, line } from "./helpers";
 import type { SeedScenario } from "./scenarios";
 
 /**
@@ -167,7 +167,7 @@ export const cenariosEntrevista: SeedScenario[] = [
     categoria: "trabalho",
     emoji: "🎙️",
     parceiro: { nome: "Prof.ª Nakamura", emoji: "👩‍🏫" },
-    missao_pt: "Treine a fala longa: quem você é, o que já fez, como está o seu japonês e o que quer para o futuro.",
+    missao_pt: "Responda à professora e, no fim, junte tudo em uma fala de 90 segundos: quem você é, o que já fez, como está o seu japonês e o que quer.",
     nivel: 4,
     vocabulario_requerido_ids: ["card_386", "card_562", "card_567", "card_568"],
     system_prompt_cenario: "Professora pede nome e país, a experiência, o nível de japonês e os planos para o futuro.",
@@ -220,6 +220,28 @@ export const cenariosEntrevista: SeedScenario[] = [
         dica_pt: "Conte o seu plano para o futuro.",
         chaves: ["しょうらい", "将来"],
         exemplo_card: "card_568",
+      },
+      {
+        ia: line("では、もういちど、じこしょうかいをおねがいします。", "では、もう一度[いちど]、自己紹介[じこしょうかい]をお願[ねが]いします。", "Agora, apresente-se de novo, por favor, tudo de uma vez.", [
+          b("de.wa", "HL", "então", "expressao"),
+          b("mo.o", "HL", "mais", "adverbio"),
+          b("i.chi.do", "LHH", "uma vez", "adverbio"),
+          b("ji.ko.sho.o.ka.i", "LHHLLL", "apresentação pessoal", "objeto"),
+          b("o", "L", "[Objeto]", "particula"),
+          b("o.ne.ga.i", "LHHH", "pedido", "expressao"),
+          b("_shi.ma._su", "HHL", "faço", "verbo"),
+        ]),
+        dica_pt: "Junte tudo em uma fala só, sem parar para perguntas.",
+        aberto: {
+          segundos: 90,
+          pontos: [
+            { rotulo: "Quem você é", chaves: ["ブラジル", "もうします", "申します", "まいりました", "参りました"] },
+            { rotulo: "O que já fez", chaves: ["しごと", "仕事", "えいぎょう", "営業", "かいしゃ", "会社", "だいがく", "大学"] },
+            { rotulo: "Como está o seu japonês", chaves: ["にほんご", "日本語"] },
+            { rotulo: "O que quer no futuro", chaves: ["しょうらい", "将来", "たいです", "たいと"] },
+          ],
+        },
+        exemplo: emendar(fala("card_386"), fala("card_562"), fala("card_567"), fala("card_568")),
       },
       {
         ia: line("よくわかりました。", "よくわかりました。", "Entendi bem. (fim)", [

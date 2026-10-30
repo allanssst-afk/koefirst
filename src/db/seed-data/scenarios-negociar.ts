@@ -1,5 +1,5 @@
 import { seedCards } from "./cards";
-import { b, line } from "./helpers";
+import { b, emendar, line } from "./helpers";
 import type { SeedScenario } from "./scenarios";
 
 /**
@@ -110,6 +110,26 @@ export const cenariosNegociar: SeedScenario[] = [
         dica_pt: "Proponha: que tal fazer assim?",
         chaves: ["こうしたら", "どうでしょうか"],
         exemplo_card: "card_556",
+      },
+      {
+        ia: line("もうすこしくわしくきかせてください。", "もう少[すこ]し詳[くわ]しく聞[き]かせてください。", "Conte com mais detalhes, por favor. (nova: kuwashiku = em detalhes)", [
+          b("mo.o", "HL", "mais", "adverbio"),
+          b("_su.ko._shi", "LHL", "um pouco", "adverbio"),
+          b("ku.wa._shi.ku", "LHHL", "em detalhes ★ nova", "adverbio"),
+          b("ki.ka.se.te", "LHHH", "deixar ouvir (forma -te)", "verbo"),
+          b("ku.da.sa.i", "HHHL", "por favor", "verbo"),
+        ]),
+        dica_pt: "Reconheça a posição do chefe, dê sua opinião e proponha uma saída.",
+        aberto: {
+          segundos: 60,
+          pontos: [
+            { rotulo: "Mostrar que entendeu", chaves: ["わかります", "おっしゃる"] },
+            { rotulo: "Sua opinião", chaves: ["おもいます", "思います"] },
+            { rotulo: "Um motivo", chaves: ["からです", "だから", "ので", "たかい", "高い"] },
+            { rotulo: "Uma proposta", chaves: ["こうしたら", "どうでしょう", "たらどう"] },
+          ],
+        },
+        exemplo: emendar(fala("card_553"), fala("card_542"), fala("card_556")),
       },
       { ia: fala("card_554", "Concordo. (fim)") },
     ],

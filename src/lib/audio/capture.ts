@@ -25,6 +25,8 @@ export interface CaptureOptions {
   silenceStartMs?: number;
   /** encerra após X ms de silêncio depois da fala */
   silenceEndMs?: number;
+  /** fala longa: o reconhecedor segue depois das pausas, e a gravação só para no botão ou em `maxMs` */
+  longa?: boolean;
   onLevel?: (rms: number) => void;
   onSpeechStart?: (latencyMs: number) => void;
   onInterim?: (text: string) => void;
@@ -77,6 +79,7 @@ export function startCapture(opts: CaptureOptions = {}): CaptureHandle {
   const maxMs = opts.maxMs ?? 9000;
   const silenceStartMs = opts.silenceStartMs ?? 6000;
   const silenceEndMs = opts.silenceEndMs ?? 1300;
+  const longa = !!opts.longa;
 
   let stopFn: () => void = () => {};
   const done = new Promise<CaptureResult>((resolve) => {
@@ -86,7 +89,10 @@ export function startCapture(opts: CaptureOptions = {}): CaptureHandle {
     let finished = false;
     let sttEnded = false;
     const alternatives: string[] = [];
+    /** trechos finais da fala longa, na ordem */
+    const trechos: string[] = [];
     let interim = "";
+    let wake: WakeLockSentinel | null = null;
     let stream: MediaStream | null = null;
     let recorder: MediaRecorder | null = null;
     const chunks: Blob[] = [];
@@ -108,6 +114,7 @@ export function startCapture(opts: CaptureOptions = {}): CaptureHandle {
       finished = true;
       cancelAnimationFrame(raf);
       clearTimeout(maxTimer);
+      wake?.release().catch(() => {});
       try {
         rec?.stop();
       } catch {}
@@ -123,7 +130,10 @@ export function startCapture(opts: CaptureOptions = {}): CaptureHandle {
       if (rec && !sttEnded) await new Promise((r) => setTimeout(r, 700));
 
       const sttSource: CaptureResult["sttSource"] = rec ? "browser" : "none";
-      if (!alternatives.length && interim) alternatives.push(interim);
+      if (longa) {
+        const tudo = (trechos.join("") + interim).trim();
+        if (tudo) alternatives.push(tudo);
+      } else if (!alternatives.length && interim) alternatives.push(interim);
       const speechMs = latency === null ? 0 : Math.max(0, Math.round((lastVoice || performance.now()) - t0 - latency));
       resolve({
         transcript: alternatives[0] ?? "",
@@ -145,22 +155,41 @@ export function startCapture(opts: CaptureOptions = {}): CaptureHandle {
         rec.lang = lang;
         rec.interimResults = true;
         rec.maxAlternatives = 5;
-        rec.continuous = false;
+        rec.continuous = longa;
         rec.onspeechstart = markSpeech;
         rec.onresult = (e) => {
           for (let i = e.resultIndex; i < e.results.length; i++) {
             const r = e.results[i];
-            if (r.isFinal) {
+            if (r.isFinal && longa) {
+              const t = r[0]?.transcript.trim() ?? "";
+              // o Chrome do Android repete o trecho anterior no começo de cada resultado final
+              const ultimo = trechos[trechos.length - 1];
+              if (ultimo && t.startsWith(ultimo)) trechos[trechos.length - 1] = t;
+              else if (t) trechos.push(t);
+              interim = "";
+              opts.onInterim?.(trechos.join(""));
+              markSpeech();
+            } else if (r.isFinal) {
               for (let k = 0; k < r.length; k++) if (r[k].transcript.trim()) alternatives.push(r[k].transcript.trim());
             } else {
               interim = r[0]?.transcript ?? interim;
-              opts.onInterim?.(interim);
+              opts.onInterim?.(longa ? trechos.join("") + interim : interim);
               markSpeech();
             }
           }
         };
         rec.onerror = () => {};
         rec.onend = () => {
+          // o reconhecedor encerra sozinho depois de uma pausa: na fala longa, volta a ouvir
+          if (longa && !finished) {
+            setTimeout(() => {
+              if (finished) return;
+              try {
+                rec?.start();
+              } catch {}
+            }, 150);
+            return;
+          }
           sttEnded = true;
           // dá um respiro para o gravador pegar o fim da fala
           setTimeout(() => void finish(), 250);
@@ -199,7 +228,7 @@ export function startCapture(opts: CaptureOptions = {}): CaptureHandle {
             if (rms > Math.max(0.025, noise * 2.5)) markSpeech();
             const now = performance.now();
             if (latency === null && elapsed > silenceStartMs) return void finish();
-            if (latency !== null && now - lastVoice > silenceEndMs && (!rec || sttEnded)) return void finish();
+            if (!longa && latency !== null && now - lastVoice > silenceEndMs && (!rec || sttEnded)) return void finish();
             raf = requestAnimationFrame(tick);
           };
           raf = requestAnimationFrame(tick);
@@ -208,6 +237,8 @@ export function startCapture(opts: CaptureOptions = {}): CaptureHandle {
         }
       }
       if (!rec && !stream) return void finish();
+      // a tela não pode apagar no meio de uma fala de minutos
+      if (longa && "wakeLock" in navigator) navigator.wakeLock.request("screen").then((w) => (wake = w)).catch(() => {});
       maxTimer = window.setTimeout(() => void finish(), maxMs);
     })();
   });

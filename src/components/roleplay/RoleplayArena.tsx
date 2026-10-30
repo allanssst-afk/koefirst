@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   ArrowLeft,
   CheckCircle2,
+  Circle,
   Lightbulb,
   Loader2,
   Mic,
@@ -21,10 +22,10 @@ import { JaBubble } from "./JaBubble";
 import { useRouter } from "next/navigation";
 import { somConclusao } from "@/lib/audio/som";
 import { playUrl, speakJa, stopAll } from "@/lib/audio/tts";
-import { CATEGORIAS, type Categoria, type Pessoa } from "@/lib/roleplay";
+import { avaliarFalaLonga, CATEGORIAS, type AvaliacaoFalaLonga, type Categoria, type Pessoa } from "@/lib/roleplay";
 import { concluirLicao, registrarAtividade } from "@/lib/queries";
 import { containsAny } from "@/lib/text";
-import type { JaLine } from "@/lib/types";
+import type { FalaLonga, JaLine } from "@/lib/types";
 
 export interface PassoView {
   ia: JaLine;
@@ -32,6 +33,7 @@ export interface PassoView {
   dica_pt: string | null;
   chaves: string[];
   exemplo: JaLine | null;
+  aberto: FalaLonga | null;
 }
 
 export interface ScenarioView {
@@ -168,6 +170,7 @@ function ScenarioCard({ s, onClick }: { s: ScenarioView; onClick: () => void }) 
             {s.parceiro.emoji} {s.parceiro.nome}
           </span>
           <span>🎙 {falas} falas</span>
+          {s.roteiro.some((p) => p.aberto) && <span>⏱ fala longa</span>}
           <span>nível {s.nivel}</span>
           <span className="flex items-center gap-1.5" title="Frases-base desta missão que você já praticou no Estúdio">
             <span className="h-1 w-10 overflow-hidden rounded-full bg-[var(--line)]">
@@ -205,6 +208,10 @@ function Conversation({
   const [fim, setFim] = useState(false);
   const [coachOpen, setCoachOpen] = useState(false);
   const [typed, setTyped] = useState("");
+  /** resultado do turno de fala longa, enquanto a pessoa decide entre continuar e falar de novo */
+  const [retorno, setRetorno] = useState<AvaliacaoFalaLonga | null>(null);
+  /** duração da última tentativa de cada turno de fala longa */
+  const [tempos, setTempos] = useState<Record<number, number>>({});
   const bottom = useRef<HTMLDivElement>(null);
   const started = useRef(false);
   const categoria = CATEGORIAS.find((c) => c.id === scenario.categoria);
@@ -246,6 +253,7 @@ function Conversation({
     const next = passo + 1;
     setFalhas(0);
     setModeloVisto(false);
+    setRetorno(null);
     if (next < scenario.roteiro.length) {
       setPasso(next);
       setTimeout(() => sayIa(scenario.roteiro[next].ia, scenario.roteiro[next].quem), 400);
@@ -300,6 +308,38 @@ function Conversation({
     handleUser(r.alternatives, r.url, r.speechMs);
   };
 
+  const falarLonga = async (aberto: FalaLonga) => {
+    stopAll();
+    setRetorno(null);
+    const r = await voice.start({ lang: "ja-JP", longa: true, maxMs: (aberto.segundos + 30) * 1000, silenceStartMs: 20_000 });
+    if (r.latencyMs === null && !r.alternatives.length) {
+      setMsgs((m) => [...m, { kind: "feedback", ok: false, text: "Não ouvi nada. Toque no microfone e fale." }]);
+      return;
+    }
+    const nota = avaliarFalaLonga(r.transcript, r.speechMs, aberto);
+    if (r.speechMs) registrarAtividade("roleplay", r.speechMs);
+    setTempos((t) => ({ ...t, [passo]: r.speechMs }));
+    if (!nota.ok) setFalhas((n) => n + 1);
+    setRetorno(nota);
+    setMsgs((m) => [
+      ...m,
+      { kind: "user", text: r.transcript, url: r.url, ms: r.speechMs },
+      {
+        kind: "feedback",
+        ok: nota.ok,
+        text: r.transcript
+          ? `Falou ${relogio(nota.segundos)} de ${relogio(aberto.segundos)} · ${nota.cobertos} de ${nota.pontos.length} pontos`
+          : `Falou ${relogio(nota.segundos)}, mas não reconheci as palavras.`,
+      },
+    ]);
+  };
+
+  /** Fecha o turno de fala longa: só conta como certo de primeira se passou sem erro e sem ver o modelo. */
+  const continuarLonga = () => {
+    if (retorno?.ok && falhas === 0 && !modeloVisto) setAcertos((a) => a + 1);
+    avancar();
+  };
+
   const enviarTexto = () => {
     if (!typed.trim()) return;
     handleUser([typed.trim()], null, 0);
@@ -308,6 +348,7 @@ function Conversation({
 
   const step = scenario.roteiro[passo];
   const feitas = Math.min(passo, etapas);
+  const totalLongo = Object.values(tempos).reduce((a, b) => a + b, 0);
 
   return (
     <div className="space-y-4">
@@ -405,6 +446,7 @@ function Conversation({
           {(
             <p className="text-sm text-[var(--muted)]">
               {acertos} de {etapas} respostas certas de primeira, sem ajuda.
+              {totalLongo > 0 && ` Fala longa: ${relogio(Math.round(totalLongo / 1000))} no total.`}
             </p>
           )}
           <div className="flex flex-wrap justify-center gap-2">
@@ -416,6 +458,20 @@ function Conversation({
             </button>
           </div>
         </div>
+      ) : step?.aberto ? (
+        <PainelFalaLonga
+          aberto={step.aberto}
+          dica={step.dica_pt}
+          gravando={voice.status === "recording"}
+          ouvido={voice.interim}
+          retorno={retorno}
+          modeloVisto={modeloVisto || !step.exemplo}
+          aoFalar={() => falarLonga(step.aberto!)}
+          aoParar={voice.stop}
+          aoVerModelo={mostrarModelo}
+          aoContinuar={continuarLonga}
+          aoPular={avancar}
+        />
       ) : (
         <div className="sticky bottom-20 z-10 space-y-2.5 rounded-2xl border border-[var(--line)] bg-[var(--bg)]/95 p-3 shadow-xl shadow-black/40 backdrop-blur md:bottom-3">
           <p className="flex items-start gap-2 text-sm">
@@ -487,6 +543,107 @@ function Conversation({
         contexto={lastIa ? `${scenario.titulo}. Última fala do parceiro: ${lastIa.kana} (${lastIa.pt})` : scenario.titulo}
         onResume={() => lastIa && speakJa(lastIa.kana)}
         />
+      )}
+    </div>
+  );
+}
+
+const relogio = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
+
+/** Painel do turno aberto: cronômetro, pontos marcados conforme a fala e, no fim, continuar ou falar de novo. */
+function PainelFalaLonga({
+  aberto,
+  dica,
+  gravando,
+  ouvido,
+  retorno,
+  modeloVisto,
+  aoFalar,
+  aoParar,
+  aoVerModelo,
+  aoContinuar,
+  aoPular,
+}: {
+  aberto: FalaLonga;
+  dica: string | null;
+  gravando: boolean;
+  ouvido: string;
+  retorno: AvaliacaoFalaLonga | null;
+  modeloVisto: boolean;
+  aoFalar: () => void;
+  aoParar: () => void;
+  aoVerModelo: () => void;
+  aoContinuar: () => void;
+  aoPular: () => void;
+}) {
+  const [decorrido, setDecorrido] = useState(0);
+  useEffect(() => {
+    if (!gravando) return;
+    const t0 = Date.now();
+    const id = setInterval(() => setDecorrido(Math.floor((Date.now() - t0) / 1000)), 250);
+    return () => {
+      clearInterval(id);
+      setDecorrido(0);
+    };
+  }, [gravando]);
+  const marcados = aberto.pontos.map((p, i) => (retorno ? retorno.pontos[i].ok : gravando && containsAny([ouvido], p.chaves)));
+
+  return (
+    <div className="sticky bottom-20 z-10 space-y-3 rounded-2xl border border-[var(--line)] bg-[var(--bg)]/95 p-3 shadow-xl shadow-black/40 backdrop-blur md:bottom-3">
+      <p className="flex items-start gap-2 text-sm">
+        <Target size={16} className="mt-0.5 shrink-0 text-[var(--accent)]" />
+        <span>
+          <b>Fala longa:</b> <span className="text-[var(--muted)]">{dica} Fale até {relogio(aberto.segundos)}, sem pressa.</span>
+        </span>
+      </p>
+      <ul className="grid gap-1 text-sm sm:grid-cols-2">
+        {aberto.pontos.map((p, i) => (
+          <li key={p.rotulo} className={`flex items-center gap-2 ${marcados[i] ? "text-[var(--ok)]" : "text-[var(--muted)]"}`}>
+            {marcados[i] ? <CheckCircle2 size={15} className="shrink-0" /> : <Circle size={15} className="shrink-0" />}
+            {p.rotulo}
+          </li>
+        ))}
+      </ul>
+      {gravando ? (
+        <div className="space-y-2">
+          <div className="flex items-center gap-2 font-mono text-sm" aria-label={`${decorrido} segundos de ${aberto.segundos}`}>
+            <span className="h-2 flex-1 overflow-hidden rounded-full bg-[var(--line)]">
+              <span className="block h-full bg-[var(--accent)] transition-[width]" style={{ width: `${Math.min(100, (decorrido / aberto.segundos) * 100)}%` }} />
+            </span>
+            {relogio(decorrido)} / {relogio(aberto.segundos)}
+          </div>
+          <button onClick={aoParar} className="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-[var(--bad)] font-bold text-black">
+            <Square size={16} /> Terminar
+          </button>
+        </div>
+      ) : retorno ? (
+        <div className="flex items-center gap-2">
+          <button onClick={aoFalar} className="flex h-12 items-center gap-2 rounded-xl border border-[var(--line)] px-3 text-sm">
+            <RotateCcw size={16} /> Falar de novo
+          </button>
+          {!modeloVisto && (
+            <button onClick={aoVerModelo} className="flex h-12 items-center rounded-xl border border-[var(--line)] px-3" aria-label="Ver um exemplo">
+              <Lightbulb size={16} className="text-[var(--warn)]" />
+            </button>
+          )}
+          <button onClick={aoContinuar} className="h-12 flex-1 rounded-xl bg-[var(--accent)] font-bold text-black">
+            Continuar
+          </button>
+        </div>
+      ) : (
+        <div className="flex items-center gap-2">
+          <button onClick={aoFalar} className="flex h-12 flex-1 items-center justify-center gap-2 rounded-xl bg-[var(--accent)] font-bold text-black">
+            <Mic size={18} /> Começar a falar
+          </button>
+          {!modeloVisto && (
+            <button onClick={aoVerModelo} className="flex h-12 items-center rounded-xl border border-[var(--line)] px-3" aria-label="Ver um exemplo">
+              <Lightbulb size={16} className="text-[var(--warn)]" />
+            </button>
+          )}
+          <button onClick={aoPular} className="flex h-12 items-center gap-1 rounded-xl border border-[var(--line)] px-3 text-xs text-[var(--muted)]">
+            <SkipForward size={14} /> Pular
+          </button>
+        </div>
       )}
     </div>
   );

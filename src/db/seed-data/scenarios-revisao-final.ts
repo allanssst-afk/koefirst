@@ -1,10 +1,11 @@
 import { seedCards } from "./cards";
-import { b, line } from "./helpers";
+import { b, emendar, line } from "./helpers";
 import type { SeedScenario } from "./scenarios";
 
 /**
- * Missões da unidade 44 (Revisão final): a avaliação oral B1 (marco do mês 12: falar de si, narrar e opinar) e uma conversa
- * com um colega que mistura boato e conselho. As respostas-modelo são frases do baralho, já conferidas no OJAD.
+ * Missões da unidade 44 (Revisão final): o ensaio com turnos curtos, uma conversa com um colega que mistura boato e conselho
+ * e a avaliação oral B1 (marco do mês 12: 5 minutos de fala longa, sobre si, narrando e opinando). As respostas-modelo são
+ * frases do baralho, já conferidas no OJAD.
  */
 
 /** Uma frase do baralho como fala do parceiro. */
@@ -17,17 +18,27 @@ const DESU = b("de._su", "LL", "é", "copula");
 const KA = b("ka", "L", "[?]", "particula");
 const DOU = b("do.o", "HL", "como", "pergunta");
 const OMOIMASU = b("o.mo.i.ma._su", "LHHHL", "acha", "verbo");
+const HANASHITE_KUDASAI = [b("ha.na._shi.te", "LHLL", "falar (forma -te)", "verbo"), b("ku.da.sa.i", "LLLL", "por favor", "verbo")];
+const O = b("o", "H", "[Objeto]", "particula");
+const OPINIAO = line("たいへんですが、たのしいとおもいます。", "大変[たいへん]ですが、楽[たの]しいと思[おも]います。", "É difícil, mas acho divertido.", [
+  b("ta.i.he.n", "LHHH", "difícil", "adjetivo"),
+  b("de._su", "HL", "é", "copula"),
+  b("ga", "L", "[mas…]", "particula"),
+  b("ta.no._shi.i", "LHHL", "divertido", "adjetivo"),
+  b("to", "L", "[citação: que…]", "particula"),
+  b("o.mo.i.ma._su", "LHHHL", "penso", "verbo"),
+]);
 
 export const cenariosRevisaoFinal: SeedScenario[] = [
-  // ───────────── Avaliação oral
+  // ───────────── Ensaio
   {
-    id: "rp_rev4_avaliacao",
-    titulo: "Avaliação oral B1",
+    id: "rp_rev4_ensaio",
+    titulo: "Ensaio da avaliação",
     categoria: "social",
     emoji: "🎓",
     parceiro: { nome: "Prof.ª Nakamura", emoji: "👩‍🏫" },
     missao_pt:
-      "O marco final: uma conversa longa com a professora. Fale de você, conte um incidente do começo ao fim, dê sua opinião com um motivo e diga o que quer para o futuro.",
+      "Ensaio em turnos curtos: fale de você, conte um incidente do começo ao fim, dê sua opinião com um motivo e diga o que quer para o futuro.",
     nivel: 4,
     vocabulario_requerido_ids: ["card_386", "card_562", "card_196", "card_567", "card_538", "card_439", "card_454", "card_536", "card_547", "card_568", "card_570"],
     system_prompt_cenario: "Professora conduz a avaliação: nome e país, experiência, motivo, japonês, um incidente recente, opinião sobre a vida no Japão e planos.",
@@ -112,14 +123,7 @@ export const cenariosRevisaoFinal: SeedScenario[] = [
         ]),
         dica_pt: "Dê sua opinião: é difícil, mas é divertida.",
         chaves: ["たいへん", "大変", "たのしい", "楽しい"],
-        exemplo: line("たいへんですが、たのしいとおもいます。", "大変[たいへん]ですが、楽[たの]しいと思[おも]います。", "É difícil, mas acho divertido.", [
-          b("ta.i.he.n", "LHHH", "difícil", "adjetivo"),
-          b("de._su", "HL", "é", "copula"),
-          b("ga", "L", "[mas…]", "particula"),
-          b("ta.no._shi.i", "LHHL", "divertido", "adjetivo"),
-          b("to", "L", "[citação: que…]", "particula"),
-          b("o.mo.i.ma._su", "LHHHL", "penso", "verbo"),
-        ]),
+        exemplo: OPINIAO,
       },
       {
         ia: line("にほんごはまいにちべんきょうしたほうがいいとおもいますか。", "日本語[にほんご]は毎日[まいにち]勉強[べんきょう]したほうがいいと思[おも]いますか。", "Você acha que é melhor estudar japonês todo dia?", [
@@ -208,6 +212,111 @@ export const cenariosRevisaoFinal: SeedScenario[] = [
           b("ne", "L", "[né]", "particula"),
           b("a.ri.ga.to.o", "LHLLL", "obrigado", "expressao"),
           b("go.za.i.ma._su", "LHHHL", "[forma educada]", "expressao"),
+        ]),
+      },
+    ],
+  },
+
+  // ───────────── Avaliação oral (marco do mês 12)
+  {
+    id: "rp_rev4_avaliacao",
+    titulo: "Avaliação oral B1",
+    categoria: "social",
+    emoji: "🎓",
+    parceiro: { nome: "Prof.ª Nakamura", emoji: "👩‍🏫" },
+    missao_pt: "O marco final: 5 minutos de fala, em quatro partes. Fale de você, conte algo que aconteceu, dê sua opinião e diga o que quer para o futuro.",
+    nivel: 4,
+    vocabulario_requerido_ids: ["card_386", "card_562", "card_538", "card_439", "card_547", "card_568"],
+    system_prompt_cenario: "Professora pede quatro falas longas: sobre a pessoa, um acontecimento, uma opinião e os planos.",
+    roteiro: [
+      {
+        ia: line("まず、じぶんについてはなしてください。", "まず、自分[じぶん]について話[はな]してください。", "Primeiro, fale sobre você.", [
+          b("ma.zu", "HL", "primeiro", "adverbio"),
+          b("ji.bu.n", "LHH", "si mesmo", "substantivo"),
+          b("ni.tsu.i.te", "HHLL", "sobre", "particula"),
+          ...HANASHITE_KUDASAI,
+        ]),
+        dica_pt: "Diga quem você é, o que faz, por que estuda japonês e do que gosta.",
+        aberto: {
+          segundos: 90,
+          pontos: [
+            { rotulo: "Quem você é", chaves: ["ブラジル", "もうします", "申します", "まいりました", "参りました", "なまえ", "名前"] },
+            { rotulo: "O que você faz", chaves: ["しごと", "仕事", "えいぎょう", "営業", "かいしゃ", "会社", "がくせい", "学生", "だいがく", "大学"] },
+            { rotulo: "Por que estuda japonês", chaves: ["からです", "だから", "たいから", "ので", "ために"] },
+            { rotulo: "Do que você gosta", chaves: ["しゅみ", "趣味", "すき", "好き"] },
+          ],
+        },
+        exemplo: emendar(fala("card_386"), fala("card_562"), fala("card_196"), fala("card_567"), fala("card_140")),
+      },
+      {
+        ia: line("つぎに、さいきんあったことをはなしてください。", "次[つぎ]に、最近[さいきん]あったことを話[はな]してください。", "Agora, conte algo que aconteceu há pouco tempo.", [
+          b("tsu.gi", "LH", "em seguida", "adverbio"),
+          b("ni", "L", "[em]", "particula"),
+          b("sa.i.ki.n", "LHHH", "recentemente", "tempo"),
+          b("a.t.ta", "HLL", "houve (forma -ta)", "verbo"),
+          b("ko.to", "LH", "coisa", "substantivo"),
+          b("o", "L", "[Objeto]", "particula"),
+          ...HANASHITE_KUDASAI,
+        ]),
+        dica_pt: "Conte com começo, meio e fim: quando foi, o que aconteceu, o que você fez e como terminou.",
+        aberto: {
+          segundos: 90,
+          pontos: [
+            { rotulo: "Quando foi", chaves: ["きのう", "昨日", "せんしゅう", "先週", "このあいだ", "この間", "さいきん", "最近", "まえ", "前"] },
+            { rotulo: "O que aconteceu", chaves: ["ました", "ったんです", "たんです"] },
+            { rotulo: "A ordem dos fatos", chaves: ["それから", "そのあと", "その後", "ところが", "でも", "さいしょ", "最初"] },
+            { rotulo: "Como terminou", chaves: ["けっきょく", "結局", "さいご", "最後"] },
+          ],
+        },
+        exemplo: emendar(fala("card_538"), fala("card_439"), fala("card_454"), fala("card_534"), fala("card_536")),
+      },
+      {
+        ia: line("にほんごのべんきょうについてどうおもいますか。", "日本語[にほんご]の勉強[べんきょう]についてどう思[おも]いますか。", "O que você acha de estudar japonês?", [
+          b("ni.ho.n.go", "LHHH", "japonês", "substantivo"),
+          b("no", "H", "[de]", "particula"),
+          b("be.n.kyo.o", "LHHH", "estudo", "substantivo"),
+          b("ni.tsu.i.te", "HHLL", "sobre", "particula"),
+          DOU,
+          OMOIMASU,
+          KA,
+        ]),
+        dica_pt: "Dê sua opinião, explique o motivo e mostre o outro lado.",
+        aberto: {
+          segundos: 60,
+          pontos: [
+            { rotulo: "Sua opinião", chaves: ["おもいます", "思います", "おもって", "思って"] },
+            { rotulo: "Um motivo", chaves: ["からです", "だから", "たいから", "ので", "ために"] },
+            { rotulo: "O outro lado", chaves: ["でも", "しかし", "けど", "ですが", "のに"] },
+          ],
+        },
+        exemplo: emendar(fala("card_533"), OPINIAO, fala("card_196"), fala("card_547")),
+      },
+      {
+        ia: line("さいごに、これからのけいかくをはなしてください。", "最後[さいご]に、これからの計画[けいかく]を話[はな]してください。", "Por último, fale dos seus planos.", [
+          b("sa.i.go", "HLL", "por último", "tempo"),
+          b("ni", "L", "[em]", "particula"),
+          b("ko.re.ka.ra", "LHHH", "daqui em diante", "tempo"),
+          b("no", "L", "[de]", "particula"),
+          b("ke.i.ka.ku", "LHHH", "plano", "objeto"),
+          O,
+          ...HANASHITE_KUDASAI,
+        ]),
+        dica_pt: "Diga o que quer fazer, quando e por quê.",
+        aberto: {
+          segundos: 60,
+          pontos: [
+            { rotulo: "O que quer fazer", chaves: ["たいです", "たいと", "つもり", "よてい", "予定", "おもって", "思って"] },
+            { rotulo: "Quando", chaves: ["しょうらい", "将来", "らいねん", "来年", "らいげつ", "来月", "いつか", "ねんご", "年後"] },
+            { rotulo: "Por quê", chaves: ["からです", "だから", "たいから", "ので", "ために"] },
+          ],
+        },
+        exemplo: emendar(fala("card_568"), fala("card_196")),
+      },
+      {
+        ia: line("がんばってくださいね。", "頑張[がんば]ってくださいね。", "Continue se esforçando! (fim)", [
+          b("ga.n.ba.t.te", "LHHLL", "esforce-se", "verbo"),
+          b("ku.da.sa.i", "LLLL", "por favor", "verbo"),
+          b("ne", "L", "[tá?]", "particula"),
         ]),
       },
     ],

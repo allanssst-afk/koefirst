@@ -55,8 +55,14 @@ Unidades novas seguem a ordem do plano; ao terminar uma, marcar no plano.
   do kanji, sem furigana; gramática e leitura usam `漢字[よみ]` (furigana na Fase 3, sem na Fase 4). Parte escrita só da
   Fase 3 em diante (`faseMinimaDaProva`).
 - **Simulado N3 completo** (u44, Revisão final, `simuladoCompleto: "n3"`): mesma prova, com as frases das unidades 27–43 e o
-  banco de `src/lib/simulado-n3.ts` (gramática das unidades 36–43; textos mais longos, que pedem a ideia). Na mesma unidade
-  fica a Avaliação oral B1 (`rp_rev4_avaliacao`), missão longa com turnos guiados: falar de si, narrar e opinar.
+  banco de `src/lib/simulado-n3.ts` (gramática das unidades 36–43; textos mais longos, que pedem a ideia).
+- **Fala longa** (`aberto` no passo do roteiro, tipo `FalaLonga`): turno da Arena em que a pessoa fala de 1 a 2 minutos.
+  `PainelFalaLonga` mostra cronômetro e pontos marcados conforme a fala; `avaliarFalaLonga` (`src/lib/roleplay.ts`) dá a nota por
+  tempo (90% da meta) e palavras-chave (2/3 dos pontos), e nunca trava: a pessoa escolhe entre continuar e falar de novo. A
+  captura usa `longa: true` (STT contínuo, volta a ouvir depois das pausas, trechos emendados, tela acesa). Na Fase 1 a
+  transcrição segue oculta. As chaves devem ser específicas: "kara" sozinho casa com "de" (ブラジルから), e "tai" com 大変 em
+  kana. A resposta-modelo vem de `emendar(...)` e precisa cobrir todos os pontos. Avaliação oral B1 (`rp_rev4_avaliacao`,
+  u44): 4 turnos abertos que somam 5 minutos; antes dela vem o ensaio em turnos curtos (`rp_rev4_ensaio`).
 - **Técnicas do método** (`src/components/TecnicasCard.tsx`, no Perfil): cada técnica, a base de pesquisa e onde
   está no app. Atualizar ao criar exercícios novos.
 - **Dicionário** (`/dicionario`, `src/lib/dicionario.ts`): cada bloco das frases do baralho vira um verbete

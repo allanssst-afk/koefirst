@@ -1,5 +1,6 @@
 import { seedCards } from "./cards";
-import { b, line } from "./helpers";
+import { b, emendar, line } from "./helpers";
+import { DE_NOVO } from "./scenarios-passiva";
 import type { SeedScenario } from "./scenarios";
 
 /**
@@ -65,6 +66,20 @@ export const cenariosHistoria: SeedScenario[] = [
         dica_pt: "Diga que, no fim, voltou de táxi.",
         chaves: ["タクシー", "けっきょく", "結局"],
         exemplo_card: "card_536",
+      },
+      {
+        ia: DE_NOVO,
+        dica_pt: "Conte a história inteira, com começo, meio e fim.",
+        aberto: {
+          segundos: 60,
+          pontos: [
+            { rotulo: "Quando foi", chaves: ["きのう", "昨日", "あさ", "朝"] },
+            { rotulo: "A ordem dos fatos", chaves: ["それから", "そのあと", "その後", "まず"] },
+            { rotulo: "O problema", chaves: ["ところが", "でも", "けど", "きませんでした", "来ませんでした"] },
+            { rotulo: "Como terminou", chaves: ["けっきょく", "結局", "さいご", "最後"] },
+          ],
+        },
+        exemplo: emendar(fala("card_538"), fala("card_534"), fala("card_535"), fala("card_536")),
       },
       { ia: fala("card_458", "Que difícil, né. (fim)") },
     ],

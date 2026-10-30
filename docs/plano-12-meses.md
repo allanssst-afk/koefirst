@@ -69,8 +69,8 @@ necessárias:
    banco em `src/lib/simulado-n5.ts`)* e N4 *(pronto, unidade 35: com kanji; banco em `src/lib/simulado-n4.ts`)* e N3 *(pronto, unidade 44: vocabulário, gramática, leitura e escuta; banco em `src/lib/simulado-n3.ts`)*.
 5. **Kanji N3**: estender `scripts/gerar-kanji.ts` para o nível antigo 2 do KANJIDIC2 (que mistura N3 e N2;
    filtrar pela lista de kanji N3 mais usada).
-6. **Fala longa** (Fase 3+): missões da Arena com turnos abertos (falar 1–2 min) e avaliação por palavras-chave.
-   A Avaliação oral B1 (unidade 44) já cobre falar de si, narrar e opinar, mas em 12 turnos guiados, sem turno aberto.
+6. **Fala longa** *(pronta: turno `aberto` na Arena, com cronômetro, pontos por palavras-chave e balanço; nas unidades 36, 40,
+   41 e 42 e na Avaliação oral B1 da unidade 44, com 4 turnos que somam 5 minutos)*.
 
 ## Como produzir cada unidade
 

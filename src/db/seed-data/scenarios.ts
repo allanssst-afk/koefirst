@@ -1,5 +1,5 @@
 import type { Categoria, Pessoa } from "../../lib/roleplay";
-import type { JaLine } from "../../lib/types";
+import type { FalaLonga, JaLine } from "../../lib/types";
 import { b, line } from "./helpers";
 import { cenariosCotidiano } from "./scenarios-cotidiano";
 import { cenariosExtra } from "./scenarios-extra";
@@ -54,6 +54,8 @@ export interface RoteiroPasso {
   /** Resposta-modelo: id de card existente ou uma fala completa. */
   exemplo_card?: string;
   exemplo?: JaLine;
+  /** Turno de fala longa (no lugar de `chaves`). */
+  aberto?: FalaLonga;
 }
 
 export interface SeedScenario {
