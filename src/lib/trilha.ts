@@ -676,6 +676,22 @@ export const UNIDADES: Unidade[] = [
     ],
     missoes: ["rp_his_dia", "rp_his_rotina", "rp_his_japones"],
   },
+  {
+    id: "u41",
+    numero: 41,
+    titulo: "Discutir e negociar",
+    descricao: "Mas, apesar de, quanto mais e acordo",
+    cor: "#a8604a",
+    contexto: "trabalho",
+    cards: [
+      "card_539", "card_540", "card_541", "card_542",
+      "card_543", "card_544", "card_545", "card_546",
+      "card_547", "card_548", "card_549", "card_550",
+      "card_551", "card_552", "card_553", "card_554",
+      "card_555", "card_556", "card_557", "card_558",
+    ],
+    missoes: ["rp_neg_preco", "rp_neg_reuniao", "rp_neg_amigo"],
+  },
 ];
 
 const TITULO: Record<TipoLicao, string> = {

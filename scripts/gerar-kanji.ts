@@ -129,6 +129,13 @@ const SIG_EXTRA: Record<string, string[]> = {
   泥: ["lama", "ladrão (em palavras)"],
   最: ["o mais", "extremo"],
   局: ["repartição", "conclusão"],
+  落: ["cair", "descer", "deixar cair"],
+  練: ["treinar", "praticar"],
+  算: ["calcular", "cálculo"],
+  賛: ["aprovar", "elogiar"],
+  成: ["tornar-se", "realizar"],
+  構: ["postura", "construção"],
+  積: ["acumular", "empilhar", "volume"],
 };
 
 const NOMES_PROPRIOS = /^(Japão|China|Coreia|Tóquio|Buda|Inglaterra)/;

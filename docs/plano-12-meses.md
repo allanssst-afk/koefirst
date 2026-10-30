@@ -5,12 +5,12 @@ independente na fala). Guia a produção de unidades: cada unidade nova sai daqu
 
 ## Metas finais (mês 12)
 
-| Medida | Meta B1 | Hoje (unidades 1–40) |
+| Medida | Meta B1 | Hoje (unidades 1–41) |
 | --- | --- | --- |
-| Frases do baralho (faladas) | ~700 | 538 |
-| Palavras ativas (fala) | ~2.000 | ~1.160 |
+| Frases do baralho (faladas) | ~700 | 558 |
+| Palavras ativas (fala) | ~2.000 | ~1.190 |
 | Palavras reconhecidas (escuta/leitura) | ~3.500 | — |
-| Kanji | ~650 (N5 + N4 + N3) | 486 com dados (N5, N4 e os do app) |
+| Kanji | ~650 (N5 + N4 + N3) | 493 com dados (N5, N4 e os do app) |
 | Formas verbais no Ping-Pong | ~20 | 26 (-masu, -mashita, -masen, -masen deshita, -tai, -mashou, -te kudasai, -te imasu, dicionário + koto, -nakereba, -ta e -nakatta casuais, -ta koto ga arimasu, volitiva + to omoimasu, potencial afirmativo e negativo, -tara ii desu yo, -te kuremashita, -tai n desu ga, -te shimaimashita, o-… shimasu, passiva, causativa + kudasai, -nakute mo ii, -ta sou desu, -te kara) |
 | Fala contínua | 5 min sobre si, narrar, opinar | frases soltas e missões de 6 turnos |
 
@@ -50,8 +50,8 @@ Fases = camadas de escrita do app (Perfil): 1 som · 2 + kana · 3 + kanji com f
 | Mês | Unidades | Gramática nova | Vocabulário | Marco |
 | --- | --- | --- | --- | --- |
 | 10 | 36 O que me aconteceu (passiva) *(pronta)* · 37 Pedir e permitir (causativa) *(pronta)* · 38 Conselhos *(pronta)* | passiva (inclusive a de incômodo) · causativa · ~sasete kudasai · ~you ni shite kudasai · ~nakute mo ii | 2.000 | contar um incidente em 2 min |
-| 11 | 39 Notícias e boatos *(pronta)* · 40 Contar uma história *(pronta)* · **41 Discutir e negociar** (próxima) | ~sou desu (ouvi dizer) · ~ni yoru to · ~to iu · ~te kara · ~mae ni · ~aida ni · ~uchi ni · ~nagara · ~noni · ~ba ~hodo · ~kedo | 2.300 (passivo 3.000) | kanji N3 (+370) |
-| 12 | 42 Entrevista e apresentação profissional · 43 Vida no Japão (moradia, médico, documentos) · 44 Revisão final | consolidação; discurso longo (introdução → fatos → opinião → conclusão) | 2.000 ativas / 3.500 passivas | simulado N3 (escuta + leitura); avaliação oral B1: 5 min sobre si, narrar e opinar |
+| 11 | 39 Notícias e boatos *(pronta)* · 40 Contar uma história *(pronta)* · 41 Discutir e negociar *(pronta)* | ~sou desu (ouvi dizer) · ~ni yoru to · ~to iu · ~te kara · ~mae ni · ~aida ni · ~uchi ni · ~nagara · ~noni · ~ba ~hodo · ~kedo | 2.300 (passivo 3.000) | kanji N3 (+370) |
+| 12 | **42 Entrevista e apresentação profissional** (próxima) · 43 Vida no Japão (moradia, médico, documentos) · 44 Revisão final | consolidação; discurso longo (introdução → fatos → opinião → conclusão) | 2.000 ativas / 3.500 passivas | simulado N3 (escuta + leitura); avaliação oral B1: 5 min sobre si, narrar e opinar |
 
 ## O que o app precisa ganhar no caminho
 
