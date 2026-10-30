@@ -625,6 +625,23 @@ export const UNIDADES: Unidade[] = [
     ],
     missoes: ["rp_cau_cedo", "rp_cau_conta", "rp_cau_medica"],
   },
+  {
+    id: "u38",
+    numero: 38,
+    titulo: "Conselhos",
+    descricao: "Não precisa, é melhor e que tal",
+    cor: "#5f9e8f",
+    contexto: "trabalho",
+    formasNovas: ["nakute"],
+    cards: [
+      "card_479", "card_480", "card_481", "card_482",
+      "card_483", "card_484", "card_485", "card_486",
+      "card_487", "card_488", "card_489", "card_490",
+      "card_491", "card_492", "card_493", "card_494",
+      "card_495", "card_496", "card_497", "card_498",
+    ],
+    missoes: ["rp_ace_amiga", "rp_ace_novato", "rp_ace_professora"],
+  },
 ];
 
 const TITULO: Record<TipoLicao, string> = {

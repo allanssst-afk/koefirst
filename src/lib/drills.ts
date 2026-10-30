@@ -75,7 +75,7 @@ export const VERBOS: Verbo[] = [
 
 const junta = (...partes: (string | undefined)[]) => partes.filter(Boolean).join(" ");
 
-export type Forma = "masu" | "mashita" | "masen" | "masen_deshita" | "tai" | "mashou" | "te_kudasai" | "te_imasu" | "koto" | "nakereba" | "ta" | "nakatta" | "ta_koto" | "ou_to" | "reru" | "remasen" | "tara" | "te_kureta" | "tai_ga" | "te_shimau" | "o_shimasu" | "rareta" | "sasete";
+export type Forma = "masu" | "mashita" | "masen" | "masen_deshita" | "tai" | "mashou" | "te_kudasai" | "te_imasu" | "koto" | "nakereba" | "ta" | "nakatta" | "ta_koto" | "ou_to" | "reru" | "remasen" | "tara" | "te_kureta" | "tai_ga" | "te_shimau" | "o_shimasu" | "rareta" | "sasete" | "nakute";
 
 interface FormaDef {
   label: string;
@@ -380,6 +380,18 @@ export const FORMAS: Record<Forma, FormaDef> = {
     kana: "ください",
     funcao: "por favor",
   },
+  nakute: {
+    pergunta: (v, obj) => `${junta("Eu tenho que", v.pt, obj)}?`,
+    abertura: "Não,",
+    quando: "Dizer que não precisa fazer",
+    regra: "forma -nai: -nai → -nakute mo ii desu",
+    frase: (v, obj) => junta("não precisa", v.pt, obj),
+    label: "Não precisa",
+    comando: "Não precisa!",
+    sufixo: [],
+    kana: "なくてもいいです",
+    funcao: "mesmo sem",
+  },
 };
 
 /** Verbos cuja volitiva é base -nai + "you" (grupo de taberu e os irregulares); os outros trocam o último som por "-ou". */
@@ -476,6 +488,7 @@ export interface Conjugacao {
  * - passiva: família -mashita: sobe na 2ª mora e cai depois de "ma" (nomaremáshita). OJAD, 15 verbos.
  * - causativa -te kudasai: verbo plano fica alto, e "kudasai" = HHHL (ikasete kudasái); verbo com queda cai antes de "se",
  *   e "kudasai" fica baixo (kaerásete kudasai). OJAD, 17 verbos. Exceção: tabesasete sai plano, e taberu fica fora da lista.
+ * - -nakute mo ii: mesma regra do -nakereba; "ii" = HL. OJAD, 18 verbos. Exceção: okinakute sai plano e fica fora da lista.
  */
 export function conjugar(verbo: Verbo, forma: Forma): Conjugacao {
   const raizBloco = verbo.raiz.join("");
@@ -625,13 +638,22 @@ export function conjugar(verbo: Verbo, forma: Forma): Conjugacao {
     return { verbo, forma, moras, kana: ta.kana + suf, kanji: ta.kanji + suf, alvos: [ta.kana + suf, plain + suf, ta.kana + "ことある", plain + "ことある"] };
   }
 
-  if (forma === "nakereba" || forma === "nakatta") {
+  if (forma === "nakereba" || forma === "nakatta" || forma === "nakute") {
     const n = verbo.nai;
     const sons = n.som.split(".");
     const plano = verbo.dicio.acento === 0;
     // base: LHH… (ou H se tem uma mora só e a queda vem logo); "na" alto só no verbo plano
     const base = sons.map((_, i) => (i === 0 ? (sons.length === 1 && !plano ? "H" : "L") : "H")).join("");
     const plain = stripFurigana(n.kanji);
+    if (forma === "nakute") {
+      const moras = [
+        ...b(`${n.som}.na._ku.te.mo`, `${base}${plano ? "H" : "L"}LLL`, `${raizFn} — ${FORMAS.nakute.funcao}`, "verbo"),
+        ...b("i.i", "HL", "bom", "adjetivo"),
+        ...b("de._su", "LL", "é", "copula"),
+      ];
+      const suf = FORMAS.nakute.kana;
+      return { verbo, forma, moras, kana: n.kana + suf, kanji: n.kanji + suf, alvos: [n.kana + suf, plain + suf, `${n.kana}なくていいです`, `${plain}なくていいです`, `${n.kana}なくても`, `${plain}なくても`] };
+    }
     if (forma === "nakatta") {
       const moras = b(`${n.som}.na.ka.t.ta`, `${base}${plano ? "H" : "L"}LLL`, `${raizFn} — não (passado casual)`, "verbo");
       return { verbo, forma, moras, kana: n.kana + "なかった", kanji: n.kanji + "なかった", alvos: [n.kana + "なかった", plain + "なかった"] };
@@ -895,6 +917,7 @@ for (const cenas of Object.values(CENAS_DRILL))
     if (!HOBBIES_OK.has(chave) && !OBRIGACOES_OK.has(chave)) c.sem = [...(c.sem ?? []), "ou_to"];
     if (!EXPERIENCIAS_OK.has(chave)) c.sem = [...(c.sem ?? []), "ta_koto"];
     if (!OBRIGACOES_OK.has(chave)) c.sem = [...(c.sem ?? []), "nakereba"];
+    if (!OBRIGACOES_OK.has(chave) || c.verbo === "okiru") c.sem = [...(c.sem ?? []), "nakute"];
     if (!PEDIDOS_OK.has(chave)) c.sem = [...(c.sem ?? []), "te_kudasai"];
     if (!HOBBIES_OK.has(chave)) c.sem = [...(c.sem ?? []), "koto"];
   }
@@ -1080,6 +1103,7 @@ const ponto = (t: string) => (/[.!?]$/.test(t) ? t : `${t}.`);
  * - Humilde:           [complemento]お願いできますか → はい、[complemento]お[raiz]します
  * - Passiva:           どうしたんですか → 友達に[complemento][passiva]ました
  * - Deixe-me:          どうしましたか → [complemento][causativa -te]ください
+ * - Não precisa:       [complemento][base -nai]なければなりませんか → いいえ、…なくてもいいです
  */
 export function montarDialogo(cena: CenaDrill, forma: Forma): DialogoDrill {
   const v = verboPorDict(cena.verbo);
@@ -1092,6 +1116,9 @@ export function montarDialogo(cena: CenaDrill, forma: Forma): DialogoDrill {
   if (forma === "ta" || forma === "nakatta") {
     const q = conjugar(v, "ta");
     pergunta = fala(KINOU.kana + c.kana + q.kana + "？", KINOU.kanji + c.kanji + q.kanji + "？", f.pergunta(v, cena.obj), KINOU.moras, c.moras, q.moras);
+  } else if (forma === "nakute") {
+    const q = conjugar(v, "nakereba");
+    pergunta = fala(fim(c.kana + q.kana + "か"), fim(c.kanji + q.kanji + "か"), f.pergunta(v, cena.obj), c.moras, q.moras, KA);
   } else if (forma === "sasete") {
     pergunta = fala(fim("どうしましたか"), fim("どうしましたか"), f.pergunta(v, cena.obj), DOU_SHIMASHITA);
   } else if (forma === "rareta") {
@@ -1145,7 +1172,7 @@ export function montarDialogo(cena: CenaDrill, forma: Forma): DialogoDrill {
   }
 
   const alvo = conjugar(v, forma);
-  const inicio = forma === "rareta" ? TOMODACHI_NI : forma === "ta" ? UN : forma === "nakatta" ? UUN : forma === "mashita" || forma === "te_kudasai" || forma === "ta_koto" || forma === "reru" || forma === "te_kureta" || forma === "o_shimasu" ? HAI : forma === "masen" || forma === "masen_deshita" || forma === "remasen" ? IIE : null;
+  const inicio = forma === "rareta" ? TOMODACHI_NI : forma === "ta" ? UN : forma === "nakatta" ? UUN : forma === "mashita" || forma === "te_kudasai" || forma === "ta_koto" || forma === "reru" || forma === "te_kureta" || forma === "o_shimasu" ? HAI : forma === "masen" || forma === "masen_deshita" || forma === "remasen" || forma === "nakute" ? IIE : null;
   const ptResposta = ponto(maiuscula(comEuImplicito([f.abertura, f.frase(v, cena.obj)].filter(Boolean).join(" "))));
   const resposta = fala(
     fim((inicio?.kana ?? "") + c.kana + alvo.kana),
