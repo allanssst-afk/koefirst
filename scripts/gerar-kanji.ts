@@ -63,6 +63,9 @@ const SIG_EXTRA: Record<string, string[]> = {
   納: ["entregar", "guardar", "pagar"],
   豆: ["feijão", "soja", "ervilha"],
   阪: ["ladeira", "Osaka"],
+  予: ["de antemão", "prévio"],
+  決: ["decidir", "fixar"],
+  受: ["receber", "aceitar"],
 };
 
 const NOMES_PROPRIOS = /^(Japão|China|Coreia|Tóquio|Buda|Inglaterra)/;

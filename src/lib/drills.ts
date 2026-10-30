@@ -75,7 +75,7 @@ export const VERBOS: Verbo[] = [
 
 const junta = (...partes: (string | undefined)[]) => partes.filter(Boolean).join(" ");
 
-export type Forma = "masu" | "mashita" | "masen" | "masen_deshita" | "tai" | "mashou" | "te_kudasai" | "te_imasu" | "koto" | "nakereba" | "ta" | "nakatta" | "ta_koto";
+export type Forma = "masu" | "mashita" | "masen" | "masen_deshita" | "tai" | "mashou" | "te_kudasai" | "te_imasu" | "koto" | "nakereba" | "ta" | "nakatta" | "ta_koto" | "ou_to";
 
 interface FormaDef {
   label: string;
@@ -260,7 +260,31 @@ export const FORMAS: Record<Forma, FormaDef> = {
     kana: "ことがあります",
     funcao: "o fato, a experiência",
   },
+  ou_to: {
+    pergunta: () => "O que você pensa em fazer amanhã?",
+    abertura: "",
+    quando: "Contar o que você pensa em fazer",
+    regra: "forma volitiva (-ou / -you) + to omoimasu",
+    frase: (v, obj) => junta("estou pensando em", v.pt, obj),
+    label: "Plano",
+    comando: "Penso em!",
+    sufixo: [],
+    kana: "とおもいます",
+    funcao: "penso",
+  },
 };
+
+/** Verbos cuja volitiva é base -nai + "you" (grupo de taberu e os irregulares); os outros trocam o último som por "-ou". */
+const VOLITIVA_YOU = new Set(["taberu", "kuru", "suru", "miru", "okiru", "neru", "hajimeru", "benkyou suru"]);
+const OU_KANA: Record<string, string> = { か: "こ", が: "ご", さ: "そ", た: "と", な: "の", ば: "ぼ", ま: "も", ら: "ろ", わ: "お" };
+
+/** Forma volitiva a partir da base -nai: kaka → kakou, tabe → tabeyou, ko → koyou. */
+function volitiva(v: Verbo) {
+  const n = v.nai;
+  if (VOLITIVA_YOU.has(v.dict)) return { som: `${n.som}.yo.o`, kana: `${n.kana}よう`, kanji: `${n.kanji}よう` };
+  const troca = (x: string) => x.slice(0, -1) + OU_KANA[x.slice(-1)] + "う";
+  return { som: `${n.som.replace(/w?a$/, "o")}.o`, kana: troca(n.kana), kanji: troca(n.kanji) };
+}
 
 /** Pitch da forma -te pela mora da queda: 0 = plano (LHH…), 1 = cai depois da 1ª (HLL…), n = LH…H depois L. */
 function pitchTe(n: number, acento: number): string {
@@ -297,6 +321,7 @@ export interface Conjugacao {
  *   (kaká-nakatta, ikaná-katta). OJAD.
  * - -ta koto ga arimasu: -ta com a melodia do verbo; depois de verbo plano "koto" fica alto e cai no "ga"
  *   (itta kotó ga); depois de verbo com queda sobe de novo (tábeta kotó ga). "arimasu" sobe de novo. OJAD, 12 verbos.
+ * - -ou to omoimasu: a volitiva cai antes do último "o" em qualquer verbo (ikóo, tabeyóo); "to" baixo. OJAD, 17 verbos.
  */
 export function conjugar(verbo: Verbo, forma: Forma): Conjugacao {
   const raizBloco = verbo.raiz.join("");
@@ -330,6 +355,19 @@ export function conjugar(verbo: Verbo, forma: Forma): Conjugacao {
     const kana = ta(te.kana);
     const kanji = ta(te.kanji);
     return { verbo, forma, moras, kana, kanji, alvos: [kana, stripFurigana(kanji)] };
+  }
+
+  if (forma === "ou_to") {
+    const vol = volitiva(verbo);
+    const n = vol.som.split(".").length;
+    const moras = [
+      ...b(vol.som, `L${"H".repeat(n - 2)}L`, `${raizFn} (volitiva)`, "verbo"),
+      ...b("to", "L", "[citação: que…]", "particula"),
+      ...b("o.mo.i.ma._su", "LHHHL", FORMAS.ou_to.funcao, "verbo"),
+    ];
+    const fim = "と思[おも]います";
+    const plain = stripFurigana(vol.kanji);
+    return { verbo, forma, moras, kana: vol.kana + FORMAS.ou_to.kana, kanji: vol.kanji + fim, alvos: [vol.kana + FORMAS.ou_to.kana, plain + stripFurigana(fim), vol.kana, plain] };
   }
 
   if (forma === "ta_koto") {
@@ -622,6 +660,8 @@ const EXPERIENCIAS_OK = new Set([
 for (const cenas of Object.values(CENAS_DRILL))
   for (const c of cenas) {
     const chave = `${c.verbo}|${c.obj}`;
+    // Plano (-ou to omoimasu) responde a "O que você pensa em fazer amanhã?": lazer e tarefas, como hobby e obrigação
+    if (!HOBBIES_OK.has(chave) && !OBRIGACOES_OK.has(chave)) c.sem = [...(c.sem ?? []), "ou_to"];
     if (!EXPERIENCIAS_OK.has(chave)) c.sem = [...(c.sem ?? []), "ta_koto"];
     if (!OBRIGACOES_OK.has(chave)) c.sem = [...(c.sem ?? []), "nakereba"];
     if (!PEDIDOS_OK.has(chave)) c.sem = [...(c.sem ?? []), "te_kudasai"];
@@ -703,6 +743,7 @@ const ponto = (t: string) => (/[.!?]$/.test(t) ? t : `${t}.`);
  * - Obrigação:         明日、何をしなければなりませんか → [complemento][base -nai]なければなりません
  * - Casual:            昨日、[complemento][verbo -ta]？ → うん、…た / ううん、…なかった
  * - Experiência:       [complemento][verbo -ta]ことがありますか → はい、…ことがあります
+ * - Plano:             明日、何をしようと思いますか → [complemento][volitiva]と思います
  */
 export function montarDialogo(cena: CenaDrill, forma: Forma): DialogoDrill {
   const v = verboPorDict(cena.verbo);
@@ -715,6 +756,9 @@ export function montarDialogo(cena: CenaDrill, forma: Forma): DialogoDrill {
   if (forma === "ta" || forma === "nakatta") {
     const q = conjugar(v, "ta");
     pergunta = fala(KINOU.kana + c.kana + q.kana + "？", KINOU.kanji + c.kanji + q.kanji + "？", f.pergunta(v, cena.obj), KINOU.moras, c.moras, q.moras);
+  } else if (forma === "ou_to") {
+    const q = conjugar(suru, "ou_to");
+    pergunta = fala(fim(ASHITA.kana + NANI_O.kana + q.kana + "か"), fim(ASHITA.kanji + NANI_O.kanji + q.kanji + "か"), f.pergunta(v, cena.obj), ASHITA.moras, NANI_O.moras, q.moras, KA);
   } else if (forma === "ta_koto") {
     const q = conjugar(v, "ta_koto");
     pergunta = fala(fim(c.kana + q.kana + "か"), fim(c.kanji + q.kanji + "か"), f.pergunta(v, cena.obj), c.moras, q.moras, KA);

@@ -377,6 +377,23 @@ export const UNIDADES: Unidade[] = [
     ],
     missoes: ["rp_cmp_loja", "rp_cmp_almoco", "rp_cmp_paises"],
   },
+  {
+    id: "u24",
+    numero: 24,
+    titulo: "Planos",
+    descricao: "Penso em, pretendo e está marcado",
+    cor: "#7a9e3f",
+    contexto: "social",
+    formasNovas: ["ou_to"],
+    cards: [
+      "card_229", "card_230", "card_231",
+      "card_232", "card_233", "card_234",
+      "card_235", "card_236", "card_237",
+      "card_238", "card_239", "card_240",
+      "card_241", "card_242", "card_243",
+    ],
+    missoes: ["rp_pla_ferias", "rp_pla_futuro", "rp_pla_reuniao"],
+  },
 ];
 
 const TITULO: Record<TipoLicao, string> = {
