@@ -76,6 +76,8 @@ const SIG_EXTRA: Record<string, string[]> = {
   辛: ["apimentado", "ardido"],
   押: ["empurrar", "apertar"],
   咲: ["florescer"],
+  探: ["procurar", "pesquisar"],
+  供: ["oferecer", "acompanhar"],
 };
 
 const NOMES_PROPRIOS = /^(Japão|China|Coreia|Tóquio|Buda|Inglaterra)/;

@@ -484,6 +484,22 @@ export const UNIDADES: Unidade[] = [
     ],
     missoes: ["rp_dar_presente", "rp_dar_ajuda", "rp_dar_foto"],
   },
+  {
+    id: "u30",
+    numero: 30,
+    titulo: "Descrever coisas e pessoas",
+    descricao: "O livro que comprei, a pessoa de óculos",
+    cor: "#7f6bb3",
+    contexto: "social",
+    cards: [
+      "card_319", "card_320", "card_321", "card_322",
+      "card_323", "card_324", "card_325", "card_326",
+      "card_327", "card_328", "card_329", "card_330",
+      "card_331", "card_332", "card_333", "card_334",
+      "card_335", "card_336", "card_337", "card_338",
+    ],
+    missoes: ["rp_des_achados", "rp_des_festa", "rp_des_cidade"],
+  },
 ];
 
 const TITULO: Record<TipoLicao, string> = {
