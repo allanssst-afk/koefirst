@@ -4,6 +4,8 @@
  */
 import type { SeedCard } from "@/db/seed-data/helpers";
 import { seedCards } from "@/db/seed-data/cards";
+import { idsDoTema } from "../db/seed-data/cards-palavras";
+import { TEMAS_PALAVRAS } from "../db/seed-data/palavras-temas";
 import { LEITURAS } from "./leituras";
 import { GRAMATICA_N3, LEITURA_N3, VOCABULARIO_N3 } from "./simulado-n3";
 import { GRAMATICA_N4, LEITURA_N4, VOCABULARIO_N4 } from "./simulado-n4";
@@ -24,6 +26,8 @@ export interface Unidade {
   contexto: Categoria | "todos" | null;
   cards: string[];
   missoes: string[];
+  /** frases por lição (padrão 3); as linhas de vocabulário usam 6 palavras */
+  porLicao?: number;
   /** transformações do Ping-Pong que esta unidade ensina; dela em diante entram no sorteio */
   formasNovas?: Forma[];
   /**
@@ -826,6 +830,18 @@ export const UNIDADES: Unidade[] = [
     ],
     missoes: ["rp_exp_opiniao", "rp_exp_trabalho"],
   },
+  // linhas de vocabulário: palavras avulsas por tema (`palavras-temas.ts`)
+  ...TEMAS_PALAVRAS.map((t) => ({
+    id: `u${t.numero}`,
+    numero: t.numero,
+    titulo: t.titulo,
+    descricao: t.descricao,
+    cor: t.cor,
+    contexto: null,
+    porLicao: 6,
+    cards: idsDoTema(t.numero),
+    missoes: [],
+  })),
 ];
 
 const TITULO: Record<TipoLicao, string> = {
@@ -851,11 +867,12 @@ export function licoesDa(u: Unidade): Licao[] {
     return l.map((x, i) => ({ ...x, id: `${u.id}:l${i + 1}`, unidade: u }));
   }
   if (u.numero === 0) l.push({ tipo: "tutorial", titulo: TITULO.tutorial, cards: [] });
-  for (let i = 0; i < u.cards.length; i += 3) {
-    const grupo = u.cards.slice(i, i + 3);
+  const porLicao = u.porLicao ?? 3;
+  for (let i = 0; i < u.cards.length; i += porLicao) {
+    const grupo = u.cards.slice(i, i + porLicao);
     // evita lição de uma frase só: junta a sobra com a anterior
     if (grupo.length === 1 && l.length && l[l.length - 1].tipo === "frases") l[l.length - 1].cards.push(...grupo);
-    else l.push({ tipo: "frases", titulo: TITULO.frases, cards: grupo });
+    else l.push({ tipo: "frases", titulo: u.porLicao ? "Palavras novas" : TITULO.frases, cards: grupo });
   }
   if (u.contexto) l.push({ tipo: "pingpong", titulo: TITULO.pingpong, cards: [] });
   for (const m of u.missoes) l.push({ tipo: "dialogo", titulo: TITULO.dialogo, cards: [], missao: m });
@@ -948,7 +965,9 @@ export const chaveBloco = (bloco: Mora[]) => `${bloco[0].bloco}|${bloco[0].funca
 const TODOS_BLOCOS = seedCards.flatMap((c) => c.blocos);
 
 function escuta(card: CardTrilha): Exercicio {
-  const outras = embaralhar(seedCards.filter((c) => c.id !== card.id)).slice(0, 3).map((c) => traducaoPrincipal(c as SeedCard));
+  // palavra concorre com palavra: entre frases, a resposta sairia pelo tamanho
+  const pool = seedCards.filter((c) => c.id !== card.id && c.tags.includes("palavra") === card.tags.includes("palavra") && c.traducao !== card.traducao);
+  const outras = embaralhar(pool).slice(0, 3).map((c) => traducaoPrincipal(c as SeedCard));
   return { tipo: "escuta", card, opcoes: embaralhar([traducaoPrincipal(card), ...outras]) };
 }
 

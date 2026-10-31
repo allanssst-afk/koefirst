@@ -39,11 +39,12 @@ function useTocarAoAbrir(texto: string, aoTocar?: (on: boolean) => void, voz?: n
 
 export function ExNova({ ex }: ExProps<Ex<"nova">>) {
   const { card } = ex;
+  const palavra = card.tags.includes("palavra");
   const [tocando, setTocando] = useState(false);
   useTocarAoAbrir(card.kana, setTocando);
   return (
     <div className="space-y-6">
-      <Enunciado rotulo="Frase nova">Ouça e observe a melodia</Enunciado>
+      <Enunciado rotulo={palavra ? "Palavra nova" : "Frase nova"}>Ouça e observe a melodia</Enunciado>
       <BalaoMascote>
         <div className="space-y-2">
           <BotoesSom texto={card.kana} aoTocar={(on) => setTocando(on)} />
@@ -53,10 +54,10 @@ export function ExNova({ ex }: ExProps<Ex<"nova">>) {
       </BalaoMascote>
       <div className="space-y-1 text-center">
         <p className="text-2xl font-extrabold">{card.traducao}</p>
-        <p className="text-sm text-[var(--muted)]">Quando usar: {card.situacao_pt}</p>
+        {!palavra && <p className="text-sm text-[var(--muted)]">Quando usar: {card.situacao_pt}</p>}
       </div>
       {/* a lógica literal: como o japonês monta a ideia, bloco a bloco */}
-      <CognitiveBreakdown moras={card.moras} literal={card.significado_cognitivo} notas={card.notas ? `💡 ${card.notas}` : undefined} />
+      {!palavra && <CognitiveBreakdown moras={card.moras} literal={card.significado_cognitivo} notas={card.notas ? `💡 ${card.notas}` : undefined} />}
     </div>
   );
 }
@@ -196,7 +197,7 @@ export function ExFalar({ ex, travado, aoResponder, aoPular }: ExProps<Ex<"falar
 
   return (
     <div className="space-y-6">
-      <Enunciado>Fale esta frase em japonês</Enunciado>
+      <Enunciado>Fale esta {ex.card.tags.includes("palavra") ? "palavra" : "frase"} em japonês</Enunciado>
       <BalaoMascote humor="feliz">
         <p className="text-xl font-bold">{ex.card.traducao}</p>
         <p className="text-xs text-[var(--muted)]">{ex.card.situacao_pt}</p>

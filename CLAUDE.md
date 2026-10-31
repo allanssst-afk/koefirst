@@ -67,6 +67,11 @@ Unidades novas seguem a ordem do plano; ao terminar uma, marcar no plano.
   as de revisão). O texto são frases do baralho em sequência (só da unidade ou de antes), com áudio e mapa de som; a escrita segue
   a fase pelo `ScriptLayer`, e na Fase 1 só aparece o mapa. Duas perguntas com resposta no texto (exercícios `texto` e
   `compreensao`). Fica fora do FSRS. XP normal de lição.
+- **Linhas de vocabulário** (unidades 50+, `src/db/seed-data/palavras-temas.ts`): palavras avulsas por tema, para chegar às 2.000
+  ativas. Cada entrada vira um card de um bloco só (`cards-palavras.ts`, id `pal_<linha>_<som>`, tag `palavra`), em lições de 6
+  (`porLicao`). O som sai do kana (`kanaParaMoras`) e a melodia de `scripts/gerar-palavras.ts` (OJAD, gera
+  `palavras-pitch.generated.ts`). Na tela somem a decomposição e o "Quando usar"; `escuta` sorteia só entre palavras. Palavra nova
+  entra em linha nova, porque a posição define as lições, e tirar antes o que o baralho já ensina.
 - **Técnicas do método** (`src/components/TecnicasCard.tsx`, no Perfil): cada técnica, a base de pesquisa e onde
   está no app. Atualizar ao criar exercícios novos.
 - **Dicionário** (`/dicionario`, `src/lib/dicionario.ts`): cada bloco das frases do baralho vira um verbete
@@ -81,7 +86,7 @@ Unidades novas seguem a ordem do plano; ao terminar uma, marcar no plano.
   `src/lib/kana-tracos.generated.ts`, gerado por `scripts/gerar-kana.mjs` a partir do KanjiVG (CC BY-SA 3.0,
   crédito na página). **Exceção à Fase 1:** é um módulo à parte, aberto por atalhos no Perfil e no Praticar
   (`AtalhosEstudo`); na Fase 1 mostra o aviso de que a escrita entra na Fase 2, e o resto do app segue só com som.
-- **Kanji** (`/kanji`, `/kanji/ver/?k=会&g=app`, `src/lib/kanji.ts`, `QuizKanji.tsx`): 766 kanji — os das frases,
+- **Kanji** (`/kanji`, `/kanji/ver/?k=会&g=app`, `src/lib/kanji.ts`, `QuizKanji.tsx`): 836 kanji — os das frases,
   missões e Ping-Pong do app (`noApp`) + JLPT N5 (103), N4 (181) e N3 (341) — com significados em português, leituras on/kun,
   nível, ordem dos traços e as palavras das frases que usam cada um (`PALAVRAS`: tiradas de `漢字[よみ]` nos cards;
   o okurigana e o prefixo お/ご vêm do bloco de moras que contém a leitura). Caligrafia igual à dos kana
@@ -228,6 +233,7 @@ scripts/gerar-migracoes.mjs      # embute migrações + copia o wasm do SQLite
 scripts/servir.mjs               # servidor estático mínimo para testar o build (npm start)
 scripts/validar-pitch.ts         # confere a entonação dos cards e missões com o OJAD
 scripts/gerar-kanji.ts · kanji-n3.ts   # gera os dados de kanji; lista e significados do N3
+scripts/gerar-palavras.ts        # melodia das palavras das linhas de vocabulário (OJAD)
 docs/plano-12-meses.md           # plano de conteúdo até o B1
 drizzle/                         # migrações SQL geradas
 public/sw.js · public/icon.svg · public/audio/
@@ -262,7 +268,7 @@ src/
     schema.ts · index.ts (sql.js + IndexedDB) · seed-run.ts · migrations.generated.ts (gerado)
     seed-data/cards.ts (+ cards-trabalho.ts, cards-lugares.ts, cards-numeros.ts, cards-pedidos.ts,
       cards-agora.ts, cards-adjetivos.ts, cards-fimdesemana.ts, cards-familia.ts, cards-saude.ts, cards-hobbies.ts,
-      cards-regras.ts, cards-casual.ts, cards-opiniao.ts, cards-motivos.ts, cards-experiencias.ts, cards-comparar.ts, cards-planos.ts, cards-viagem.ts, cards-consegue.ts, cards-condicional.ts, cards-dar-receber.ts, cards-descrever.ts, cards-servicos.ts, cards-problemas.ts, cards-keigo.ts, cards-telefone.ts, cards-aparencias.ts, cards-passiva.ts, cards-causativa.ts, cards-conselhos.ts, cards-noticias.ts, cards-historia.ts, cards-negociar.ts, cards-entrevista.ts, cards-vida-japao.ts, cards-expansao.ts) ·
+      cards-regras.ts, cards-casual.ts, cards-opiniao.ts, cards-motivos.ts, cards-experiencias.ts, cards-comparar.ts, cards-planos.ts, cards-viagem.ts, cards-consegue.ts, cards-condicional.ts, cards-dar-receber.ts, cards-descrever.ts, cards-servicos.ts, cards-problemas.ts, cards-keigo.ts, cards-telefone.ts, cards-aparencias.ts, cards-passiva.ts, cards-causativa.ts, cards-conselhos.ts, cards-noticias.ts, cards-historia.ts, cards-negociar.ts, cards-entrevista.ts, cards-vida-japao.ts, cards-expansao.ts, cards-palavras.ts) ·
       seed-data/scenarios.ts
       (+ scenarios-cotidiano.ts,
       scenarios-extra.ts, scenarios-trabalho.ts, scenarios-lugares.ts, scenarios-numeros.ts, scenarios-pedidos.ts,
