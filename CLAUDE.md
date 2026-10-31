@@ -219,6 +219,9 @@ Unidades novas seguem a ordem do plano; ao terminar uma, marcar no plano.
   `src/lib/fsrs.ts`. Passos 1m/10m com `allowModelOverride: false`, para frases novas voltarem em minutos.
 - Áudio só com APIs do navegador: TTS `speechSynthesis` (ja-JP), STT `webkitSpeechRecognition` (ja-JP; pt-BR no
   Coach), gravação `MediaRecorder`, "Nativo vs Eu" e contorno de F0 via Web Audio API (`src/lib/audio/pitch.ts`).
+  Em `capture.ts`, o STT e a gravação são independentes: um erro do STT nunca encerra a captura (no iPhone ele não funciona no app
+  instalado), e sem `alternatives` a tela cai na autoavaliação. O `AudioContext` nasce dentro do toque, e `SR.start()` não pode vir
+  depois de um await. `falha` traz o motivo em texto, e `AvisoMicrofone` mostra em qualquer tela.
 - Sem IA externa (não há onde guardar chave num site estático): a Arena usa os roteiros guiados dos cenários e o
   Coach busca a frase mais parecida no baralho (`fraseMaisProxima` em `src/lib/queries.ts`). O Coach abre pelo
   `BotaoCoach` na linha de resposta da Arena — nada de botão flutuante (cobria os botões no celular).

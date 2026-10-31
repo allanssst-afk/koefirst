@@ -305,6 +305,17 @@ function Conversation({
       setMsgs((m) => [...m, { kind: "feedback", ok: false, text: "Não ouvi nada. Toque no microfone e fale." }]);
       return;
     }
+    // gravou, mas o aparelho não reconheceu as palavras: não dá para corrigir, então a pessoa compara e segue
+    if (r.sttSource === "none" && !r.alternatives.length) {
+      if (r.speechMs) registrarAtividade("roleplay", r.speechMs);
+      setMsgs((m) => [
+        ...m,
+        { kind: "user", text: "", url: r.url, ms: r.speechMs },
+        { kind: "feedback", ok: false, text: "Gravei, mas sem reconhecer as palavras. Ouça sua fala, veja como responder e siga." },
+      ]);
+      setFalhas((n) => n + 1);
+      return;
+    }
     handleUser(r.alternatives, r.url, r.speechMs);
   };
 

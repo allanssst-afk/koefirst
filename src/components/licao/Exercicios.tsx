@@ -183,7 +183,9 @@ export function ExFalar({ ex, travado, aoResponder, aoPular }: ExProps<Ex<"falar
     if (r.latencyMs === null) return setAviso("Não ouvi nada. Toque e fale mais perto do microfone.");
     if (r.speechMs) registrarAtividade("study", r.speechMs);
     if (!r.alternatives.length) {
-      setGravou(true); // sem reconhecimento de voz: o próprio aluno compara com o modelo
+      // sem reconhecimento de voz: o próprio aluno compara com o modelo
+      setSemStt(true);
+      setGravou(true);
       return;
     }
     const s = bestSimilarity(r.alternatives, [ex.card.kana, stripFurigana(ex.card.kanji)]);

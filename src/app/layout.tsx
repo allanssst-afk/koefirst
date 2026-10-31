@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Outfit } from "next/font/google";
 import { NavBar } from "@/components/NavBar";
+import { AvisoMicrofone } from "@/components/AvisoMicrofone";
 import { PhaseProvider } from "@/components/PhaseProvider";
 import { ServiceWorker } from "@/components/ServiceWorker";
 import "./globals.css";
@@ -32,6 +33,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <NavBar />
           <main className="mx-auto max-w-5xl px-4 pb-28 pt-5 md:pb-12">{children}</main>
         </PhaseProvider>
+        <AvisoMicrofone />
         <ServiceWorker />
       </body>
     </html>

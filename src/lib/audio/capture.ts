@@ -15,6 +15,8 @@ export interface CaptureResult {
   blob: Blob | null;
   url: string | null;
   sttSource: "browser" | "server" | "none";
+  /** o que deu errado no microfone ou no reconhecimento, em texto para a pessoa */
+  falha: string | null;
 }
 
 export interface CaptureOptions {
@@ -69,6 +71,41 @@ export function micSupported() {
   return typeof navigator !== "undefined" && !!navigator.mediaDevices?.getUserMedia;
 }
 
+/** Erros que matam o reconhecedor; "no-speech" e "aborted" não são falha: ele só não ouviu nada. */
+const STT_MORTO = new Set(["not-allowed", "service-not-allowed", "audio-capture", "network", "language-not-supported"]);
+
+const eIphone = () => typeof navigator !== "undefined" && /iPhone|iPad|iPod/.test(navigator.userAgent);
+const instalado = () =>
+  typeof window !== "undefined" && (window.matchMedia?.("(display-mode: standalone)").matches || (navigator as { standalone?: boolean }).standalone === true);
+
+const COMO_LIBERAR = () =>
+  eIphone()
+    ? "No iPhone: Ajustes > Safari > Microfone > Permitir."
+    : "No Android: Chrome > ⋮ > Configurações > Configurações do site > Microfone, e permita este site.";
+
+/** Explica a falha: microfone fechado (nada foi gravado) ou só sem reconhecimento (gravou, mas sem entender as palavras). */
+function mensagemFalha(gravou: boolean, sttVivo: boolean, erroMic: string | null, erroStt: string | null): string | null {
+  if (!gravou && !sttVivo) {
+    if (erroMic === "NotAllowedError" || erroMic === "SecurityError") return `O microfone está bloqueado para este site. ${COMO_LIBERAR()}`;
+    if (erroMic === "NotFoundError") return "Não encontrei um microfone neste aparelho.";
+    if (erroMic === "NotReadableError") return "Outro app está usando o microfone. Feche esse app e tente de novo.";
+    if (!micSupported()) return "Este navegador não dá acesso ao microfone. Abra o link direto no Chrome (Android) ou no Safari (iPhone), fora de apps como WhatsApp ou Instagram.";
+    return `Não consegui abrir o microfone (${erroMic ?? erroStt ?? "erro desconhecido"}). ${COMO_LIBERAR()}`;
+  }
+  if (erroStt && gravou) {
+    if (eIphone() && instalado()) return "Sua voz foi gravada, mas o iPhone não reconhece as palavras no app instalado. Para ter a correção, abra o link no Safari.";
+    if (erroStt === "not-allowed") return "Sua voz foi gravada, mas o reconhecimento das palavras ainda não foi permitido. Toque de novo e permita.";
+    if (erroStt === "network") return "Sua voz foi gravada, mas o reconhecimento das palavras precisa de internet.";
+    return `Sua voz foi gravada, mas o aparelho não reconheceu as palavras (${erroStt}). Compare com o modelo.`;
+  }
+  return null;
+}
+
+/** Avisa a tela: `AvisoMicrofone` mostra o texto, e null limpa o aviso anterior. */
+function avisar(texto: string | null) {
+  if (typeof window !== "undefined") window.dispatchEvent(new CustomEvent("koe-microfone", { detail: texto }));
+}
+
 export interface CaptureHandle {
   done: Promise<CaptureResult>;
   stop: () => void;
@@ -88,6 +125,10 @@ export function startCapture(opts: CaptureOptions = {}): CaptureHandle {
     let lastVoice = 0;
     let finished = false;
     let sttEnded = false;
+    let erroStt: string | null = null;
+    let erroMic: string | null = null;
+    let micAbrindo = false;
+    let paradoNoBotao = false;
     const alternatives: string[] = [];
     /** trechos finais da fala longa, na ordem */
     const trechos: string[] = [];
@@ -100,6 +141,17 @@ export function startCapture(opts: CaptureOptions = {}): CaptureHandle {
     let raf = 0;
     let rec: SR | null = null;
     let maxTimer = 0;
+
+    avisar(null);
+    // criado aqui, ainda dentro do toque: depois de um await, no iPhone ele nasce suspenso e o detector de voz não ouve nada
+    try {
+      ctx = new AudioContext();
+      void ctx.resume().catch(() => {});
+    } catch {
+      ctx = null;
+    }
+
+    const temResultado = () => alternatives.length > 0 || trechos.length > 0 || !!interim;
 
     const markSpeech = () => {
       if (latency === null) {
@@ -124,12 +176,21 @@ export function startCapture(opts: CaptureOptions = {}): CaptureHandle {
         recorder.stop();
       });
       stream?.getTracks().forEach((t) => t.stop());
+      // detector mudo (áudio suspenso) ou sem reconhecedor para confirmar: se gravou e a pessoa parou no botão, a fala conta
+      if (latency === null && blob && (ctx?.state === "suspended" || (paradoNoBotao && (!rec || !!erroStt)))) {
+        latency = 0;
+        lastVoice = performance.now();
+      }
       ctx?.close().catch(() => {});
 
       // Aguarda o resultado final do reconhecedor (chega logo após o stop).
       if (rec && !sttEnded) await new Promise((r) => setTimeout(r, 700));
 
-      const sttSource: CaptureResult["sttSource"] = rec ? "browser" : "none";
+      const sttVivo = !!rec && !erroStt;
+      const sttSource: CaptureResult["sttSource"] = sttVivo ? "browser" : "none";
+      // silêncio com microfone aberto não é falha do aparelho: quem avisa é a tela ("Não ouvi nada")
+      const falha = stream && latency === null ? null : mensagemFalha(!!stream, sttVivo, erroMic, erroStt);
+      avisar(falha);
       if (longa) {
         const tudo = (trechos.join("") + interim).trim();
         if (tudo) alternatives.push(tudo);
@@ -143,9 +204,13 @@ export function startCapture(opts: CaptureOptions = {}): CaptureHandle {
         blob,
         url: blob ? URL.createObjectURL(blob) : null,
         sttSource,
+        falha,
       });
     };
-    stopFn = () => void finish();
+    stopFn = () => {
+      paradoNoBotao = true;
+      void finish();
+    };
 
     (async () => {
       // STT do navegador
@@ -178,10 +243,12 @@ export function startCapture(opts: CaptureOptions = {}): CaptureHandle {
             }
           }
         };
-        rec.onerror = () => {};
+        rec.onerror = (e) => {
+          if (STT_MORTO.has(e.error)) erroStt = e.error;
+        };
         rec.onend = () => {
           // o reconhecedor encerra sozinho depois de uma pausa: na fala longa, volta a ouvir
-          if (longa && !finished) {
+          if (longa && !finished && !erroStt) {
             setTimeout(() => {
               if (finished) return;
               try {
@@ -191,6 +258,8 @@ export function startCapture(opts: CaptureOptions = {}): CaptureHandle {
             return;
           }
           sttEnded = true;
+          // sem resultado, a captura não acaba aqui: com o microfone aberto, quem encerra é o detector de voz
+          if (!temResultado() && (stream || micAbrindo)) return;
           // dá um respiro para o gravador pegar o fim da fala
           setTimeout(() => void finish(), 250);
         };
@@ -203,14 +272,32 @@ export function startCapture(opts: CaptureOptions = {}): CaptureHandle {
 
       // Gravação + medidor de energia
       if (micSupported()) {
+        micAbrindo = true;
         try {
           stream = await navigator.mediaDevices.getUserMedia({
             audio: { echoCancellation: true, noiseSuppression: true },
           });
-          recorder = new MediaRecorder(stream);
-          recorder.ondataavailable = (ev) => ev.data.size && chunks.push(ev.data);
-          recorder.start();
-          ctx = new AudioContext();
+        } catch (e) {
+          erroMic = (e as Error).name;
+          stream = null;
+        }
+        micAbrindo = false;
+        // parou antes de o microfone abrir: não deixa ele ligado à toa
+        if (finished) {
+          stream?.getTracks().forEach((t) => t.stop());
+          return;
+        }
+        if (stream) {
+          try {
+            recorder = new MediaRecorder(stream);
+            recorder.ondataavailable = (ev) => ev.data.size && chunks.push(ev.data);
+            recorder.start();
+          } catch {
+            recorder = null;
+          }
+        }
+        if (stream && ctx) {
+          void ctx.resume().catch(() => {});
           const src = ctx.createMediaStreamSource(stream);
           const an = ctx.createAnalyser();
           an.fftSize = 1024;
@@ -232,11 +319,10 @@ export function startCapture(opts: CaptureOptions = {}): CaptureHandle {
             raf = requestAnimationFrame(tick);
           };
           raf = requestAnimationFrame(tick);
-        } catch {
-          stream = null;
         }
       }
-      if (!rec && !stream) return void finish();
+      // sem microfone e sem reconhecedor vivo não há o que esperar
+      if (!stream && (!rec || sttEnded)) return void finish();
       // a tela não pode apagar no meio de uma fala de minutos
       if (longa && "wakeLock" in navigator) navigator.wakeLock.request("screen").then((w) => (wake = w)).catch(() => {});
       maxTimer = window.setTimeout(() => void finish(), maxMs);
