@@ -5,12 +5,12 @@ independente na fala). Guia a produção de unidades: cada unidade nova sai daqu
 
 ## Metas finais (mês 12)
 
-| Medida | Meta B1 | Hoje (unidades 1–73) |
+| Medida | Meta B1 | Hoje (unidades 1–83) |
 | --- | --- | --- |
 | Frases do baralho (faladas) | ~700 | 700 |
-| Palavras ativas (fala) | ~2.000 | ~1.740 blocos distintos, medidos em frases, palavras, missões e Ping-Pong (a mesma palavra conjugada conta mais de uma vez; a estimativa antiga de ~1.275 era alta) |
+| Palavras ativas (fala) | ~2.000 | ~2.010 blocos distintos, medidos em frases, palavras, missões e Ping-Pong (a mesma palavra conjugada conta mais de uma vez; a estimativa antiga de ~1.275 era alta) |
 | Palavras reconhecidas (escuta/leitura) | ~3.500 | — |
-| Kanji | ~650 (N5 + N4 + N3) | 912 com dados (N5, N4, N3 e os do app) |
+| Kanji | ~650 (N5 + N4 + N3) | 1.011 com dados (N5, N4, N3 e os do app) |
 | Formas verbais no Ping-Pong | ~20 | 26 (-masu, -mashita, -masen, -masen deshita, -tai, -mashou, -te kudasai, -te imasu, dicionário + koto, -nakereba, -ta e -nakatta casuais, -ta koto ga arimasu, volitiva + to omoimasu, potencial afirmativo e negativo, -tara ii desu yo, -te kuremashita, -tai n desu ga, -te shimaimashita, o-… shimasu, passiva, causativa + kudasai, -nakute mo ii, -ta sou desu, -te kara) |
 | Fala contínua | 5 min sobre si, narrar, opinar | frases soltas e missões de 6 turnos |
 
@@ -61,13 +61,15 @@ chave do progresso salvo. Sem gramática nova nem forma nova no Ping-Pong; cada 
 45 Tempo e estações *(pronta)* · 46 Celular e internet *(pronta)* · 47 Sentimentos e relações *(pronta)* · 48 Casa e cozinha
 *(pronta)* · 49 Sociedade e opinião *(pronta)*
 
-### Linhas de vocabulário (unidades 50–73)
+### Linhas de vocabulário (unidades 50–83)
 
 Uma frase nova traz só ~1,3 palavra nova, então chegar às 2.000 só com frases pediria quase 700 frases. Estas linhas ensinam palavras
 avulsas por tema, em lições de 6. Primeira leva (50–57, 211 palavras): comida, corpo e saúde, casa, cidade, natureza, trabalho e
 escola, verbos, como é. Segunda leva (58–65, 223 palavras): pessoas, roupas e objetos, calendário, lazer, dinheiro e lojas, verbos de
 ação, pensar e sentir, qualidades. Terceira leva (66–73, 227 palavras): viagem e transporte, escritório, estudo, moradia, lugares e
-direções, números e contadores, advérbios e ligações, verbos do cotidiano. A lista fica em `src/db/seed-data/palavras-temas.ts`.
+direções, números e contadores, advérbios e ligações, verbos do cotidiano. Leva final (74–83, 284 palavras): sociedade e notícias,
+saúde, refeições, objetos e papéis, sentimentos e ideias, movimento e natureza, ações com suru, mais qualidades, cultura e materiais,
+campo e bichos. São 945 palavras ao todo, e a meta de ~2.000 blocos foi alcançada. A lista fica em `src/db/seed-data/palavras-temas.ts`.
 
 ## O que o app precisa ganhar no caminho
 
