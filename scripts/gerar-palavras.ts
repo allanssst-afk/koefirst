@@ -33,6 +33,9 @@ function prever(texto: string) {
 /** O OJAD devolve a sílaba sem o "ゃ" pequeno e sem o "ー": compara só o que sobra. */
 const esqueleto = (k: string) => toHiragana(k).replace(/[ゃゅょぁぃぅぇぉー]/g, "");
 
+/** Onde o OJAD diverge do acento de dicionário */
+const AJUSTES: Record<string, string> = { パン屋: "HLL", お札: "LHH" };
+
 const saida: Record<string, string> = {};
 const avisos: string[] = [];
 for (const tema of TEMAS_PALAVRAS) {
@@ -47,7 +50,7 @@ for (const tema of TEMAS_PALAVRAS) {
       continue;
     }
     // sem contexto o OJAD deixa a mora única baixa: 目, 手 e 歯 são altos
-    saida[chave] = n === 1 ? "H" : p.pitch;
+    saida[chave] = AJUSTES[chave] ?? (n === 1 ? "H" : p.pitch);
   }
 }
 
