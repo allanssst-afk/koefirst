@@ -220,7 +220,9 @@ Unidades novas seguem a ordem do plano; ao terminar uma, marcar no plano.
 - Áudio só com APIs do navegador: TTS `speechSynthesis` (ja-JP), STT `webkitSpeechRecognition` (ja-JP; pt-BR no
   Coach), gravação `MediaRecorder`, "Nativo vs Eu" e contorno de F0 via Web Audio API (`src/lib/audio/pitch.ts`).
   Em `capture.ts`, o STT e a gravação são independentes: um erro do STT nunca encerra a captura (no iPhone ele não funciona no app
-  instalado), e sem `alternatives` a tela cai na autoavaliação. O `AudioContext` nasce dentro do toque, e `SR.start()` não pode vir
+  instalado), e sem `alternatives` a tela cai na autoavaliação. No Android o STT roda sozinho, porque gravar junto pode tirar o
+  microfone dele (hipótese ainda não confirmada em aparelho), e a gravação só abre se ele falhar; lá não há "ouvir minha fala" nem
+  contorno de F0. O Teste do microfone do Perfil (`teste-microfone.ts`) mede gravação, STT e os dois juntos no aparelho. O `AudioContext` nasce dentro do toque, e `SR.start()` não pode vir
   depois de um await. `falha` traz o motivo em texto, e `AvisoMicrofone` mostra em qualquer tela.
 - Sem IA externa (não há onde guardar chave num site estático): a Arena usa os roteiros guiados dos cenários e o
   Coach busca a frase mais parecida no baralho (`fraseMaisProxima` em `src/lib/queries.ts`). O Coach abre pelo
@@ -259,6 +261,7 @@ src/
     ScriptLayer.tsx              # aplica a camada ortográfica da fase atual
     PhaseProvider.tsx            # abre o banco do aparelho + fase global + seletor
     PhaseCard.tsx · BackupCard.tsx · ContextPicker.tsx · TecnicasCard.tsx · AtalhosEstudo.tsx
+    AvisoMicrofone.tsx · TesteMicrofoneCard.tsx   # motivo das falhas do microfone; teste no Perfil
     escrita/ Caligrafia.tsx · Quiz.tsx · QuizKana.tsx · QuizKanji.tsx
     AudioControls.tsx            # Ouvir / Devagar / "Nativo vs Eu"
     useVoiceCapture.ts           # hook de gravação + STT + latência
@@ -295,7 +298,7 @@ src/
     trilha.ts                    # unidades, lições e geração dos exercícios
     dicionario.ts · kana.ts · kana-tracos.generated.ts (scripts/gerar-kana.mjs)
     kanji.ts · kanji-dados.generated.ts (scripts/gerar-kanji.ts)
-    audio/ tts.ts · capture.ts (MediaRecorder + STT + VAD) · pitch.ts (F0)
+    audio/ tts.ts · capture.ts (MediaRecorder + STT + VAD) · pitch.ts (F0) · teste-microfone.ts
 ```
 
 ## Modelo de dados (Drizzle, `src/db/schema.ts`)

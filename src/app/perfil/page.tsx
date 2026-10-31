@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { BookOpen, Flame, Target, Timer, Waves, Zap } from "lucide-react";
 import { BackupCard } from "@/components/BackupCard";
+import { TesteMicrofoneCard } from "@/components/TesteMicrofoneCard";
 import { PhaseCard } from "@/components/PhaseCard";
 import { TecnicasCard } from "@/components/TecnicasCard";
 import { AtalhosEstudo } from "@/components/AtalhosEstudo";
@@ -137,6 +138,7 @@ export default function Perfil() {
       <RitmoCard />
 
       <BackupCard />
+      <TesteMicrofoneCard />
     </div>
   );
 }

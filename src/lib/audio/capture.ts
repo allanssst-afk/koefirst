@@ -57,7 +57,7 @@ interface SR {
   abort(): void;
 }
 
-function getSR(): (new () => SR) | null {
+export function getSR(): (new () => SR) | null {
   if (typeof window === "undefined") return null;
   const w = window as unknown as { SpeechRecognition?: new () => SR; webkitSpeechRecognition?: new () => SR };
   return w.SpeechRecognition ?? w.webkitSpeechRecognition ?? null;
@@ -75,6 +75,7 @@ export function micSupported() {
 const STT_MORTO = new Set(["not-allowed", "service-not-allowed", "audio-capture", "network", "language-not-supported"]);
 
 const eIphone = () => typeof navigator !== "undefined" && /iPhone|iPad|iPod/.test(navigator.userAgent);
+const eAndroid = () => typeof navigator !== "undefined" && /Android/.test(navigator.userAgent);
 const instalado = () =>
   typeof window !== "undefined" && (window.matchMedia?.("(display-mode: standalone)").matches || (navigator as { standalone?: boolean }).standalone === true);
 
@@ -212,64 +213,7 @@ export function startCapture(opts: CaptureOptions = {}): CaptureHandle {
       void finish();
     };
 
-    (async () => {
-      // STT do navegador
-      const SRCtor = getSR();
-      if (SRCtor) {
-        rec = new SRCtor();
-        rec.lang = lang;
-        rec.interimResults = true;
-        rec.maxAlternatives = 5;
-        rec.continuous = longa;
-        rec.onspeechstart = markSpeech;
-        rec.onresult = (e) => {
-          for (let i = e.resultIndex; i < e.results.length; i++) {
-            const r = e.results[i];
-            if (r.isFinal && longa) {
-              const t = r[0]?.transcript.trim() ?? "";
-              // o Chrome do Android repete o trecho anterior no começo de cada resultado final
-              const ultimo = trechos[trechos.length - 1];
-              if (ultimo && t.startsWith(ultimo)) trechos[trechos.length - 1] = t;
-              else if (t) trechos.push(t);
-              interim = "";
-              opts.onInterim?.(trechos.join(""));
-              markSpeech();
-            } else if (r.isFinal) {
-              for (let k = 0; k < r.length; k++) if (r[k].transcript.trim()) alternatives.push(r[k].transcript.trim());
-            } else {
-              interim = r[0]?.transcript ?? interim;
-              opts.onInterim?.(longa ? trechos.join("") + interim : interim);
-              markSpeech();
-            }
-          }
-        };
-        rec.onerror = (e) => {
-          if (STT_MORTO.has(e.error)) erroStt = e.error;
-        };
-        rec.onend = () => {
-          // o reconhecedor encerra sozinho depois de uma pausa: na fala longa, volta a ouvir
-          if (longa && !finished && !erroStt) {
-            setTimeout(() => {
-              if (finished) return;
-              try {
-                rec?.start();
-              } catch {}
-            }, 150);
-            return;
-          }
-          sttEnded = true;
-          // sem resultado, a captura não acaba aqui: com o microfone aberto, quem encerra é o detector de voz
-          if (!temResultado() && (stream || micAbrindo)) return;
-          // dá um respiro para o gravador pegar o fim da fala
-          setTimeout(() => void finish(), 250);
-        };
-        try {
-          rec.start();
-        } catch {
-          rec = null;
-        }
-      }
-
+    const abrirMic = async () => {
       // Gravação + medidor de energia
       if (micSupported()) {
         micAbrindo = true;
@@ -322,7 +266,72 @@ export function startCapture(opts: CaptureOptions = {}): CaptureHandle {
         }
       }
       // sem microfone e sem reconhecedor vivo não há o que esperar
-      if (!stream && (!rec || sttEnded)) return void finish();
+      if (!stream && (!rec || sttEnded || erroStt)) void finish();
+    };
+
+    (async () => {
+      // STT do navegador
+      const SRCtor = getSR();
+      if (SRCtor) {
+        rec = new SRCtor();
+        rec.lang = lang;
+        rec.interimResults = true;
+        rec.maxAlternatives = 5;
+        rec.continuous = longa;
+        rec.onspeechstart = markSpeech;
+        rec.onresult = (e) => {
+          for (let i = e.resultIndex; i < e.results.length; i++) {
+            const r = e.results[i];
+            if (r.isFinal && longa) {
+              const t = r[0]?.transcript.trim() ?? "";
+              // o Chrome do Android repete o trecho anterior no começo de cada resultado final
+              const ultimo = trechos[trechos.length - 1];
+              if (ultimo && t.startsWith(ultimo)) trechos[trechos.length - 1] = t;
+              else if (t) trechos.push(t);
+              interim = "";
+              opts.onInterim?.(trechos.join(""));
+              markSpeech();
+            } else if (r.isFinal) {
+              for (let k = 0; k < r.length; k++) if (r[k].transcript.trim()) alternatives.push(r[k].transcript.trim());
+            } else {
+              interim = r[0]?.transcript ?? interim;
+              opts.onInterim?.(longa ? trechos.join("") + interim : interim);
+              markSpeech();
+            }
+          }
+        };
+        rec.onerror = (e) => {
+          if (!STT_MORTO.has(e.error)) return;
+          erroStt = e.error;
+          // sem reconhecedor, a gravação de reserva entra no lugar dele
+          if (!stream && !micAbrindo && !finished && eAndroid()) void abrirMic();
+        };
+        rec.onend = () => {
+          // o reconhecedor encerra sozinho depois de uma pausa: na fala longa, volta a ouvir
+          if (longa && !finished && !erroStt) {
+            setTimeout(() => {
+              if (finished) return;
+              try {
+                rec?.start();
+              } catch {}
+            }, 150);
+            return;
+          }
+          sttEnded = true;
+          // sem resultado, a captura não acaba aqui: com o microfone aberto, quem encerra é o detector de voz
+          if (!temResultado() && (stream || micAbrindo)) return;
+          // dá um respiro para o gravador pegar o fim da fala
+          setTimeout(() => void finish(), 250);
+        };
+        try {
+          rec.start();
+        } catch {
+          rec = null;
+        }
+      }
+
+      // no Android, gravar junto pode tirar o microfone do reconhecedor: ele vai sozinho, e a gravação fica de reserva
+      if (!rec || !eAndroid()) await abrirMic();
       // a tela não pode apagar no meio de uma fala de minutos
       if (longa && "wakeLock" in navigator) navigator.wakeLock.request("screen").then((w) => (wake = w)).catch(() => {});
       maxTimer = window.setTimeout(() => void finish(), maxMs);
