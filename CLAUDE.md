@@ -71,7 +71,8 @@ Unidades novas seguem a ordem do plano; ao terminar uma, marcar no plano.
   ativas. Cada entrada vira um card de um bloco só (`cards-palavras.ts`, id `pal_<linha>_<som>`, tag `palavra`), em lições de 6
   (`porLicao`). O som sai do kana (`kanaParaMoras`) e a melodia de `scripts/gerar-palavras.ts` (OJAD, gera
   `palavras-pitch.generated.ts`). Na tela somem a decomposição e o "Quando usar"; `escuta` sorteia só entre palavras. Palavra nova
-  entra em linha nova, porque a posição define as lições, e tirar antes o que o baralho já ensina.
+  entra em linha nova, porque a posição define as lições, e tirar antes o que o baralho já ensina. `kanaParaMoras` não trata
+  "ファ" e outros sons com vogal pequena (ァィゥェォ). Revisar a saída do OJAD; `AJUSTES` no gerador corrige à mão onde ele diverge.
 - **Técnicas do método** (`src/components/TecnicasCard.tsx`, no Perfil): cada técnica, a base de pesquisa e onde
   está no app. Atualizar ao criar exercícios novos.
 - **Dicionário** (`/dicionario`, `src/lib/dicionario.ts`): cada bloco das frases do baralho vira um verbete
@@ -86,7 +87,7 @@ Unidades novas seguem a ordem do plano; ao terminar uma, marcar no plano.
   `src/lib/kana-tracos.generated.ts`, gerado por `scripts/gerar-kana.mjs` a partir do KanjiVG (CC BY-SA 3.0,
   crédito na página). **Exceção à Fase 1:** é um módulo à parte, aberto por atalhos no Perfil e no Praticar
   (`AtalhosEstudo`); na Fase 1 mostra o aviso de que a escrita entra na Fase 2, e o resto do app segue só com som.
-- **Kanji** (`/kanji`, `/kanji/ver/?k=会&g=app`, `src/lib/kanji.ts`, `QuizKanji.tsx`): 879 kanji — os das frases,
+- **Kanji** (`/kanji`, `/kanji/ver/?k=会&g=app`, `src/lib/kanji.ts`, `QuizKanji.tsx`): 912 kanji — os das frases,
   missões e Ping-Pong do app (`noApp`) + JLPT N5 (103), N4 (181) e N3 (341) — com significados em português, leituras on/kun,
   nível, ordem dos traços e as palavras das frases que usam cada um (`PALAVRAS`: tiradas de `漢字[よみ]` nos cards;
   o okurigana e o prefixo お/ご vêm do bloco de moras que contém a leitura). Caligrafia igual à dos kana

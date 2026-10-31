@@ -34,7 +34,7 @@ function prever(texto: string) {
 const esqueleto = (k: string) => toHiragana(k).replace(/[ゃゅょぁぃぅぇぉー]/g, "");
 
 /** Onde o OJAD diverge do acento de dicionário */
-const AJUSTES: Record<string, string> = { パン屋: "HLL", お札: "LHH" };
+const AJUSTES: Record<string, string> = { パン屋: "HLL", お札: "LHH", 指定席: "LHHLL", 自由席: "LHHLL", 案内所: "LHHHH", または: "HLL", 割る: "LH", 開く: "LH" };
 
 const saida: Record<string, string> = {};
 const avisos: string[] = [];
