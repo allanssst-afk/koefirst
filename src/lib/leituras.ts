@@ -234,4 +234,44 @@ export const LEITURAS: Record<string, LeituraUnidade> = {
       { pergunta: "Que problema há no apartamento?", certa: "Não sai água quente", erradas: ["O vizinho faz barulho", "A porta não abre", "O aluguel subiu"] },
     ],
   },
+  u45: {
+    titulo: "As estações",
+    frases: ["card_600", "card_602", "card_603", "card_604", "card_612"],
+    perguntas: [
+      { pergunta: "Quando começa a estação das chuvas?", certa: "Em junho", erradas: ["Em março", "Em setembro", "Em dezembro"] },
+      { pergunta: "Qual é a estação favorita da pessoa?", certa: "O outono", erradas: ["A primavera", "O verão", "O inverno"] },
+    ],
+  },
+  u46: {
+    titulo: "Um dia sem sorte",
+    frases: ["card_619", "card_626", "card_625", "card_637"],
+    perguntas: [
+      { pergunta: "O que aconteceu com a tela?", certa: "Rachou", erradas: ["Apagou sozinha", "Ficou sem som", "Foi trocada"] },
+      { pergunta: "O que a pessoa esqueceu?", certa: "A senha", erradas: ["O carregador", "O celular", "O aplicativo"] },
+    ],
+  },
+  u47: {
+    titulo: "Depois da briga",
+    frases: ["card_650", "card_640", "card_651", "card_656"],
+    perguntas: [
+      { pergunta: "Com quem a pessoa brigou?", certa: "Com um amigo", erradas: ["Com a namorada", "Com o chefe", "Com a família"] },
+      { pergunta: "O que ela quer fazer?", certa: "Fazer as pazes", erradas: ["Mudar de cidade", "Ficar sozinha", "Conversar com o chefe"] },
+    ],
+  },
+  u48: {
+    titulo: "O jantar",
+    frases: ["card_674", "card_659", "card_660", "card_662", "card_678"],
+    perguntas: [
+      { pergunta: "O que vão preparar?", certa: "Curry", erradas: ["Ramen", "Sushi", "Sopa"] },
+      { pergunta: "O que é refogado?", certa: "A cebola", erradas: ["O arroz", "O ovo", "A carne"] },
+    ],
+  },
+  u49: {
+    titulo: "O Japão de hoje",
+    frases: ["card_680", "card_681", "card_682", "card_688", "card_698"],
+    perguntas: [
+      { pergunta: "O que está diminuindo no Japão?", certa: "A população", erradas: ["Os preços", "Os idosos", "Os impostos"] },
+      { pergunta: "O que está subindo?", certa: "Os preços", erradas: ["Os salários", "A natalidade", "As folgas"] },
+    ],
+  },
 };

@@ -63,7 +63,7 @@ Unidades novas seguem a ordem do plano; ao terminar uma, marcar no plano.
   transcrição segue oculta. As chaves devem ser específicas: "kara" sozinho casa com "de" (ブラジルから), e "tai" com 大変 em
   kana. A resposta-modelo vem de `emendar(...)` e precisa cobrir todos os pontos. Avaliação oral B1 (`rp_rev4_avaliacao`,
   u44): 4 turnos abertos que somam 5 minutos; antes dela vem o ensaio em turnos curtos (`rp_rev4_ensaio`).
-- **Leitura por unidade** (`tipo: "leitura"`, `opcional: true`, `src/lib/leituras.ts`): última estação das unidades 15–43 (exceto
+- **Leitura por unidade** (`tipo: "leitura"`, `opcional: true`, `src/lib/leituras.ts`): última estação das unidades 15–49 (exceto
   as de revisão). O texto são frases do baralho em sequência (só da unidade ou de antes), com áudio e mapa de som; a escrita segue
   a fase pelo `ScriptLayer`, e na Fase 1 só aparece o mapa. Duas perguntas com resposta no texto (exercícios `texto` e
   `compreensao`). Fica fora do FSRS. XP normal de lição.
@@ -81,7 +81,7 @@ Unidades novas seguem a ordem do plano; ao terminar uma, marcar no plano.
   `src/lib/kana-tracos.generated.ts`, gerado por `scripts/gerar-kana.mjs` a partir do KanjiVG (CC BY-SA 3.0,
   crédito na página). **Exceção à Fase 1:** é um módulo à parte, aberto por atalhos no Perfil e no Praticar
   (`AtalhosEstudo`); na Fase 1 mostra o aviso de que a escrita entra na Fase 2, e o resto do app segue só com som.
-- **Kanji** (`/kanji`, `/kanji/ver/?k=会&g=app`, `src/lib/kanji.ts`, `QuizKanji.tsx`): 725 kanji — os das frases,
+- **Kanji** (`/kanji`, `/kanji/ver/?k=会&g=app`, `src/lib/kanji.ts`, `QuizKanji.tsx`): 766 kanji — os das frases,
   missões e Ping-Pong do app (`noApp`) + JLPT N5 (103), N4 (181) e N3 (341) — com significados em português, leituras on/kun,
   nível, ordem dos traços e as palavras das frases que usam cada um (`PALAVRAS`: tiradas de `漢字[よみ]` nos cards;
   o okurigana e o prefixo お/ご vêm do bloco de moras que contém a leitura). Caligrafia igual à dos kana
@@ -262,7 +262,7 @@ src/
     schema.ts · index.ts (sql.js + IndexedDB) · seed-run.ts · migrations.generated.ts (gerado)
     seed-data/cards.ts (+ cards-trabalho.ts, cards-lugares.ts, cards-numeros.ts, cards-pedidos.ts,
       cards-agora.ts, cards-adjetivos.ts, cards-fimdesemana.ts, cards-familia.ts, cards-saude.ts, cards-hobbies.ts,
-      cards-regras.ts, cards-casual.ts, cards-opiniao.ts, cards-motivos.ts, cards-experiencias.ts, cards-comparar.ts, cards-planos.ts, cards-viagem.ts, cards-consegue.ts, cards-condicional.ts, cards-dar-receber.ts, cards-descrever.ts, cards-servicos.ts, cards-problemas.ts, cards-keigo.ts, cards-telefone.ts, cards-aparencias.ts, cards-passiva.ts, cards-causativa.ts, cards-conselhos.ts, cards-noticias.ts, cards-historia.ts, cards-negociar.ts, cards-entrevista.ts, cards-vida-japao.ts) ·
+      cards-regras.ts, cards-casual.ts, cards-opiniao.ts, cards-motivos.ts, cards-experiencias.ts, cards-comparar.ts, cards-planos.ts, cards-viagem.ts, cards-consegue.ts, cards-condicional.ts, cards-dar-receber.ts, cards-descrever.ts, cards-servicos.ts, cards-problemas.ts, cards-keigo.ts, cards-telefone.ts, cards-aparencias.ts, cards-passiva.ts, cards-causativa.ts, cards-conselhos.ts, cards-noticias.ts, cards-historia.ts, cards-negociar.ts, cards-entrevista.ts, cards-vida-japao.ts, cards-expansao.ts) ·
       seed-data/scenarios.ts
       (+ scenarios-cotidiano.ts,
       scenarios-extra.ts, scenarios-trabalho.ts, scenarios-lugares.ts, scenarios-numeros.ts, scenarios-pedidos.ts,
@@ -273,7 +273,7 @@ src/
       scenarios-dar-receber.ts, scenarios-descrever.ts, scenarios-servicos.ts, scenarios-problemas.ts, scenarios-keigo.ts,
       scenarios-telefone.ts, scenarios-aparencias.ts,
       scenarios-passiva.ts, scenarios-causativa.ts, scenarios-conselhos.ts,
-      scenarios-noticias.ts, scenarios-historia.ts, scenarios-negociar.ts, scenarios-entrevista.ts, scenarios-vida-japao.ts, scenarios-revisao-final.ts) ·
+      scenarios-noticias.ts, scenarios-historia.ts, scenarios-negociar.ts, scenarios-entrevista.ts, scenarios-vida-japao.ts, scenarios-revisao-final.ts, scenarios-expansao.ts) ·
       seed-data/helpers.ts
   lib/
     types.ts · fsrs.ts · roles.ts · text.ts (normalização/similaridade/furigana) · idb.ts

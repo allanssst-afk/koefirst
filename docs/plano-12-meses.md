@@ -5,12 +5,12 @@ independente na fala). Guia a produção de unidades: cada unidade nova sai daqu
 
 ## Metas finais (mês 12)
 
-| Medida | Meta B1 | Hoje (unidades 1–44) |
+| Medida | Meta B1 | Hoje (unidades 1–49) |
 | --- | --- | --- |
-| Frases do baralho (faladas) | ~700 | 598 |
-| Palavras ativas (fala) | ~2.000 | ~1.275 |
+| Frases do baralho (faladas) | ~700 | 700 |
+| Palavras ativas (fala) | ~2.000 | ~1.120 blocos distintos, medidos em frases, missões e Ping-Pong (a mesma palavra conjugada conta mais de uma vez; a estimativa antiga de ~1.275 era alta) |
 | Palavras reconhecidas (escuta/leitura) | ~3.500 | — |
-| Kanji | ~650 (N5 + N4 + N3) | 725 com dados (N5, N4, N3 e os do app) |
+| Kanji | ~650 (N5 + N4 + N3) | 766 com dados (N5, N4, N3 e os do app) |
 | Formas verbais no Ping-Pong | ~20 | 26 (-masu, -mashita, -masen, -masen deshita, -tai, -mashou, -te kudasai, -te imasu, dicionário + koto, -nakereba, -ta e -nakatta casuais, -ta koto ga arimasu, volitiva + to omoimasu, potencial afirmativo e negativo, -tara ii desu yo, -te kuremashita, -tai n desu ga, -te shimaimashita, o-… shimasu, passiva, causativa + kudasai, -nakute mo ii, -ta sou desu, -te kara) |
 | Fala contínua | 5 min sobre si, narrar, opinar | frases soltas e missões de 6 turnos |
 
@@ -52,6 +52,14 @@ Fases = camadas de escrita do app (Perfil): 1 som · 2 + kana · 3 + kanji com f
 | 10 | 36 O que me aconteceu (passiva) *(pronta)* · 37 Pedir e permitir (causativa) *(pronta)* · 38 Conselhos *(pronta)* | passiva (inclusive a de incômodo) · causativa · ~sasete kudasai · ~you ni shite kudasai · ~nakute mo ii | 2.000 | contar um incidente em 2 min |
 | 11 | 39 Notícias e boatos *(pronta)* · 40 Contar uma história *(pronta)* · 41 Discutir e negociar *(pronta)* | ~sou desu (ouvi dizer) · ~ni yoru to · ~to iu · ~te kara · ~mae ni · ~aida ni · ~uchi ni · ~nagara · ~noni · ~ba ~hodo · ~kedo | 2.300 (passivo 3.000) | kanji N3 (+370) |
 | 12 | 42 Entrevista e apresentação profissional *(pronta)* · 43 Vida no Japão (moradia, médico, documentos) *(pronta)* · 44 Revisão final *(pronta)* | consolidação; discurso longo (introdução → fatos → opinião → conclusão) | 2.000 ativas / 3.500 passivas | simulado N3 (escuta + leitura); avaliação oral B1: 5 min sobre si, narrar e opinar |
+
+### Expansão do B1 (depois da unidade 44)
+
+Temas de B1 que a trilha não cobria, para chegar às 700 frases. Não entram nas unidades antigas porque os ids das lições são a
+chave do progresso salvo. Sem gramática nova nem forma nova no Ping-Pong; cada unidade tem 2 missões e leitura.
+
+45 Tempo e estações *(pronta)* · 46 Celular e internet *(pronta)* · 47 Sentimentos e relações *(pronta)* · 48 Casa e cozinha
+*(pronta)* · 49 Sociedade e opinião *(pronta)*
 
 ## O que o app precisa ganhar no caminho
 
