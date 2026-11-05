@@ -1,0 +1,5 @@
+:HL["/koefirst/_next/static/chunks/1bq5ynducbl7y.css","style"]
+:HL["/koefirst/_next/static/media/c0680f1bdb3a2e90-s.p.1gsd1jahc5dg_.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
+2:[["children",{"s":"__PAGE__","h":160}]]
+1:[["children",{"s":"drills","h":96,"c":"$Q2"}]]
+0:{"b":"p5N69sMsZzWRBLyXgFMa8","t":{"t":{"s":"","h":80,"c":"$Q1"}}}
