@@ -52,6 +52,7 @@ interface SR {
   onend: (() => void) | null;
   onerror: ((e: { error: string }) => void) | null;
   onspeechstart: (() => void) | null;
+  onaudiostart: (() => void) | null;
   start(): void;
   stop(): void;
   abort(): void;
@@ -74,15 +75,15 @@ export function micSupported() {
 /** Erros que matam o reconhecedor; "no-speech" e "aborted" não são falha: ele só não ouviu nada. */
 const STT_MORTO = new Set(["not-allowed", "service-not-allowed", "audio-capture", "network", "language-not-supported"]);
 
-const eIphone = () => typeof navigator !== "undefined" && /iPhone|iPad|iPod/.test(navigator.userAgent);
-const eAndroid = () => typeof navigator !== "undefined" && /Android/.test(navigator.userAgent);
-const instalado = () =>
+export const eIphone = () => typeof navigator !== "undefined" && /iPhone|iPad|iPod/.test(navigator.userAgent);
+export const eAndroid = () => typeof navigator !== "undefined" && /Android/.test(navigator.userAgent);
+export const instalado = () =>
   typeof window !== "undefined" && (window.matchMedia?.("(display-mode: standalone)").matches || (navigator as { standalone?: boolean }).standalone === true);
 
 const COMO_LIBERAR = () =>
   eIphone()
     ? "No iPhone: Ajustes > Safari > Microfone > Permitir."
-    : "No Android: Chrome > ⋮ > Configurações > Configurações do site > Microfone, e permita este site.";
+    : "No Android: Chrome > ⋮ > Configurações > Configurações do site > Microfone, e permita este site. Confira também em Configurações do Android > Apps > Chrome > Permissões > Microfone.";
 
 /** Explica a falha: microfone fechado (nada foi gravado) ou só sem reconhecimento (gravou, mas sem entender as palavras). */
 function mensagemFalha(gravou: boolean, sttVivo: boolean, erroMic: string | null, erroStt: string | null): string | null {
@@ -97,6 +98,7 @@ function mensagemFalha(gravou: boolean, sttVivo: boolean, erroMic: string | null
     if (eIphone() && instalado()) return "Sua voz foi gravada, mas o iPhone não reconhece as palavras no app instalado. Para ter a correção, abra o link no Safari.";
     if (erroStt === "not-allowed") return "Sua voz foi gravada, mas o reconhecimento das palavras ainda não foi permitido. Toque de novo e permita.";
     if (erroStt === "network") return "Sua voz foi gravada, mas o reconhecimento das palavras precisa de internet.";
+    if (erroStt === "sem-audio") return "Sua voz foi gravada, mas o reconhecimento de voz do aparelho não respondeu. Compare com o modelo.";
     return `Sua voz foi gravada, mas o aparelho não reconheceu as palavras (${erroStt}). Compare com o modelo.`;
   }
   return null;
@@ -130,6 +132,8 @@ export function startCapture(opts: CaptureOptions = {}): CaptureHandle {
     let erroMic: string | null = null;
     let micAbrindo = false;
     let paradoNoBotao = false;
+    /** o reconhecedor chegou a abrir o microfone (evento audiostart) */
+    let srOuviu = false;
     const alternatives: string[] = [];
     /** trechos finais da fala longa, na ordem */
     const trechos: string[] = [];
@@ -213,6 +217,18 @@ export function startCapture(opts: CaptureOptions = {}): CaptureHandle {
       void finish();
     };
 
+    /** Android: o reconhecedor não abriu o microfone (erro, fim sem ouvir ou demora) → sai dele e grava no lugar */
+    const reservaAndroid = (motivo: string) => {
+      if (!eAndroid() || stream || micAbrindo || finished) return false;
+      erroStt = erroStt ?? motivo;
+      sttEnded = true;
+      try {
+        rec?.abort();
+      } catch {}
+      void abrirMic();
+      return true;
+    };
+
     const abrirMic = async () => {
       // Gravação + medidor de energia
       if (micSupported()) {
@@ -279,6 +295,9 @@ export function startCapture(opts: CaptureOptions = {}): CaptureHandle {
         rec.maxAlternatives = 5;
         rec.continuous = longa;
         rec.onspeechstart = markSpeech;
+        rec.onaudiostart = () => {
+          srOuviu = true;
+        };
         rec.onresult = (e) => {
           for (let i = e.resultIndex; i < e.results.length; i++) {
             const r = e.results[i];
@@ -301,12 +320,13 @@ export function startCapture(opts: CaptureOptions = {}): CaptureHandle {
           }
         };
         rec.onerror = (e) => {
-          if (!STT_MORTO.has(e.error)) return;
-          erroStt = e.error;
+          if (STT_MORTO.has(e.error)) erroStt = e.error;
           // sem reconhecedor, a gravação de reserva entra no lugar dele
-          if (!stream && !micAbrindo && !finished && eAndroid()) void abrirMic();
+          if (STT_MORTO.has(e.error) || !srOuviu) reservaAndroid(e.error);
         };
         rec.onend = () => {
+          // acabou sem nem abrir o microfone (acontece no app instalado): grava no lugar dele
+          if (!srOuviu && !temResultado() && reservaAndroid("sem-audio")) return;
           // o reconhecedor encerra sozinho depois de uma pausa: na fala longa, volta a ouvir
           if (longa && !finished && !erroStt) {
             setTimeout(() => {
@@ -325,6 +345,8 @@ export function startCapture(opts: CaptureOptions = {}): CaptureHandle {
         };
         try {
           rec.start();
+          // o reconhecedor do Android avisa audiostart logo que abre o microfone; sem isso em 4 s, ele travou
+          if (eAndroid()) window.setTimeout(() => !srOuviu && !temResultado() && reservaAndroid("sem-audio"), 4000);
         } catch {
           rec = null;
         }

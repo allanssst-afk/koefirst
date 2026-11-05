@@ -221,8 +221,9 @@ Unidades novas seguem a ordem do plano; ao terminar uma, marcar no plano.
   Coach), gravação `MediaRecorder`, "Nativo vs Eu" e contorno de F0 via Web Audio API (`src/lib/audio/pitch.ts`).
   Em `capture.ts`, o STT e a gravação são independentes: um erro do STT nunca encerra a captura (no iPhone ele não funciona no app
   instalado), e sem `alternatives` a tela cai na autoavaliação. No Android o STT roda sozinho, porque gravar junto pode tirar o
-  microfone dele (hipótese ainda não confirmada em aparelho), e a gravação só abre se ele falhar; lá não há "ouvir minha fala" nem
-  contorno de F0. O Teste do microfone do Perfil (`teste-microfone.ts`) mede gravação, STT e os dois juntos no aparelho. O `AudioContext` nasce dentro do toque, e `SR.start()` não pode vir
+  microfone dele (hipótese ainda não confirmada em aparelho), e a gravação só abre se ele falhar — erro, fim sem `audiostart` ou 4 s sem
+  `audiostart` (`reservaAndroid`, caso do app instalado); lá não há "ouvir minha fala" nem contorno de F0. O Teste do microfone mostra
+  versão do build (`NEXT_PUBLIC_VERSAO`), modo (instalado ou aba) e o estado da permissão, com botão para copiar. O Teste do microfone do Perfil (`teste-microfone.ts`) mede gravação, STT e os dois juntos no aparelho. O `AudioContext` nasce dentro do toque, e `SR.start()` não pode vir
   depois de um await. `falha` traz o motivo em texto, e `AvisoMicrofone` mostra em qualquer tela.
 - Sem IA externa (não há onde guardar chave num site estático): a Arena usa os roteiros guiados dos cenários e o
   Coach busca a frase mais parecida no baralho (`fraseMaisProxima` em `src/lib/queries.ts`). O Coach abre pelo

@@ -9,6 +9,8 @@ const nextConfig: NextConfig = {
   basePath: BASE || undefined,
   trailingSlash: true,
   images: { unoptimized: true },
+  // aparece no Teste do microfone: mostra se o app instalado já pegou a versão nova
+  env: { NEXT_PUBLIC_VERSAO: new Date().toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo", dateStyle: "short", timeStyle: "short" }) },
   // NEXT_DIST_DIR permite testar um build em outra pasta sem atrapalhar o `npm run dev`.
   distDir: process.env.NEXT_DIST_DIR || ".next",
 };

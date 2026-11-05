@@ -3,7 +3,7 @@
  * pessoa o que funciona. Devolve linhas de texto, sem a transcrição (a Fase 1 não mostra escrita). Chamar dentro do toque: o
  * navegador exige gesto para abrir o áudio.
  */
-import { getSR, micSupported } from "./capture";
+import { eAndroid, eIphone, getSR, instalado, micSupported } from "./capture";
 
 const DURACAO_MS = 4000;
 const espera = (ms: number) => new Promise((r) => setTimeout(r, ms));
@@ -16,16 +16,28 @@ function ouvirReconhecedor(): Promise<string> {
     let texto = "";
     let erro = "";
     let acabou = false;
+    let abriu = false;
     const fim = () => {
       if (acabou) return;
       acabou = true;
-      resolve(erro ? `Reconhecimento: falhou (${erro}).` : texto ? `Reconhecimento: ok, entendeu ${[...texto].length} caracteres.` : "Reconhecimento: rodou, mas não entendeu nada.");
+      resolve(
+        erro
+          ? `Reconhecimento: falhou (${erro}${abriu ? "" : ", sem abrir o microfone"}).`
+          : texto
+            ? `Reconhecimento: ok, entendeu ${[...texto].length} caracteres.`
+            : abriu
+              ? "Reconhecimento: abriu o microfone, mas não entendeu nada."
+              : "Reconhecimento: não chegou a abrir o microfone.",
+      );
     };
     rec.lang = "ja-JP";
     rec.interimResults = true;
     rec.maxAlternatives = 1;
     rec.continuous = false;
     rec.onspeechstart = null;
+    rec.onaudiostart = () => {
+      abriu = true;
+    };
     rec.onresult = (e) => {
       texto = Array.from({ length: e.results.length }, (_, i) => e.results[i][0]?.transcript ?? "").join("");
     };
@@ -106,4 +118,23 @@ export async function testarMicrofone(qual: TesteMicrofone): Promise<string[]> {
     qual === "gravacao" ? [await ouvirGravacao(ctx)] : qual === "reconhecimento" ? [await ouvirReconhecedor()] : await Promise.all([ouvirReconhecedor(), ouvirGravacao(ctx)]);
   void ctx?.close().catch(() => {});
   return linhas;
+}
+
+const PERMISSAO: Record<string, string> = { granted: "permitida", denied: "bloqueada", prompt: "ainda não respondida" };
+
+/** Onde o app está rodando: versão, modo (instalado ou aba), aparelho e o que o navegador oferece. */
+export async function diagnosticoAmbiente(): Promise<string[]> {
+  let permissao = "o navegador não informa";
+  try {
+    const st = await navigator.permissions.query({ name: "microphone" as PermissionName });
+    permissao = PERMISSAO[st.state] ?? st.state;
+  } catch {}
+  const chrome = navigator.userAgent.match(/Chrome\/(\d+)/)?.[1];
+  const aparelho = eAndroid() ? "Android" : eIphone() ? "iPhone" : "computador";
+  return [
+    `Versão do app: ${process.env.NEXT_PUBLIC_VERSAO ?? "dev"}`,
+    `Aberto como: ${instalado() ? "app instalado" : "aba do navegador"} · ${aparelho}${chrome ? ` · Chrome ${chrome}` : ""}`,
+    `Permissão do microfone: ${permissao}`,
+    `Reconhecimento de voz: ${getSR() ? "existe" : "não existe"} · gravação: ${micSupported() && typeof MediaRecorder !== "undefined" ? "existe" : "não existe"}${isSecureContext ? "" : " · conexão sem HTTPS"}`,
+  ];
 }
