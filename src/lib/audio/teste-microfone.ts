@@ -4,6 +4,7 @@
  * navegador exige gesto para abrir o áudio.
  */
 import { eAndroid, eIphone, getSR, instalado, micSupported } from "./capture";
+import { eApp, vozJaponesaInstalada } from "./nativo";
 
 const DURACAO_MS = 4000;
 const espera = (ms: number) => new Promise((r) => setTimeout(r, ms));
@@ -131,10 +132,12 @@ export async function diagnosticoAmbiente(): Promise<string[]> {
   } catch {}
   const chrome = navigator.userAgent.match(/Chrome\/(\d+)/)?.[1];
   const aparelho = eAndroid() ? "Android" : eIphone() ? "iPhone" : "computador";
+  const modo = eApp() ? "app Android (APK)" : instalado() ? "app instalado" : "aba do navegador";
   return [
     `Versão do app: ${process.env.NEXT_PUBLIC_VERSAO ?? "dev"}`,
-    `Aberto como: ${instalado() ? "app instalado" : "aba do navegador"} · ${aparelho}${chrome ? ` · Chrome ${chrome}` : ""}`,
+    `Aberto como: ${modo} · ${aparelho}${chrome ? ` · Chrome ${chrome}` : ""}`,
     `Permissão do microfone: ${permissao}`,
+    ...(eApp() ? [`Voz japonesa do Android: ${(await vozJaponesaInstalada()) ? "instalada" : "não instalada (Configurações > Sistema > Idiomas > Saída de conversão de texto em voz)"}`] : []),
     `Reconhecimento de voz: ${getSR() ? "existe" : "não existe"} · gravação: ${micSupported() && typeof MediaRecorder !== "undefined" ? "existe" : "não existe"}${isSecureContext ? "" : " · conexão sem HTTPS"}`,
   ];
 }

@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import { BotoesSom } from "@/components/licao/comuns";
 import { Mascote } from "@/components/Mascote";
+import { RotaDoApp } from "@/components/RotaDoApp";
 import { PitchAccentVisualizer } from "@/components/PitchAccentVisualizer";
 import { contarNovas, getProgressoTrilha, getQueue, novosDeHoje } from "@/lib/queries";
 import { cardPorId, hrefDaLicao, licoesDa, UNIDADES, type Licao, type TipoLicao, type Unidade } from "@/lib/trilha";
@@ -83,6 +84,7 @@ export default function Trilha() {
 
   return (
     <div className="mx-auto max-w-md space-y-7 pb-8">
+      <RotaDoApp />
       {/* status do dia */}
       <div className="grid grid-cols-3 gap-2">
         <Indicador icone={Flame} cor="var(--warn)" valor={sequencia} rotulo={sequencia === 1 ? "dia seguido" : "dias seguidos"} />

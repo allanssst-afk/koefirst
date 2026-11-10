@@ -236,6 +236,8 @@ Unidades novas seguem a ordem do plano; ao terminar uma, marcar no plano.
 CLAUDE.md
 drizzle.config.ts · next.config.ts · postcss.config.mjs · tsconfig.json
 scripts/publicar.sh              # npm run publicar → build + envio para a branch gh-pages
+scripts/gerar-apk.sh · gerar-icones-android.mjs   # npm run apk → apk/KoeFirst.apk (Capacitor)
+capacitor.config.ts · android/   # projeto Android do APK
 scripts/gerar-migracoes.mjs      # embute migrações + copia o wasm do SQLite
 scripts/servir.mjs               # servidor estático mínimo para testar o build (npm start)
 scripts/validar-pitch.ts         # confere a entonação dos cards e missões com o OJAD
@@ -299,7 +301,7 @@ src/
     trilha.ts                    # unidades, lições e geração dos exercícios
     dicionario.ts · kana.ts · kana-tracos.generated.ts (scripts/gerar-kana.mjs)
     kanji.ts · kanji-dados.generated.ts (scripts/gerar-kanji.ts)
-    audio/ tts.ts · capture.ts (MediaRecorder + STT + VAD) · pitch.ts (F0) · teste-microfone.ts
+    audio/ tts.ts · capture.ts (MediaRecorder + STT + VAD) · pitch.ts (F0) · teste-microfone.ts · nativo.ts (APK)
 ```
 
 ## Modelo de dados (Drizzle, `src/db/schema.ts`)
@@ -364,6 +366,25 @@ npm run db:generate  # após mudar schema.ts (gera a migração e embute)
   escopo `workflow`.
 - No celular: abrir o endereço e instalar ("Adicionar à Tela de Início" / "Instalar app"). HTTPS do GitHub
   Pages libera o microfone. Cada aparelho tem o próprio banco; para levar o progresso, use backup/carregar.
+
+## APK do Android (Capacitor)
+
+- `npm run apk` (`scripts/gerar-apk.sh`): build sem caminho base → `scripts/gerar-icones-android.mjs` (ícones a partir de
+  `public/icon.svg`) → `npx cap sync android` → `gradlew assembleRelease` → `apk/KoeFirst.apk` (fora do git). Publicar como
+  release do GitHub: `gh release create apk-1.N apk/KoeFirst.apk` (o link fixo `releases/latest/download/KoeFirst.apk` sempre
+  aponta para o mais novo). `versionCode` = número de commits, para o APK novo instalar por cima.
+- Ferramentas no Mac, na pasta do usuário: Java 21 em `~/Library/Java/jdk-21*`, Android SDK em `~/Library/Android/sdk`.
+- Assinatura: `~/.android/koefirst-release.jks` + `~/.android/koefirst-assinatura.properties` (fora do repositório). Sem essa
+  chave o Android não atualiza o app instalado: só desinstalando (e perdendo o banco do aparelho).
+- O WebView do Android não tem `speechSynthesis` nem `webkitSpeechRecognition`: `src/lib/audio/nativo.ts` usa os plugins
+  nativos (`@capacitor-community/text-to-speech` e `speech-recognition`) quando `eApp()` (ponte `window.Capacitor`). Os plugins
+  carregam por import dinâmico (alguns mexem em `window` e quebravam o build estático). `ReconhecedorNativo` imita a interface do
+  reconhecedor do Chrome (só resultados finais), então `capture.ts` e o Teste do microfone não mudam. Backup no APK: grava no
+  cache e abre o menu de compartilhar (`@capacitor/filesystem` + `@capacitor/share`); carregar usa o seletor de arquivos.
+- O servidor interno do Capacitor responde caminho sem extensão com o `index.html` da raiz: a navegação do Next (arquivos
+  `.txt`) funciona, mas uma página recarregada abriria a tela inicial. `RotaDoApp` (na tela inicial) corrige com
+  `router.replace`; evitar `location.reload()` e links fora do `next/link`. Service worker desligado no APK.
+- Versões fixas do Capacitor 8 (`-E`); o plugin de reconhecimento é da linha 7 (sem versão 8 publicada).
 
 ## Convenções
 

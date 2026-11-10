@@ -4,6 +4,8 @@
  * `false` se foi interrompido (stopAll ou outra fala) — quem encadeia áudios deve parar no `false`.
  */
 
+import { eApp, falarNativo, pararNativo } from "./nativo";
+
 let current: { audio: HTMLAudioElement; parar: () => void } | null = null;
 // Mantém referência para o Chrome não descartar a utterance antes do onend.
 const liveUtterances: SpeechSynthesisUtterance[] = [];
@@ -22,7 +24,8 @@ export function stopAll() {
     current.parar();
     current = null;
   }
-  if (typeof speechSynthesis !== "undefined") speechSynthesis.cancel();
+  if (eApp()) pararNativo();
+  else if (typeof speechSynthesis !== "undefined") speechSynthesis.cancel();
 }
 
 export function playUrl(url: string, rate = 1): Promise<boolean> {
@@ -59,6 +62,17 @@ const PREFERRED: Record<string, RegExp> = {
  * sem ela, usa a voz preferida.
  */
 export async function speakSynth(text: string, lang: "ja-JP" | "pt-BR", rate = 1, voz?: number): Promise<boolean> {
+  // APK: o WebView do Android não tem speechSynthesis; fala a voz do próprio Android
+  if (eApp()) {
+    stopAll();
+    const minha = geracao;
+    try {
+      await falarNativo(text, lang, rate, voz);
+    } catch {
+      return false;
+    }
+    return minha === geracao;
+  }
   if (typeof speechSynthesis === "undefined") return false;
   stopAll();
   const minha = geracao;

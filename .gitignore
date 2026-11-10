@@ -14,3 +14,6 @@ public/sql-wasm-browser.wasm
 .claude/
 
 .ojad-cache/
+
+# APK do Android (npm run apk)
+apk/

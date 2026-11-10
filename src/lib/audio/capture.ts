@@ -2,6 +2,7 @@
  * Captura de fala: MediaRecorder (gravação para comparação) + Web Speech API (STT)
  * + detector de voz por energia (latência do reflexo oral).
  */
+import { eApp, ReconhecedorNativo } from "./nativo";
 
 export interface CaptureResult {
   /** melhor transcrição (pode ser vazia) */
@@ -60,6 +61,8 @@ interface SR {
 
 export function getSR(): (new () => SR) | null {
   if (typeof window === "undefined") return null;
+  // APK: o WebView não tem o reconhecedor do Chrome; usa o do Android
+  if (eApp()) return ReconhecedorNativo;
   const w = window as unknown as { SpeechRecognition?: new () => SR; webkitSpeechRecognition?: new () => SR };
   return w.SpeechRecognition ?? w.webkitSpeechRecognition ?? null;
 }
@@ -81,7 +84,9 @@ export const instalado = () =>
   typeof window !== "undefined" && (window.matchMedia?.("(display-mode: standalone)").matches || (navigator as { standalone?: boolean }).standalone === true);
 
 const COMO_LIBERAR = () =>
-  eIphone()
+  eApp()
+    ? "No app: Configurações do Android > Apps > KoeFirst > Permissões > Microfone > Permitir."
+    : eIphone()
     ? "No iPhone: Ajustes > Safari > Microfone > Permitir."
     : "No Android: Chrome > ⋮ > Configurações > Configurações do site > Microfone, e permita este site. Confira também em Configurações do Android > Apps > Chrome > Permissões > Microfone.";
 

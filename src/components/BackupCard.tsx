@@ -3,6 +3,7 @@
 import { useRef, useState } from "react";
 import { Download, HardDrive, Upload } from "lucide-react";
 import { exportarBanco, importarBanco } from "@/db";
+import { eApp, salvarBackupNoApp } from "@/lib/audio/nativo";
 
 /**
  * O progresso fica salvo só neste aparelho. Daqui dá para baixar um backup (.db)
@@ -12,12 +13,23 @@ export function BackupCard() {
   const input = useRef<HTMLInputElement>(null);
   const [msg, setMsg] = useState("");
 
-  const baixar = () => {
+  const baixar = async () => {
     const bytes = exportarBanco();
+    const nome = `koefirst-${new Date().toISOString().slice(0, 10)}.db`;
+    // APK: o WebView não baixa arquivos; grava no aparelho e abre o menu de compartilhar (Drive, e-mail, Arquivos…)
+    if (eApp()) {
+      try {
+        await salvarBackupNoApp(nome, bytes);
+        setMsg("Backup pronto: escolha onde guardar.");
+      } catch (e) {
+        if (!/cancel/i.test(String(e))) setMsg(String(e instanceof Error ? e.message : e));
+      }
+      return;
+    }
     const blob = new Blob([new Uint8Array(bytes)], { type: "application/vnd.sqlite3" });
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
-    a.download = `koefirst-${new Date().toISOString().slice(0, 10)}.db`;
+    a.download = nome;
     a.click();
     setTimeout(() => URL.revokeObjectURL(a.href), 1000);
     setMsg("Backup baixado.");
@@ -28,7 +40,8 @@ export function BackupCard() {
     if (!confirm("Substituir o progresso deste aparelho pelo do arquivo escolhido?")) return;
     try {
       await importarBanco(new Uint8Array(await file.arrayBuffer()));
-      location.reload();
+      // volta ao início: no APK, recarregar outra página abriria a tela inicial com o endereço errado
+      location.replace(`${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}/`);
     } catch (e) {
       setMsg(String(e instanceof Error ? e.message : e));
     }
