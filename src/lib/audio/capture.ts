@@ -103,6 +103,8 @@ function mensagemFalha(gravou: boolean, sttVivo: boolean, erroMic: string | null
     if (eIphone() && instalado()) return "Sua voz foi gravada, mas o iPhone não reconhece as palavras no app instalado. Para ter a correção, abra o link no Safari.";
     if (erroStt === "not-allowed") return "Sua voz foi gravada, mas o reconhecimento das palavras ainda não foi permitido. Toque de novo e permita.";
     if (erroStt === "network") return "Sua voz foi gravada, mas o reconhecimento das palavras precisa de internet.";
+    if (erroStt === "language-not-supported")
+      return "Sua voz foi gravada, mas o reconhecimento de voz do aparelho não aceitou o japonês. No app Google: Configurações > Voz > Idiomas, e adicione Japonês.";
     if (erroStt === "sem-audio") return "Sua voz foi gravada, mas o reconhecimento de voz do aparelho não respondeu. Compare com o modelo.";
     return `Sua voz foi gravada, mas o aparelho não reconheceu as palavras (${erroStt}). Compare com o modelo.`;
   }
@@ -133,6 +135,10 @@ export function startCapture(opts: CaptureOptions = {}): CaptureHandle {
     let lastVoice = 0;
     let finished = false;
     let sttEnded = false;
+    /** avisa o fim do reconhecedor a quem está esperando o resultado final */
+    let fimStt: (() => void) | null = null;
+    /** erro que não mata o reconhecedor, mas explica o resultado vazio ("no-match": ouviu e não entendeu) */
+    let erroLeve: string | null = null;
     let erroStt: string | null = null;
     let erroMic: string | null = null;
     let micAbrindo = false;
@@ -193,18 +199,27 @@ export function startCapture(opts: CaptureOptions = {}): CaptureHandle {
       }
       ctx?.close().catch(() => {});
 
-      // Aguarda o resultado final do reconhecedor (chega logo após o stop).
-      if (rec && !sttEnded) await new Promise((r) => setTimeout(r, 700));
+      // Aguarda o resultado final do reconhecedor (chega logo após o stop). O do Android (APK) só entrega o resultado
+      // depois de mandar a fala para o servidor: pode levar alguns segundos depois do toque em "terminar".
+      if (rec && !sttEnded)
+        await new Promise<void>((r) => {
+          fimStt = r;
+          setTimeout(r, eApp() ? 5000 : 700);
+        });
 
       const sttVivo = !!rec && !erroStt;
       const sttSource: CaptureResult["sttSource"] = sttVivo ? "browser" : "none";
       // silêncio com microfone aberto não é falha do aparelho: quem avisa é a tela ("Não ouvi nada")
-      const falha = stream && latency === null ? null : mensagemFalha(!!stream, sttVivo, erroMic, erroStt);
-      avisar(falha);
       if (longa) {
         const tudo = (trechos.join("") + interim).trim();
         if (tudo) alternatives.push(tudo);
       } else if (!alternatives.length && interim) alternatives.push(interim);
+      const naoEntendeu =
+        !alternatives.length && sttVivo && erroLeve === "no-match"
+          ? "O reconhecimento ouviu sua voz, mas não entendeu as palavras em japonês. Fale um pouco mais alto, perto do microfone, ou compare com o modelo."
+          : null;
+      const falha = (stream && latency === null ? null : mensagemFalha(!!stream, sttVivo, erroMic, erroStt)) ?? naoEntendeu;
+      avisar(falha);
       const speechMs = latency === null ? 0 : Math.max(0, Math.round((lastVoice || performance.now()) - t0 - latency));
       resolve({
         transcript: alternatives[0] ?? "",
@@ -317,6 +332,9 @@ export function startCapture(opts: CaptureOptions = {}): CaptureHandle {
               markSpeech();
             } else if (r.isFinal) {
               for (let k = 0; k < r.length; k++) if (r[k].transcript.trim()) alternatives.push(r[k].transcript.trim());
+              // reconheceu palavras: houve fala, mesmo que o aviso de início não tenha chegado (o reconhecedor do Android nem
+              // sempre avisa, e sem isso a tela dizia "Não ouvi nada")
+              if (latency === null && alternatives.length) markSpeech();
             } else {
               interim = r[0]?.transcript ?? interim;
               opts.onInterim?.(longa ? trechos.join("") + interim : interim);
@@ -326,6 +344,7 @@ export function startCapture(opts: CaptureOptions = {}): CaptureHandle {
         };
         rec.onerror = (e) => {
           if (STT_MORTO.has(e.error)) erroStt = e.error;
+          else erroLeve = e.error;
           // sem reconhecedor, a gravação de reserva entra no lugar dele
           if (STT_MORTO.has(e.error) || !srOuviu) reservaAndroid(e.error);
         };
@@ -343,6 +362,7 @@ export function startCapture(opts: CaptureOptions = {}): CaptureHandle {
             return;
           }
           sttEnded = true;
+          fimStt?.();
           // sem resultado, a captura não acaba aqui: com o microfone aberto, quem encerra é o detector de voz
           if (!temResultado() && (stream || micAbrindo)) return;
           // dá um respiro para o gravador pegar o fim da fala

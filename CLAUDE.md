@@ -379,7 +379,10 @@ npm run db:generate  # após mudar schema.ts (gera a migração e embute)
 - O WebView do Android não tem `speechSynthesis` nem `webkitSpeechRecognition`: `src/lib/audio/nativo.ts` usa os plugins
   nativos (`@capacitor-community/text-to-speech` e `speech-recognition`) quando `eApp()` (ponte `window.Capacitor`). Os plugins
   carregam por import dinâmico (alguns mexem em `window` e quebravam o build estático). `ReconhecedorNativo` imita a interface do
-  reconhecedor do Chrome (só resultados finais), então `capture.ts` e o Teste do microfone não mudam. Backup no APK: grava no
+  reconhecedor do Chrome (só resultados finais), então `capture.ts` e o Teste do microfone não mudam. O resultado do Android
+  chega depois do toque em "terminar" (vai ao servidor): `finish` espera até 5 s no APK (`fimStt`). Palavra reconhecida conta como
+  fala mesmo sem o aviso de início (`markSpeech` no resultado final). "No match" vira `no-match` (ouviu e não entendeu, com aviso), e
+  o texto genérico do plugin vira `language-not-supported` (reconhecedor sem japonês). Backup no APK: grava no
   cache e abre o menu de compartilhar (`@capacitor/filesystem` + `@capacitor/share`); carregar usa o seletor de arquivos.
 - O servidor interno do Capacitor responde caminho sem extensão com o `index.html` da raiz: a navegação do Next (arquivos
   `.txt`) funciona, mas uma página recarregada abriria a tela inicial. `RotaDoApp` (na tela inicial) corrige com

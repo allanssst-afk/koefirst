@@ -14,7 +14,8 @@ export const eApp = () =>
 
 /** Mensagens do reconhecedor do Android → códigos da Web Speech API, que a captura já sabe tratar. */
 const CODIGOS: Record<string, string> = {
-  "No match": "no-speech",
+  // ouviu a fala, mas não achou palavras: diferente de silêncio
+  "No match": "no-match",
   "No speech input": "no-speech",
   "Insufficient permissions": "not-allowed",
   "Missing permission": "not-allowed",
@@ -24,6 +25,8 @@ const CODIGOS: Record<string, string> = {
   "Audio recording error": "audio-capture",
   "Client side error": "aborted",
   "RecognitionService busy": "aborted",
+  // o plugin usa este texto para os códigos que não conhece; na prática, idioma sem suporte no reconhecedor (erros 12 e 13)
+  "Didn't understand, please try again.": "language-not-supported",
 };
 
 type Alternativa = { transcript: string; confidence: number };

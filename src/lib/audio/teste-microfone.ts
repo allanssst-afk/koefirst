@@ -22,7 +22,9 @@ function ouvirReconhecedor(): Promise<string> {
       if (acabou) return;
       acabou = true;
       resolve(
-        erro
+        erro === "no-match" && !texto
+          ? "Reconhecimento: ouviu a voz, mas não entendeu as palavras (no-match)."
+          : erro && !texto
           ? `Reconhecimento: falhou (${erro}${abriu ? "" : ", sem abrir o microfone"}).`
           : texto
             ? `Reconhecimento: ok, entendeu ${[...texto].length} caracteres.`
@@ -56,7 +58,8 @@ function ouvirReconhecedor(): Promise<string> {
       try {
         rec.stop();
       } catch {}
-      setTimeout(fim, 1000);
+      // o reconhecedor do Android (APK) entrega o resultado só depois de consultar o servidor
+      setTimeout(fim, eApp() ? 5000 : 1000);
     }, DURACAO_MS);
   });
 }
